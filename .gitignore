@@ -1,0 +1,32 @@
+# === Backups creados durante migración ===
+*.pre-dotfiles.bak
+
+# === Editor temp files ===
+*.swp
+*.swo
+*~
+
+# === OS junk ===
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# === Datos sensibles (NUNCA commitear) ===
+.env
+.env.*
+*.key
+*.pem
+*_rsa
+*_dsa
+*_ed25519
+secrets/
+
+# === VS Code MCP config (puede contener tokens) ===
+mcp.json
+syncLocalSettings.json
+
+# === Cache local ===
+.cache/
+*.cache
+*.log
+*.tmp
