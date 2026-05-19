@@ -59,12 +59,14 @@
     ],
     "profiles": 
     {
-        "defaults": 
+        "defaults":
         {
+            "antialiasingMode": "grayscale",
             "colorScheme": "Monokai Soda",
-            "font": 
+            "font":
             {
-                "face": "Cascadia Code"
+                "face": "CaskaydiaCove Nerd Font",
+                "size": 11
             }
         },
         "list": 
@@ -85,7 +87,7 @@
                 "font": 
                 {
                     "face": "CaskaydiaCove Nerd Font",
-                    "size": 12
+                    "size": 11
                 },
                 "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
                 "hidden": false,
@@ -102,7 +104,7 @@
                 "font": 
                 {
                     "face": "CaskaydiaCove Nerd Font",
-                    "size": 12
+                    "size": 11
                 },
                 "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
                 "hidden": false,
