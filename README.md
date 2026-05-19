@@ -79,9 +79,11 @@ Cuando pregunte si confías en `PSGallery` → `S` (Sí).
 ## 🚀 Paso 1 — Clonar el repo
 
 ```powershell
-git clone https://github.com/M1gu3l4ngel/dotfiles-windows.git $env:USERPROFILE\dotfiles-windows
-cd $env:USERPROFILE\dotfiles-windows
+git clone https://github.com/M1gu3l4ngel/dotfiles-windows.git $env:USERPROFILE\dotfiles
+cd $env:USERPROFILE\dotfiles
 ```
+
+> El repo en GitHub se llama `dotfiles-windows` (para distinguir del repo de Parrot), pero localmente lo clonamos como `dotfiles` para mantener la convención de carpetas corta.
 
 ---
 
@@ -143,9 +145,9 @@ curl -s https://ohmyposh.dev/install.sh | bash -s
 Edita `~/.bashrc` con `nano ~/.bashrc` y agrega al final:
 
 ```bash
-# oh-my-posh — mismo tema que Windows (via dotfiles-windows en /mnt/c)
+# oh-my-posh — mismo tema que Windows (via dotfiles en /mnt/c)
 export PATH="$HOME/.local/bin:$PATH"
-eval "$(oh-my-posh init bash --config /mnt/c/Users/<TU_USUARIO>/dotfiles-windows/oh-my-posh/capr4n.omp.json)"
+eval "$(oh-my-posh init bash --config /mnt/c/Users/<TU_USUARIO>/dotfiles/oh-my-posh/capr4n.omp.json)"
 ```
 
 Reemplaza `<TU_USUARIO>` por tu nombre de usuario de Windows (en mi caso, `migue`).
@@ -163,7 +165,7 @@ Deberías ver el prompt **idéntico** al de PowerShell.
 ## 📂 Estructura
 
 ```
-dotfiles-windows/
+dotfiles/
 ├── powershell\                   → ~\Documents\PowerShell\ (PS 7)
 │                                 → ~\Documents\WindowsPowerShell\ (PS legacy)
 ├── oh-my-posh\                   → ~\AppData\Local\Programs\oh-my-posh\themes\
@@ -182,7 +184,7 @@ El mismo `Microsoft.PowerShell_profile.ps1` se usa para PowerShell 7 y Windows P
 
 ## 🛠 Personalizar
 
-Edita los archivos en `~\dotfiles-windows\` — los symlinks hacen que los cambios se apliquen al reabrir la app correspondiente. Para el PowerShell profile basta con `. $PROFILE` en una sesión activa.
+Edita los archivos en `~\dotfiles\` — los symlinks hacen que los cambios se apliquen al reabrir la app correspondiente. Para el PowerShell profile basta con `. $PROFILE` en una sesión activa.
 
 ---
 
