@@ -3,6 +3,8 @@
 Configuración personal de Windows 11 con PowerShell + oh-my-posh + Windows Terminal + VS Code + WSL Ubuntu.
 Pensado para desarrollo profesional, productividad y replicabilidad entre máquinas — clona este repo en otra PC y en pocos minutos tienes exactamente el mismo setup.
 
+![Preview](assets/preview.png)
+
 ---
 
 ## ✨ Stack
