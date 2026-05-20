@@ -32,6 +32,8 @@
     "copyFormatting": "none",
     "copyOnSelect": false,
     "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+    "initialCols": 150,
+    "initialRows": 50,
     "keybindings": 
     [
         {
@@ -51,6 +53,7 @@
             "keys": "alt+shift+d"
         }
     ],
+    "language": "es-ES",
     "newTabMenu": 
     [
         {
@@ -59,11 +62,11 @@
     ],
     "profiles": 
     {
-        "defaults":
+        "defaults": 
         {
             "antialiasingMode": "grayscale",
             "colorScheme": "Monokai Soda",
-            "font":
+            "font": 
             {
                 "face": "CaskaydiaCove Nerd Font",
                 "size": 11,

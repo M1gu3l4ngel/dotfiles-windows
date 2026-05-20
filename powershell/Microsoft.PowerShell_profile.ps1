@@ -8,3 +8,7 @@ oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\capr4n.omp.json" | Invoke-E
 
 # Iconos por tipo de archivo en ls/dir
 Import-Module -Name Terminal-Icons
+
+# Locale en español para que git y otros programas con gettext muestren
+# mensajes traducidos (matchea con Parrot que tiene es_ES.UTF-8 por default).
+$env:LANG = "es_ES.UTF-8"
