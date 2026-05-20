@@ -22,9 +22,23 @@ Pensado para desarrollo profesional, productividad y replicabilidad entre máqui
 
 ---
 
+## 🔄 Migración rápida (si ya tienes el stack instalado)
+
+¿Tu PC ya tiene PowerShell 7, Windows Terminal, VS Code, oh-my-posh y los demás componentes funcionando, y solo quieres aplicar **mis configs** encima de las tuyas?
+
+**Salta los Pre-requisitos y arranca directo en el [Paso 1](#-paso-1--clonar-el-repo)**. El `install.ps1` es seguro para este caso porque:
+
+- Detecta cada archivo de config existente (PowerShell profile, settings de Windows Terminal, settings de VS Code, etc.)
+- Le hace **backup automático** con sufijo `.pre-dotfiles.bak` antes de tocarlo
+- Crea un symlink hacia el archivo del repo
+
+Si después algo no te gusta, revertir es renombrar el `.pre-dotfiles.bak` de vuelta a su nombre original. No reinstala ni toca tus herramientas, solo cambia los archivos de configuración.
+
+---
+
 ## 📋 Pre-requisitos
 
-Antes de aplicar los dotfiles necesitas tener el stack instalado.
+Antes de aplicar los dotfiles necesitas tener el stack instalado. **Si ya lo tienes** (caso de migración arriba), salta esta sección.
 
 ### 1. Activar Developer Mode
 
