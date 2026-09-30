@@ -1,0 +1,95 @@
+{
+  "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+  "CreationDate": "2026-09-30T17:10:18.0000000+00:00",
+  "Sources": [
+    {
+      "Packages": [
+        {
+          "PackageIdentifier": "Anthropic.Claude"
+        },
+        {
+          "PackageIdentifier": "chrisant996.Clink"
+        },
+        {
+          "PackageIdentifier": "CoreyButler.NVMforWindows"
+        },
+        {
+          "PackageIdentifier": "DBBrowserForSQLite.DBBrowserForSQLite"
+        },
+        {
+          "PackageIdentifier": "Docker.DockerDesktop"
+        },
+        {
+          "PackageIdentifier": "Git.Git"
+        },
+        {
+          "PackageIdentifier": "GitHub.cli"
+        },
+        {
+          "PackageIdentifier": "GnuPG.GnuPG"
+        },
+        {
+          "PackageIdentifier": "GnuPG.Gpg4win"
+        },
+        {
+          "PackageIdentifier": "JanDeDobbeleer.OhMyPosh"
+        },
+        {
+          "PackageIdentifier": "lsd-rs.lsd"
+        },
+        {
+          "PackageIdentifier": "Microsoft.PowerShell"
+        },
+        {
+          "PackageIdentifier": "Microsoft.PowerToys"
+        },
+        {
+          "PackageIdentifier": "Microsoft.SQLServerManagementStudio"
+        },
+        {
+          "PackageIdentifier": "Microsoft.VisualStudio.BuildTools"
+        },
+        {
+          "PackageIdentifier": "Microsoft.VisualStudioCode"
+        },
+        {
+          "PackageIdentifier": "Microsoft.WindowsTerminal"
+        },
+        {
+          "PackageIdentifier": "Microsoft.WSL"
+        },
+        {
+          "PackageIdentifier": "Oracle.MySQL"
+        },
+        {
+          "PackageIdentifier": "Oracle.MySQLWorkbench"
+        },
+        {
+          "PackageIdentifier": "PostgreSQL.pgAdmin"
+        },
+        {
+          "PackageIdentifier": "Python.Launcher"
+        },
+        {
+          "PackageIdentifier": "Python.Python.3.13"
+        },
+        {
+          "PackageIdentifier": "Rustlang.Rustup"
+        },
+        {
+          "PackageIdentifier": "sharkdp.bat"
+        },
+        {
+          "PackageIdentifier": "Stripe.StripeCli"
+        }
+      ],
+      "SourceDetails": {
+        "Argument": "https://cdn.winget.microsoft.com/cache",
+        "Identifier": "Microsoft.Winget.Source_8wekyb3d8bbwe",
+        "Name": "winget",
+        "Type": "Microsoft.PreIndexed.Package"
+      }
+    }
+  ],
+  "WinGetVersion": "1.29.380"
+}

@@ -25,6 +25,10 @@ secrets/
 mcp.json
 syncLocalSettings.json
 
+# === Snapshot local de apps (registro privado, NO publicar) ===
+# apps/winget-full.local.json lleva las apps personales; se queda solo en tu maquina.
+*.local.json
+
 # === Cache local ===
 .cache/
 *.cache
