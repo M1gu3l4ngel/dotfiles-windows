@@ -23,7 +23,7 @@
 	"editor.tabSize": 2,
 	"editor.insertSpaces": false,
 	"editor.tokenColorCustomizations": {
-		"comments": "#9a9c9a",
+		"comments": "#9a9c9a"
 		// "comments": "#097409",
 	},
 	"terminal.integrated.fontFamily": "CaskaydiaCove Nerd Font",
@@ -32,17 +32,10 @@
 	"security.workspace.trust.banner": "never",
 	"files.autoSaveDelay": 600,
 	"files.autoSave": "afterDelay",
-	"css.enabledLanguages": [
-		"html"
-	],
+	"css.enabledLanguages": ["html"],
 	"explorer.confirmDragAndDrop": false,
 	"auto-close-tag.enableAutoCloseTag": true,
-	"auto-rename-tag.activationOnLanguage": [
-		"html",
-		"xml",
-		"php",
-		"javascript"
-	],
+	"auto-rename-tag.activationOnLanguage": ["html", "xml", "php", "javascript"],
 	"auto-close-tag.activationOnLanguage": [
 		"xml",
 		"php",
@@ -62,27 +55,24 @@
 		"cfml",
 		"HTML (EEx)",
 		"HTML (Eex)",
-		"plist",
+		"plist"
 	],
 	"terminal.integrated.profiles.windows": {
 		"PowerShell": {
 			"source": "PowerShell",
-			"icon": "terminal-powershell",
+			"icon": "terminal-powershell"
 		},
 		"Command Prompt": {
-			"path": [
-				"${env:windir}\\Sysnative\\cmd.exe",
-				"${env:windir}\\System32\\cmd.exe"
-			],
+			"path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"],
 			"args": [],
-			"icon": "terminal-cmd",
+			"icon": "terminal-cmd"
 		},
 		"Git Bash": {
-			"source": "Git Bash",
+			"source": "Git Bash"
 		},
 		"Windows PowerShell": {
-			"path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-		},
+			"path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+		}
 	},
 	"importCost.debug": true,
 	"html.format.wrapLineLength": 130,
@@ -90,41 +80,38 @@
 	"php.validate.executablePath": "C:\\PHP\\php.exe",
 	"symbols.hidesExplorerArrows": false,
 	"[javascript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[html]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[css]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
-	},
-	"[jsonc]": {
-		"editor.defaultFormatter": "vscode.json-language-features",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"editor.stickyScroll.enabled": false,
 	"[scss]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[typescriptreact]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.formatOnPaste": true,
 	"mssql.connectionGroups": [
 		{
 			"name": "ROOT",
-			"id": "ROOT",
-		},
+			"id": "ROOT"
+		}
 	],
 	"[sql]": {
-		"editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode",
+		"editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
 	},
 	"sonarlint.connectedMode.connections.sonarcloud": [
 		{
 			"organizationKey": "m1gu3l4ngel",
 			"connectionId": "m1gu3l4ngel",
-			"region": "EU",
-		},
+			"region": "EU"
+		}
 	],
 	"terminal.integrated.initialHint": false,
 	"aiCommit.language": "es",
@@ -161,32 +148,19 @@
 	},
 	"Prettier-SQL.tabSizeOverride": 2,
 	"Prettier-SQL.expressionWidth": 100,
-	"mssql.connections": [
-		{
-			"authenticationType": "AzureMFA",
-			"connectTimeout": 30,
-			"applicationName": "vscode-mssql",
-			"applicationIntent": "ReadWrite",
-			"server": "***REMOVED***",
-			"database": "",
-			"user": "Miguel Serrao - ***REMOVED***",
-			"commandTimeout": 30,
-			"encrypt": "Mandatory",
-			"groupId": "ROOT",
-			"profileName": "***REMOVED***",
-			"accountId": "***REMOVED***",
-			"email": "***REMOVED***",
-			"azureAccountToken": "",
-			"expiresOn": 1774920612,
-			"id": "***REMOVED***"
-		}
-	],
+	"mssql.connections": [],
 	"sqltools.results.limit": 100,
 	"mssql.openQueryResultsInTabByDefaultDoNotShowPrompt": true,
 	"gitCommitter.language": "es",
-	"gitCommitter.apiKey": "***REMOVED***",
+	"gitCommitter.apiKey": "",
 	"gitCommitter.apiUrl": "http://localhost:3000",
 	"git.autofetch": true,
 	"js/ts.updateImportsOnFileMove.enabled": "always",
 	"editor.unicodeHighlight.nonBasicASCII": false,
+	"mssql.autoDisableNonTSqlLanguageService": true,
+	"editor.largeFileOptimizations": false,
+	"sonarlint.automaticAnalysis": true,
+	"[powershell]": {
+		"editor.defaultFormatter": "ms-vscode.powershell"
+	}
 }

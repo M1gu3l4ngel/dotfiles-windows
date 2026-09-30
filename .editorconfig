@@ -1,0 +1,30 @@
+# Convenciones de formato del repo. Lo leen VS Code, Neovim, JetBrains, etc.,
+# así que cualquiera que lo clone escribe en el mismo estilo sin configurar nada.
+# https://editorconfig.org
+root = true
+
+# ----- DEFAULTS PARA TODOS LOS ARCHIVOS -----
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# ----- POWERSHELL: 4 espacios (como install.ps1 y el perfil) -----
+[*.ps1]
+indent_style = space
+indent_size = 4
+
+[*.psm1]
+indent_style = space
+indent_size = 4
+
+# ----- JSON / JSONC: tabs (estilo actual de los settings de VS Code) -----
+[*.{json,jsonc}]
+indent_style = tab
+
+# ----- MARKDOWN: 4 espacios; no recortar (los 2 espacios finales son saltos) -----
+[*.md]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = false

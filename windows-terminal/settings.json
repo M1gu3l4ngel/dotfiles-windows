@@ -174,6 +174,24 @@
                 "hidden": false,
                 "name": "PowerShell 7",
                 "source": "Windows.Terminal.PowershellCore"
+            },
+            {
+                "guid": "{5fcb8498-1331-539b-82cc-a0ce0266b232}",
+                "hidden": false,
+                "name": "Developer Command Prompt for VS 18",
+                "source": "Windows.Terminal.VisualStudio"
+            },
+            {
+                "guid": "{8392bd23-e576-597a-ad4d-1298d1f6db62}",
+                "hidden": false,
+                "name": "Developer PowerShell for VS 18",
+                "source": "Windows.Terminal.VisualStudio"
+            },
+            {
+                "guid": "{f7854d26-8f9b-57b6-96ce-00f5ade273bc}",
+                "hidden": false,
+                "name": "Ubuntu-20.04",
+                "source": "Microsoft.WSL"
             }
         ]
     },

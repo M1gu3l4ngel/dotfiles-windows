@@ -1,0 +1,23 @@
+# Normalización de finales de línea.
+# Todos los archivos de texto se guardan como LF en el repo y se sacan como LF
+# en el working tree, en cualquier máquina. Esto neutraliza core.autocrlf=true
+# (que estaba metiendo CRLF) y deja el repo consistente con el resto de proyectos.
+* text=auto eol=lf
+
+# Scripts que DEBEN conservar su final de línea nativo aunque se editen en Windows.
+*.ps1   text eol=lf
+*.psm1  text eol=lf
+*.sh    text eol=lf
+*.bashrc      text eol=lf
+*.bash_profile text eol=lf
+
+# Binarios: git nunca debe tocar sus bytes ni intentar normalizarlos.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary

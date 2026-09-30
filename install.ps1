@@ -17,94 +17,116 @@ $ErrorActionPreference = 'Stop'
 $DotfilesRoot = $PSScriptRoot
 $BackupSuffix = '.pre-dotfiles.bak'
 
+# Ubicacion REAL de la carpeta Documentos. No usar "$env:USERPROFILE\Documents":
+# esa carpeta puede estar redirigida a otra unidad (aqui esta en D:\Documentos) y
+# PowerShell busca sus perfiles en la ruta real, no en la de C:.
+$DocumentsPath = [Environment]::GetFolderPath('MyDocuments')
+
 # Mapeo: archivo en repo → ruta destino en el sistema
 $Links = @(
-    @{
-        Source = "$DotfilesRoot\powershell\Microsoft.PowerShell_profile.ps1"
-        Target = "$env:USERPROFILE\Documents\PowerShell\Microsoft.PowerShell_profile.ps1"
-        Label  = 'PowerShell 7 profile'
-    },
-    @{
-        Source = "$DotfilesRoot\powershell\Microsoft.PowerShell_profile.ps1"
-        Target = "$env:USERPROFILE\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
-        Label  = 'Windows PowerShell (legacy) profile'
-    },
-    @{
-        Source = "$DotfilesRoot\oh-my-posh\capr4n.omp.json"
-        Target = "$env:LOCALAPPDATA\Programs\oh-my-posh\themes\capr4n.omp.json"
-        Label  = 'oh-my-posh theme (capr4n)'
-    },
-    @{
-        Source = "$DotfilesRoot\windows-terminal\settings.json"
-        Target = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-        Label  = 'Windows Terminal settings'
-    },
-    @{
-        Source = "$DotfilesRoot\vscode\settings.json"
-        Target = "$env:APPDATA\Code\User\settings.json"
-        Label  = 'VS Code settings'
-    },
-    @{
-        Source = "$DotfilesRoot\vscode\keybindings.json"
-        Target = "$env:APPDATA\Code\User\keybindings.json"
-        Label  = 'VS Code keybindings'
-    }
+	@{
+		Source = "$DotfilesRoot\powershell\Microsoft.PowerShell_profile.ps1"
+		Target = "$DocumentsPath\PowerShell\Microsoft.PowerShell_profile.ps1"
+		Label  = 'PowerShell 7 profile'
+	},
+	@{
+		Source = "$DotfilesRoot\powershell\Microsoft.PowerShell_profile.ps1"
+		Target = "$DocumentsPath\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+		Label  = 'Windows PowerShell (legacy) profile'
+	},
+	# NOTA: deliberadamente NO se instala perfil para el host de VS Code
+	# (Microsoft.VSCode_profile.ps1). Cargarlo cuesta ~872 ms en CADA terminal
+	# integrada que abre VS Code — medido el 2026-09-18 — y ahi se abren muchas
+	# (tareas, dev server, sesiones de agente). La terminal de VS Code se queda
+	# sin oh-my-posh a proposito; la consola normal si lo tiene.
+	# Git Bash: abre como login shell, que lee .bash_profile (no .bashrc).
+	@{
+		Source = "$DotfilesRoot\bash\.bashrc"
+		Target = "$env:USERPROFILE\.bashrc"
+		Label  = 'Git Bash rc'
+	},
+	@{
+		Source = "$DotfilesRoot\bash\.bash_profile"
+		Target = "$env:USERPROFILE\.bash_profile"
+		Label  = 'Git Bash profile (carga .bashrc)'
+	},
+	@{
+		Source = "$DotfilesRoot\oh-my-posh\capr4n.omp.json"
+		Target = "$env:LOCALAPPDATA\Programs\oh-my-posh\themes\capr4n.omp.json"
+		Label  = 'oh-my-posh theme (capr4n)'
+	},
+	@{
+		Source = "$DotfilesRoot\windows-terminal\settings.json"
+		Target = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+		Label  = 'Windows Terminal settings'
+	},
+	@{
+		Source = "$DotfilesRoot\vscode\settings.json"
+		Target = "$env:APPDATA\Code\User\settings.json"
+		Label  = 'VS Code settings'
+	},
+	@{
+		Source = "$DotfilesRoot\vscode\keybindings.json"
+		Target = "$env:APPDATA\Code\User\keybindings.json"
+		Label  = 'VS Code keybindings'
+	}
 )
 
 function Install-Symlink {
-    param(
-        [string]$Source,
-        [string]$Target,
-        [string]$Label
-    )
+	param(
+		[string]$Source,
+		[string]$Target,
+		[string]$Label
+	)
 
-    Write-Host ""
-    Write-Host "[$Label]" -ForegroundColor Magenta
+	Write-Host ""
+	Write-Host "[$Label]" -ForegroundColor Magenta
 
-    if (-not (Test-Path $Source)) {
-        Write-Warning "  Source no existe en el repo: $Source — skip"
-        return
-    }
+	if (-not (Test-Path $Source)) {
+		Write-Warning "  Source no existe en el repo: $Source — skip"
+		return
+	}
 
-    # Asegurar que el directorio destino existe
-    $TargetDir = Split-Path $Target -Parent
-    if (-not (Test-Path $TargetDir)) {
-        Write-Host "  Creando directorio: $TargetDir" -ForegroundColor Cyan
-        New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
-    }
+	# Asegurar que el directorio destino existe
+	$TargetDir = Split-Path $Target -Parent
+	if (-not (Test-Path $TargetDir)) {
+		Write-Host "  Creando directorio: $TargetDir" -ForegroundColor Cyan
+		New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
+	}
 
-    # Si el target ya existe, evaluar
-    if (Test-Path $Target) {
-        $item = Get-Item $Target -Force
-        # Si ya es symlink al source correcto, todo OK
-        if ($item.LinkType -eq 'SymbolicLink' -and $item.Target -contains $Source) {
-            Write-Host "  Ya symlinked correctamente — skip" -ForegroundColor Green
-            return
-        }
-        # Backup del archivo existente
-        $Backup = "$Target$BackupSuffix"
-        if (Test-Path $Backup) {
-            Write-Host "  Backup previo ya existe (no sobreescribo): $Backup" -ForegroundColor Yellow
-        } else {
-            Write-Host "  Backup: $Target -> $Backup" -ForegroundColor Yellow
-            Rename-Item -Path $Target -NewName $Backup
-        }
-        # Si después del rename aún queda algo en target (symlink raro), eliminar
-        if (Test-Path $Target) {
-            Remove-Item $Target -Force
-        }
-    }
+	# Si el target ya existe, evaluar
+	if (Test-Path $Target) {
+		$item = Get-Item $Target -Force
+		# Si ya es symlink al source correcto, todo OK
+		if ($item.LinkType -eq 'SymbolicLink' -and $item.Target -contains $Source) {
+			Write-Host "  Ya symlinked correctamente — skip" -ForegroundColor Green
+			return
+		}
+		# Backup del archivo existente
+		$Backup = "$Target$BackupSuffix"
+		if (Test-Path $Backup) {
+			Write-Host "  Backup previo ya existe (no sobreescribo): $Backup" -ForegroundColor Yellow
+		}
+		else {
+			Write-Host "  Backup: $Target -> $Backup" -ForegroundColor Yellow
+			Rename-Item -Path $Target -NewName $Backup
+		}
+		# Si después del rename aún queda algo en target (symlink raro), eliminar
+		if (Test-Path $Target) {
+			Remove-Item $Target -Force
+		}
+	}
 
-    # Crear el symlink
-    Write-Host "  Creando symlink: $Target -> $Source" -ForegroundColor Green
-    New-Item -ItemType SymbolicLink -Path $Target -Target $Source -Force | Out-Null
+	# Crear el symlink
+	Write-Host "  Creando symlink: $Target -> $Source" -ForegroundColor Green
+	New-Item -ItemType SymbolicLink -Path $Target -Target $Source -Force | Out-Null
 }
 
 Write-Host "=== Instalador dotfiles-windows ===" -ForegroundColor Magenta
 Write-Host "Root del repo: $DotfilesRoot" -ForegroundColor Gray
 
 foreach ($link in $Links) {
-    Install-Symlink -Source $link.Source -Target $link.Target -Label $link.Label
+	Install-Symlink -Source $link.Source -Target $link.Target -Label $link.Label
 }
 
 Write-Host ""
