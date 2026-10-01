@@ -116,15 +116,22 @@ function Install-NerdFont($font, $fontsDir) {
 	}
 	if (Test-Path $ext) { Remove-Item $ext -Recurse -Force }
 	Expand-Archive -Path $zip -DestinationPath $ext -Force
-	$n = 0
+	$n = 0; $skipped = 0
 	Get-ChildItem (Join-Path $ext $font.Glob) -ErrorAction SilentlyContinue | ForEach-Object {
-		Copy-Item $_.FullName $fontsDir -Force
-		New-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts' `
-			-Name "$($_.BaseName) (TrueType)" -Value "$fontsDir\$($_.Name)" -PropertyType String -Force | Out-Null
-		$n++
+		$ttf = $_
+		# Si el .ttf esta en uso (WT o VS Code lo tienen cargado), Copy-Item falla.
+		# Un archivo bloqueado ya esta instalado, asi que se omite sin abortar todo.
+		try {
+			Copy-Item $ttf.FullName $fontsDir -Force -ErrorAction Stop
+			New-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts' `
+				-Name "$($ttf.BaseName) (TrueType)" -Value "$fontsDir\$($ttf.Name)" -PropertyType String -Force | Out-Null
+			$n++
+		}
+		catch { $skipped++ }
 	}
 	Remove-Item $zip, $ext -Recurse -Force -ErrorAction SilentlyContinue
 	Ok "$($font.Archive): $n archivos ($($font.Family))"
+	if ($skipped -gt 0) { Warn "$skipped en uso, se omitieron (ya instaladas; cierra WT/VS Code para forzarlas)" }
 }
 
 function Set-UserEnv($name, $value) {
