@@ -55,7 +55,18 @@ Si ya tienes el stack instalado y solo quieres estas configs:
 ```
 
 Antes de crear cada enlace, `install.ps1` renombra tu archivo existente con el
-sufijo `.pre-dotfiles.bak`. Para volver atrás, borra el enlace y quita ese sufijo.
+sufijo `.pre-dotfiles.bak`. Para volver atrás, usa `uninstall.ps1` (abajo).
+
+## Desinstalar
+
+Revierte los symlinks y restaura tus archivos originales (los `.pre-dotfiles.bak`):
+
+```powershell
+.\uninstall.ps1 -DryRun   # ver qué haría sin tocar nada
+.\uninstall.ps1           # revertir de verdad
+```
+
+No desinstala apps ni toca variables de entorno o WSL.
 
 ## Pasos manuales (implican secretos, no se automatizan)
 
@@ -72,6 +83,8 @@ sufijo `.pre-dotfiles.bak`. Para volver atrás, borra el enlace y quita ese sufi
 |---|---|
 | `bootstrap.ps1` | Instalación del entorno en un comando |
 | `install.ps1` | Symlinks de configuración |
+| `uninstall.ps1` | Revertir los symlinks y restaurar los backups (`-DryRun` para simular) |
+| `lib/` | Código compartido (el mapeo de symlinks) |
 | `powershell/` | Perfil de PowerShell (PS 7 y legacy, mismo archivo) |
 | `bash/` | Perfil de Git Bash (mismo prompt que PowerShell) |
 | `oh-my-posh/` | Tema del prompt (`capr4n`, compartido con Parrot) |

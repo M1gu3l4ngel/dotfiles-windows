@@ -24,55 +24,10 @@ $BackupSuffix = '.pre-dotfiles.bak'
 # PowerShell busca sus perfiles en la ruta real, no en la de C:.
 $DocumentsPath = [Environment]::GetFolderPath('MyDocuments')
 
-# Mapeo: archivo en repo -> ruta destino en el sistema
-$Links = @(
-	@{
-		Source = "$DotfilesRoot\powershell\Microsoft.PowerShell_profile.ps1"
-		Target = "$DocumentsPath\PowerShell\Microsoft.PowerShell_profile.ps1"
-		Label  = 'PowerShell 7 profile'
-	},
-	@{
-		Source = "$DotfilesRoot\powershell\Microsoft.PowerShell_profile.ps1"
-		Target = "$DocumentsPath\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
-		Label  = 'Windows PowerShell (legacy) profile'
-	},
-	# NOTA: deliberadamente NO se instala perfil para el host de VS Code
-	# (Microsoft.VSCode_profile.ps1). Cargarlo cuesta ~872 ms en CADA terminal
-	# integrada que abre VS Code - medido el 2026-09-18 - y ahi se abren muchas
-	# (tareas, dev server, sesiones de agente). La terminal de VS Code se queda
-	# sin oh-my-posh a proposito; la consola normal si lo tiene.
-	# Git Bash: abre como login shell, que lee .bash_profile (no .bashrc).
-	@{
-		Source = "$DotfilesRoot\bash\.bashrc"
-		Target = "$env:USERPROFILE\.bashrc"
-		Label  = 'Git Bash rc'
-	},
-	@{
-		Source = "$DotfilesRoot\bash\.bash_profile"
-		Target = "$env:USERPROFILE\.bash_profile"
-		Label  = 'Git Bash profile (carga .bashrc)'
-	},
-	@{
-		Source = "$DotfilesRoot\oh-my-posh\capr4n.omp.json"
-		Target = "$env:LOCALAPPDATA\Programs\oh-my-posh\themes\capr4n.omp.json"
-		Label  = 'oh-my-posh theme (capr4n)'
-	},
-	@{
-		Source = "$DotfilesRoot\windows-terminal\settings.json"
-		Target = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-		Label  = 'Windows Terminal settings'
-	},
-	@{
-		Source = "$DotfilesRoot\vscode\settings.json"
-		Target = "$env:APPDATA\Code\User\settings.json"
-		Label  = 'VS Code settings'
-	},
-	@{
-		Source = "$DotfilesRoot\vscode\keybindings.json"
-		Target = "$env:APPDATA\Code\User\keybindings.json"
-		Label  = 'VS Code keybindings'
-	}
-)
+# Mapeo de symlinks: definido en lib/links.ps1 (compartido con uninstall.ps1, para
+# que el mapeo viva en un solo sitio y no se desincronicen).
+. "$PSScriptRoot\lib\links.ps1"
+$Links = Get-DotfilesLink -DotfilesRoot $DotfilesRoot -DocumentsPath $DocumentsPath
 
 # Comprueba si el sistema puede crear symlinks SIN fallar a mitad del proceso:
 # un administrador siempre puede; un usuario normal solo con Developer Mode

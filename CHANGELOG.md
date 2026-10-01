@@ -8,6 +8,9 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Añadido
 
+- `uninstall.ps1` + `lib/links.ps1`: desinstalador que revierte los symlinks y
+  restaura los backups (con `-DryRun`); el mapeo de symlinks se comparte entre
+  `install.ps1` y `uninstall.ps1` para que no se desincronicen.
 - `tools/check.ps1` + `PSScriptAnalyzerSettings.psd1`: comprobaciones locales de
   calidad (sintaxis, PSScriptAnalyzer, JSON, higiene del repo público, LF).
 - CI en GitHub Actions (windows-latest): corre `tools/check.ps1` en cada push y
