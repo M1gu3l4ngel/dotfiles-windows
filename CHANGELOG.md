@@ -8,6 +8,10 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Añadido
 
+- `tools/check.ps1` + `PSScriptAnalyzerSettings.psd1`: comprobaciones locales de
+  calidad (sintaxis, PSScriptAnalyzer, JSON, higiene del repo público, LF).
+- CI en GitHub Actions (windows-latest): corre `tools/check.ps1` en cada push y
+  pull request, con las acciones fijadas por SHA de commit y permisos mínimos.
 - `bootstrap.ps1`: instalación del entorno en un comando, idempotente, con modo
   `-DryRun`. Instala el set esencial de winget, fuentes Nerd verificadas por
   SHA-256, toolchain de Node, variables de entorno, WSL y los symlinks.
@@ -21,6 +25,10 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- Perfil de PowerShell ~48% más rápido: Terminal-Icons se carga diferido (OnIdle).
+- Prompt (oh-my-posh): texto oscuro uniforme, consistente en VS Code, Windows
+  Terminal y Parrot.
+- Scripts `.ps1` en ASCII puro (sin BOM) para compatibilidad con PowerShell 5.1.
 - `install.ps1`: backup con fecha si ya existe uno, validación de capacidad de
   symlink antes de tocar nada, y comparación de rutas robusta.
 - `bash/.bashrc`: la ubicación del repo se deriva del symlink (funciona aunque no

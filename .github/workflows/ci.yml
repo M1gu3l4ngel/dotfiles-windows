@@ -1,0 +1,58 @@
+# .github/workflows/ci.yml
+# CI del repo: en cada push a main y en cada pull request corre tools/check.ps1
+# (sintaxis, PSScriptAnalyzer, JSON, higiene del repo publico, LF y gitleaks).
+# El resultado aparece como check junto a cada commit. En local: .\tools\check.ps1
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Minimo privilegio: el workflow solo necesita leer el codigo.
+permissions:
+  contents: read
+
+# Un push nuevo cancela la ejecucion anterior de la misma rama.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Comprobaciones
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      # Accion fijada por SHA de commit, no por etiqueta: una etiqueta puede
+      # moverse a otro codigo; un SHA no.
+      - name: Descargar el repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # historial completo: gitleaks revisa todos los commits
+          persist-credentials: false
+
+      - name: Instalar PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module -Name PSScriptAnalyzer -Scope CurrentUser -Force
+
+      # gitleaks no viene en el runner: se descarga en version fijada y se verifica
+      # su SHA-256 antes de usarlo.
+      - name: Instalar gitleaks
+        shell: pwsh
+        env:
+          GITLEAKS_VERSION: "8.30.1"
+          GITLEAKS_SHA256: "d29144deff3a68aa93ced33dddf84b7fdc26070add4aa0f4513094c8332afc4e"
+        run: |
+          $url = "https://github.com/gitleaks/gitleaks/releases/download/v${env:GITLEAKS_VERSION}/gitleaks_${env:GITLEAKS_VERSION}_windows_x64.zip"
+          Invoke-WebRequest -Uri $url -OutFile gitleaks.zip
+          $hash = (Get-FileHash gitleaks.zip -Algorithm SHA256).Hash.ToLower()
+          if ($hash -ne $env:GITLEAKS_SHA256) { throw "SHA-256 de gitleaks no coincide" }
+          Expand-Archive -Path gitleaks.zip -DestinationPath gitleaks-bin -Force
+          Add-Content -Path $env:GITHUB_PATH -Value "$PWD\gitleaks-bin"
+
+      - name: Ejecutar comprobaciones
+        shell: pwsh
+        run: .\tools\check.ps1

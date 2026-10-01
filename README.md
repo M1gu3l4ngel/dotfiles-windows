@@ -3,6 +3,8 @@
 Setup de Windows 11 para desarrollo: PowerShell, oh-my-posh, Windows Terminal,
 VS Code, WSL y el toolchain de desarrollo, con instalación en un comando.
 
+[![CI](https://github.com/M1gu3l4ngel/dotfiles-windows/actions/workflows/ci.yml/badge.svg)](https://github.com/M1gu3l4ngel/dotfiles-windows/actions/workflows/ci.yml)
+
 ![Escritorio](assets/preview.png)
 
 ## Reproducir en un comando

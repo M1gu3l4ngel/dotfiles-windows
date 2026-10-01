@@ -1,136 +1,182 @@
 # Firma de commits con GPG (Windows)
 
-Setup de firma criptográfica de commits/tags. Objetivo: firmar todo (integridad +
-"Verified" en GitHub) sin reintroducir la passphrase en cada commit, gracias al
-caché del `gpg-agent`.
+Firmar todos los commits y tags (integridad + badge "Verified" en GitHub) sin
+reintroducir la passphrase en cada commit, gracias al caché del `gpg-agent`.
 
-Es el enfoque estándar: no se desactiva la firma, se delega la passphrase al agente
-y se cachea por una ventana corta.
+No se desactiva la firma: se delega la passphrase al agente y se cachea una
+ventana corta. Todo desde una ventana normal de PowerShell (no la terminal
+integrada de VS Code, que a veces no enfoca el pinentry).
 
-## Estado
+## Dos detalles de Windows que confunden
 
-| Ajuste | Valor |
-|---|---|
-| Método | GPG clásico (OpenPGP), no SSH signing |
-| Clave de firma | `ed25519/<TU_KEYID>` |
-| Fingerprint | `<TU_FINGERPRINT>` |
-| UID | `<tu-nombre> <TU_ID+usuario@users.noreply.github.com>` |
-| `commit.gpgsign` / `tag.gpgsign` | `true` |
-| `gpg.program` | `C:\Program Files\GnuPG\bin\gpg.exe` |
-| Home de GnuPG | `%APPDATA%\gnupg` |
-| pinentry | gráfico (Gpg4win): foco en el input y captura de teclado |
-
-La config de firma vive en el `.gitconfig` global (que no se versiona). Se
-estableció una vez con:
+**1. Hay dos GnuPG.** El standalone (`C:\Program Files\GnuPG\bin\gpg.exe`, el que
+usa git) y el de Gpg4win (`C:\Program Files\Gpg4win\...`, del que solo se toma el
+pinentry gráfico). El `gpg` suelto del PATH suele ser el de Gpg4win y **puede no
+ver tus claves**. Para operar sobre la clave, usa **siempre la ruta completa** del
+standalone:
 
 ```powershell
-git config --global user.signingkey <TU_FINGERPRINT>
+& "C:\Program Files\GnuPG\bin\gpg.exe" --list-secret-keys --keyid-format long
+```
+
+**2. Key ID vs fingerprint son la misma clave.** El *fingerprint* son 40
+caracteres; el *Key ID* son los **últimos 16** de ese fingerprint. GitHub y gpg a
+veces muestran uno u otro. No son dos claves distintas.
+
+## 1. Email noreply de GitHub
+
+Cada commit publica el email del autor. En GitHub → Settings → Emails:
+
+1. Marca "Keep my email addresses private".
+2. Copia tu dirección `<id>+<usuario>@users.noreply.github.com`. En esta guía es
+   `<noreply>`.
+
+El commit **y** el UID de la clave GPG deben usar ese `<noreply>` para que GitHub
+muestre "Verified".
+
+## 2. La clave GPG
+
+### Caso A: clave nueva (recomendado, como Parrot)
+
+Se crea directamente con el noreply, así nunca lleva tu correo personal:
+
+```powershell
+& "C:\Program Files\GnuPG\bin\gpg.exe" --quick-generate-key "<nombre> <noreply>" default default 2y
+```
+
+Guarda la passphrase en tu lugar seguro (si la olvidas, no se recupera).
+
+### Caso B: ya tienes una clave con tu email personal
+
+Añade el UID noreply (pedirá la passphrase por pinentry):
+
+```powershell
+& "C:\Program Files\GnuPG\bin\gpg.exe" --quick-add-uid <fingerprint> "<nombre> <noreply>"
+```
+
+Para que tu correo personal **no quede público** en la clave, tienes dos opciones:
+
+- **No destructiva (filtro al exportar, estilo Parrot):** la clave conserva ambos
+  UIDs localmente, pero al subirla a GitHub se exporta solo el noreply (ver paso 4
+  con `--export-filter`).
+- **Limpia del todo (borrar el UID personal):** deja la clave solo con el noreply.
+  Primero marca el noreply como primario:
+
+  ```powershell
+  & "C:\Program Files\GnuPG\bin\gpg.exe" --quick-set-primary-uid <fingerprint> "<nombre> <noreply>"
+  ```
+
+  Luego borra el UID personal con el editor interactivo (el borrado por script no
+  funciona bien en esta versión):
+
+  ```powershell
+  & "C:\Program Files\GnuPG\bin\gpg.exe" --edit-key <fingerprint>
+  ```
+
+  En el prompt `gpg>`, mirando la lista de UIDs para confirmar el número del
+  personal (p. ej. `(2)`):
+
+  ```
+  uid 2
+  deluid
+  y
+  save
+  ```
+
+## 3. Configurar git para firmar
+
+```powershell
+git config --global user.email "<noreply>"
+git config --global user.signingkey <fingerprint>
 git config --global commit.gpgsign true
 git config --global tag.gpgsign true
 git config --global gpg.program "C:\Program Files\GnuPG\bin\gpg.exe"
 ```
 
-## El caché de la passphrase
+## 4. Subir la clave pública a GitHub
 
-El archivo que controla el "no me pidas la passphrase cada vez":
+Copia la clave pública al portapapeles. Si la clave ya quedó solo con el noreply
+(Caso B limpio), basta exportarla:
 
+```powershell
+& "C:\Program Files\GnuPG\bin\gpg.exe" --armor --export <fingerprint> | Set-Clipboard
 ```
-%APPDATA%\gnupg\gpg-agent.conf
+
+Si la clave aún tiene tu email personal y prefieres el filtro no destructivo
+(estilo Parrot), exporta solo el UID noreply:
+
+```powershell
+& "C:\Program Files\GnuPG\bin\gpg.exe" --armor --export --export-filter "keep-uid=mbox=<noreply>" <fingerprint> | Set-Clipboard
 ```
+
+En GitHub → Settings → SSH and GPG keys:
+
+1. Si ya existe una versión vieja de esta clave (mismo Key ID), **bórrala** primero
+   — GitHub rechaza subir una clave con fingerprint duplicado.
+2. **New GPG key** → clic en el campo → **Ctrl+V** → **Add GPG key**.
+
+> El comando con `Set-Clipboard` es el que copia la clave (no muestra nada en
+> pantalla). Verifícalo con `Get-Clipboard`: debe empezar con
+> `-----BEGIN PGP PUBLIC KEY BLOCK-----`.
+
+## 5. Verificar
+
+Haz un commit y comprueba la firma local (`G` = firma válida):
+
+```powershell
+git log -1 --format='%G? %GK %s'
+```
+
+En GitHub, el commit debe aparecer como **"Verified"**. Los commits creados antes
+de tener la clave bien configurada no cambian retroactivamente si no estaban
+firmados.
+
+## El caché de la passphrase (gpg-agent.conf)
+
+Archivo: `%APPDATA%\gnupg\gpg-agent.conf`
 
 ```ini
 # Segundos de inactividad antes de olvidar la passphrase (10 min, ventana deslizante)
 default-cache-ttl 600
-
 # Vida máxima absoluta desde que se introdujo (2 h)
 max-cache-ttl 7200
-
-# Pinentry gráfico (Gpg4win): abre el diálogo con foco en el input y agarra el teclado
+# Pinentry gráfico (Gpg4win): abre el diálogo con el foco en el input
 pinentry-program C:/Program Files/Gpg4win/bin/pinentry.exe
 ```
 
-- `default-cache-ttl` (600 s): ventana deslizante desde el último uso. Cada commit
-  dentro de la ventana reinicia el contador.
-- `max-cache-ttl` (7200 s): tope absoluto desde que la introdujiste, sin importar
-  cuánto la reutilices. Es la red de seguridad.
+- `default-cache-ttl` (600 s): ventana deslizante desde el **último uso**; cada
+  commit dentro de la ventana reinicia el contador.
+- `max-cache-ttl` (7200 s): tope absoluto desde que la introdujiste.
 
-Mientras el TTL está vigente, la passphrase vive descifrada en la memoria del
-`gpg-agent`; la clave privada nunca sale del agente. 10 min equilibra comodidad y
-exposición.
-
-## Aplicar / recargar cambios
-
-Tras editar `gpg-agent.conf`, recarga el agente sin matar la sesión:
+Te la vuelve a pedir cuando pase lo primero de los dos: 10 min sin firmar, o 2 h
+desde que la escribiste. Tras editar el archivo, recarga el agente:
 
 ```powershell
 gpg-connect-agent reloadagent /bye
 ```
 
-Verificar que los TTL quedaron activos (el último número de cada línea es el real):
+## Backup (obligatorio)
+
+Guarda la clave privada (va cifrada con tu passphrase) en tu carpeta de claves,
+nunca en el repo:
 
 ```powershell
-gpgconf --list-options gpg-agent | Select-String "^default-cache-ttl:|^max-cache-ttl:"
+& "C:\Program Files\GnuPG\bin\gpg.exe" --armor --export-secret-keys <fingerprint> > "D:\Dev\security-keys\gpg-privada.asc"
 ```
 
-## Revertir
-
-Reversible, no toca la clave ni el `.gitconfig`:
-
-```powershell
-Remove-Item "$env:APPDATA\gnupg\gpg-agent.conf"
-gpg-connect-agent reloadagent /bye
-```
-
-Para dejar de firmar (no recomendado):
-
-```powershell
-git config --global commit.gpgsign false
-git config --global tag.gpgsign false
-```
-
-## Cambiar la passphrase
-
-Cambia solo el candado local de la clave privada; no cambia la clave, ni el
-fingerprint, ni la pública (no hay que resubir nada a GitHub). Backup antes (el
-`.asc` contiene la clave privada — guárdalo seguro, nunca al repo):
-
-```powershell
-gpg --export-secret-keys --armor <TU_FINGERPRINT> > "$env:USERPROFILE\gpg-key-backup.asc"
-gpg --change-passphrase <TU_FINGERPRINT>
-gpg-connect-agent reloadagent /bye
-```
-
-Hazlo en una ventana normal de PowerShell, no en la terminal integrada de VS Code.
+Guarda también el certificado de revocación (sirve para invalidar la clave si te
+la roban) y la passphrase por separado.
 
 ## Troubleshooting
 
-- **Pinentry gráfico (Gpg4win):** se instaló por winget (`GnuPG.Gpg4win`) solo para
-  usar su `pinentry.exe`, que abre el diálogo con el foco ya en el input y agarra el
-  teclado. Coexisten dos GnuPG: el standalone 2.5.x (`C:\Program Files\GnuPG`, el que
-  firma) y el de Gpg4win (del que solo se toma el pinentry). Si un `gpg` suelto
-  resuelve al de Gpg4win por orden de `PATH`, prioriza `C:\Program Files\GnuPG\bin`.
-- **Sigue pidiendo la passphrase en cada commit:** revisa que el agente esté vivo
-  (`gpg-connect-agent reloadagent /bye`) y que `ignore-cache-for-signing` no esté activo.
-- **"gpg failed to sign the data":** el agente no arrancó o `gpg.program` apunta mal.
-  Verifica `git config --global gpg.program` y prueba `echo test | gpg --clearsign`.
-- **GitHub muestra "Unverified" — el email de la firma no coincide con el del commit:**
-  los commits usan el email **noreply**, así que la clave GPG debe tener un UID con ese
-  mismo noreply. Si solo tiene tu correo personal, añade el UID:
-
-  ```powershell
-  gpg --edit-key <TU_FINGERPRINT>
-  # dentro del prompt de gpg:
-  #   adduid   -> nombre + <TU_ID+usuario@users.noreply.github.com>
-  #   save
-  ```
-
-  Luego re-exporta la clave pública (`gpg --armor --export <TU_FINGERPRINT>`) y
-  vuelve a subirla a GitHub → Settings → SSH and GPG keys.
-
-## Reproducir en otra máquina
-
-Como `gpg-agent.conf` no contiene secretos (solo los TTL), es seguro replicarlo:
-
-1. Importar la clave privada GPG (backup) y confiar en ella.
-2. Configurar `user.signingkey`, `commit.gpgsign`, `tag.gpgsign`, `gpg.program`.
-3. Copiar `gpg-agent.conf` a `%APPDATA%\gnupg\` y recargar el agente.
+- **GitHub dice "Unverified - the email in this signature doesn't match the
+  committer email":** tus commits usan el `<noreply>` pero la clave no tiene un UID
+  con ese email. Añádelo (Caso B, paso 2), re-sube la clave (paso 4) y listo.
+- **"gpg failed to sign the data":** el agente no arrancó o `gpg.program` apunta
+  mal. Verifica `git config --global gpg.program` y prueba
+  `echo test | & "C:\Program Files\GnuPG\bin\gpg.exe" --clearsign`.
+- **Sigue pidiendo la passphrase en cada commit:** recarga el agente
+  (`gpg-connect-agent reloadagent /bye`) y revisa que `ignore-cache-for-signing`
+  no esté activo.
+- **"No public key" al listar la clave:** estás usando el `gpg` del PATH (Gpg4win),
+  que no ve tus claves. Usa la ruta completa del standalone.

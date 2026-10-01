@@ -66,9 +66,11 @@ if ($jsonOk) { Pass 'JSON valido (JSON puro)' }
 
 # ----- 4. HIGIENE DEL REPO PUBLICO -----
 # Rutas con un usuario concreto y datos de empresa no deben estar versionados.
-# Se excluye .claude/ porque las reglas NOMBRAN los patrones prohibidos (para
-# prohibirlos); mencionarlos ahi no es una fuga.
-$hygieneFiles = $tracked | Where-Object { $_ -notmatch $binExt -and $_ -notlike '.claude/*' } | ForEach-Object { Join-Path $repo $_ }
+# Se excluyen .claude/ y este mismo check.ps1 porque DEFINEN/nombran los patrones
+# prohibidos (para prohibirlos); mencionarlos ahi no es una fuga.
+$hygieneFiles = $tracked |
+	Where-Object { $_ -notmatch $binExt -and $_ -notlike '.claude/*' -and $_ -ne 'tools/check.ps1' } |
+	ForEach-Object { Join-Path $repo $_ }
 $badPatterns = @{
 	'ruta con usuario (C:\Users\<nombre>)' = 'C:\\Users\\[A-Za-z0-9._-]+\\'
 	'dominio de empresa (REDACTED)'        = 'REDACTED'
