@@ -98,7 +98,7 @@ function Install-WingetId($id) {
 	if ($DryRun) { Would "winget install $id"; return }
 	Info "instalando $id ..."
 	winget install --id $id -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity 2>&1 | Out-Null
-	if ($LASTEXITCODE -eq 0) { Ok "$id instalado" } else { Warn "winget devolvio $LASTEXITCODE para $id — revisar a mano" }
+	if ($LASTEXITCODE -eq 0) { Ok "$id instalado" } else { Warn "winget devolvio $LASTEXITCODE para $id - revisar a mano" }
 }
 
 # Instala una fuente de la tabla $NerdFonts: descarga, verifica SHA-256, extrae
@@ -148,7 +148,7 @@ function Add-UserPath($dir) {
 # PASOS
 # =====================================================================
 
-function Invoke-Step0Checks {
+function Invoke-Step0Check {
 	Step 'Comprobaciones previas'
 	if ($PSVersionTable.PSVersion.Major -lt 5) { Die 'Se requiere PowerShell 5.1 o superior.' }
 	if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
@@ -165,10 +165,14 @@ function Invoke-Step0Checks {
 function Invoke-Step1Winget {
 	Step 'Set esencial (winget)'
 	foreach ($id in $WingetEssential) { Install-WingetId $id }
+	# Modulo de PowerShell para iconos en ls/dir (lo usa el perfil).
+	if (Get-Module -ListAvailable Terminal-Icons) { Ok 'Terminal-Icons ya instalado' }
+	elseif ($DryRun) { Would 'Install-Module Terminal-Icons' }
+	else { Install-Module -Name Terminal-Icons -Scope CurrentUser -Force; Ok 'Terminal-Icons instalado' }
 	Update-SessionPath
 }
 
-function Invoke-Step2Fonts {
+function Invoke-Step2Font {
 	Step "Fuentes Nerd $NerdFontsVersion"
 	$fontsDir = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
 	$marker = Join-Path $fontsDir '.nerdfonts.version'
@@ -229,7 +233,7 @@ function Invoke-Step5Wsl {
 	$list = (($raw -join "`n") -replace "`0", '')
 	if ($list -match 'Ubuntu') { Ok 'WSL/Ubuntu ya presente'; return }
 	if ($DryRun) { Would 'wsl --install -d Ubuntu-20.04 (requiere reinicio)'; return }
-	Warn 'Instalando WSL + Ubuntu — REQUIERE REINICIO al terminar.'
+	Warn 'Instalando WSL + Ubuntu - REQUIERE REINICIO al terminar.'
 	wsl --install -d Ubuntu-20.04
 }
 
@@ -242,14 +246,14 @@ function Invoke-Step6Git {
 	Ok 'git identidad + defaults (la firma GPG va en los pasos manuales)'
 }
 
-function Invoke-Step7Symlinks {
+function Invoke-Step7Symlink {
 	Step 'Symlinks de configuracion (install.ps1)'
 	if ($DryRun) { Would 'ejecutar install.ps1 (enlaza perfiles, WT, VS Code, oh-my-posh, bash)'; return }
 	& "$DotfilesRoot\install.ps1"
 }
 
 function Invoke-Step8Manual {
-	Step 'Listo. Pasos MANUALES (secretos — no se automatizan)'
+	Step 'Listo. Pasos MANUALES (secretos - no se automatizan)'
 	$lines = @(
 		'1. Reinicia si se instalo WSL o Docker por primera vez.',
 		'',
@@ -277,14 +281,14 @@ Write-Host '=== bootstrap dotfiles-windows ===' -ForegroundColor Magenta
 Write-Host "Repo: $DotfilesRoot" -ForegroundColor Gray
 $drive = Get-WorkDrive
 
-Invoke-Step0Checks
+Invoke-Step0Check
 Invoke-Step1Winget
-Invoke-Step2Fonts
+Invoke-Step2Font
 Invoke-Step3Env  $drive
 Invoke-Step4Node $drive
 Invoke-Step5Wsl
 Invoke-Step6Git
-Invoke-Step7Symlinks
+Invoke-Step7Symlink
 Invoke-Step8Manual
 
 Write-Host "`n=== bootstrap completo ===" -ForegroundColor Magenta

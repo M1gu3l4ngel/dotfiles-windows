@@ -1,11 +1,11 @@
 # install.ps1
 # Instalador idempotente de dotfiles-windows.
-# Crea symlinks desde las ubicaciones estándar hacia los archivos del repo.
+# Crea symlinks desde las ubicaciones estandar hacia los archivos del repo.
 # Antes de cualquier sobreescritura hace backup con sufijo .pre-dotfiles.bak
 # (con fecha si ya existe uno, para no perder ninguna version).
 #
 # Requisitos:
-#   - Developer Mode activado (Settings → Privacy & security → For developers)
+#   - Developer Mode activado (Settings -> Privacy & security -> For developers)
 #     o ejecutar como administrador (cualquiera de los dos permite crear symlinks).
 #   - PowerShell 5.1 o superior.
 #
@@ -38,7 +38,7 @@ $Links = @(
 	},
 	# NOTA: deliberadamente NO se instala perfil para el host de VS Code
 	# (Microsoft.VSCode_profile.ps1). Cargarlo cuesta ~872 ms en CADA terminal
-	# integrada que abre VS Code — medido el 2026-09-18 — y ahi se abren muchas
+	# integrada que abre VS Code - medido el 2026-09-18 - y ahi se abren muchas
 	# (tareas, dev server, sesiones de agente). La terminal de VS Code se queda
 	# sin oh-my-posh a proposito; la consola normal si lo tiene.
 	# Git Bash: abre como login shell, que lee .bash_profile (no .bashrc).
@@ -96,7 +96,7 @@ function Install-Symlink {
 	Write-Host "[$Label]" -ForegroundColor Magenta
 
 	if (-not (Test-Path $Source)) {
-		Write-Warning "  Source no existe en el repo: $Source — skip"
+		Write-Warning "  Source no existe en el repo: $Source - skip"
 		return
 	}
 
@@ -115,7 +115,7 @@ function Install-Symlink {
 		$existing = @($item.Target)[0]
 		if ($item.LinkType -eq 'SymbolicLink' -and $existing -and
 			([IO.Path]::GetFullPath($existing) -ieq [IO.Path]::GetFullPath($Source))) {
-			Write-Host "  Ya symlinked correctamente — skip" -ForegroundColor Green
+			Write-Host "  Ya symlinked correctamente - skip" -ForegroundColor Green
 			return
 		}
 		# Backup del archivo existente. Si ya hay un .bak de una corrida anterior,
