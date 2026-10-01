@@ -111,6 +111,19 @@ sistema y claves nuevas).
 `winget import`. Las apps personales no se versionan: se restauran con la imagen
 del sistema. Detalle en [apps/README.md](apps/README.md).
 
+## Nombre visual del prompt (opcional)
+
+Por defecto el prompt muestra tu usuario de Windows. Si prefieres mostrar otro
+nombre (solo en pantalla, sin tocar el sistema), usa el ayudante:
+
+```powershell
+.\tools\set-prompt-name.ps1
+```
+
+Te pregunta el nombre (Enter en blanco = tu usuario real) y lo guarda en la
+variable `POSH_NAME`, que el tema lee. Es puramente decorativo: no afecta rutas,
+comandos ni git.
+
 ## Solución de problemas
 
 | Síntoma | Causa | Solución |
