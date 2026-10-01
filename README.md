@@ -24,6 +24,10 @@ Después, completa los pasos manuales (claves GPG/SSH) que el propio script list
 ## Requisitos previos
 
 - Windows 10/11 con `winget` (App Installer, de la Microsoft Store).
+- **git** para clonar el repo. Si la PC no lo trae (recién formateada), instálalo
+  primero y reabre la terminal: `winget install Git.Git`. El `bootstrap.ps1`
+  instala y actualiza todo lo demás de forma idempotente (git incluido: si ya
+  está, lo salta).
 - **Developer Mode** activado (Settings → Privacy & security → For developers) o
   ejecutar PowerShell como administrador: necesario para crear los symlinks.
 - Recomendado: ejecutar `bootstrap.ps1` como administrador (WSL y Docker lo piden).
