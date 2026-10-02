@@ -11,7 +11,8 @@ máquina se queda local (no se versiona).
 | `CLAUDE.md` | `~/.claude/CLAUDE.md` | Reglas universales: disco, editar con Edit/Write, confirmar antes de borrar, interacción, compactación |
 | `statusline.mjs` | `~/.claude/statusline.mjs` | Barra de estado (modelo, contexto en tokens, carpeta) |
 | `hooks/block-shell-edits.mjs` | `~/.claude/hooks/block-shell-edits.mjs` | Hook `PreToolUse` que impone editar con Edit/Write (bloquea `sed -i`, redirecciones, heredocs… y deja pasar temporales). Portable Windows/Linux |
-| `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos + registro del hook |
+| `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos + registro del hook + `skillOverrides` |
+| `check-budget.mjs` | — (script) | Guarda de presupuesto: cuenta líneas de `CLAUDE.md`/`statusline`/`hook` y falla si exceden. `node claude/check-budget.mjs`. Portable |
 
 ## Qué NO se versiona (queda local, por máquina)
 
