@@ -1,4 +1,4 @@
-# Entorno de Miguel — lo que aplica siempre
+# Capa global de Claude Code — lo que aplica siempre
 
 Capa global: **solo comportamiento universal**. Lo de cada proyecto vive en su repo.
 El detalle de la máquina (discos, cachés, variables, rustup, robocopy, qué no tocar) está en

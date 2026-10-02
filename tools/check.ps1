@@ -71,11 +71,30 @@ if ($jsonOk) { Pass 'JSON valido (JSON puro)' }
 $hygieneFiles = $tracked |
 	Where-Object { $_ -notmatch $binExt -and $_ -notlike '.claude/*' -and $_ -ne 'tools/check.ps1' } |
 	ForEach-Object { Join-Path $repo $_ }
+# Patrones genericos (sin literal sensible): pueden vivir en el repo publico.
 $badPatterns = @{
 	'ruta con usuario (C:\Users\<nombre>)' = 'C:\\Users\\[A-Za-z0-9._-]+\\'
-	'dominio de empresa (REDACTED)'        = 'REDACTED'
 	'endpoint de Fabric'                   = 'fabric\.microsoft'
-	'correo personal'                      = 'REDACTED'
+}
+# Literales sensibles (correo, empresa) NO van en el repo publico: se leen de un
+# archivo local ignorado por git (tools/hygiene-patterns.local, lineas 'nombre=patron')
+# o de la variable de entorno DOTFILES_HYGIENE_PATTERNS (p.ej. como secret del CI).
+$patternsFile = Join-Path $PSScriptRoot 'hygiene-patterns.local'
+$extraPatterns = @()
+if (Test-Path $patternsFile) {
+	$extraPatterns = Get-Content $patternsFile
+}
+elseif ($env:DOTFILES_HYGIENE_PATTERNS) {
+	$extraPatterns = $env:DOTFILES_HYGIENE_PATTERNS -split "`n"
+}
+foreach ($line in $extraPatterns) {
+	$t = $line.Trim()
+	if (-not $t -or $t.StartsWith('#')) { continue }
+	$kv = $line -split '=', 2
+	if ($kv.Count -eq 2) { $badPatterns[$kv[0].Trim()] = $kv[1].Trim() }
+}
+if (@($extraPatterns).Count -eq 0) {
+	Skip 'higiene: patrones sensibles no cargados (crea tools/hygiene-patterns.local o define DOTFILES_HYGIENE_PATTERNS)'
 }
 $hygieneOk = $true
 foreach ($name in $badPatterns.Keys) {

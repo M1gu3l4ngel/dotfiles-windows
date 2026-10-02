@@ -3,7 +3,7 @@
 # https://editorconfig.org
 root = true
 
-# ----- DEFAULT: tabs (el editor de Miguel usa insertSpaces=false, tabSize=2) -----
+# ----- DEFAULT: tabs (el editor usa insertSpaces=false, tabSize=2) -----
 [*]
 charset = utf-8
 end_of_line = lf

@@ -12,6 +12,8 @@ desktop.ini
 .DS_Store
 
 # === Datos sensibles (NUNCA commitear) ===
+# Literales personales/empresa para la higiene (los lee tools/check.ps1):
+tools/hygiene-patterns.local
 .env
 .env.*
 *.key
