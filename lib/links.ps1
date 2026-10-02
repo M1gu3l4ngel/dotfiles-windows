@@ -57,6 +57,21 @@ function Get-DotfilesLink {
 			Source = "$DotfilesRoot\vscode\keybindings.json"
 			Target = "$env:APPDATA\Code\User\keybindings.json"
 			Label  = 'VS Code keybindings'
+		},
+		@{
+			Source = "$DotfilesRoot\claude\CLAUDE.md"
+			Target = "$env:USERPROFILE\.claude\CLAUDE.md"
+			Label  = 'Claude global CLAUDE.md'
+		},
+		@{
+			Source = "$DotfilesRoot\claude\statusline.mjs"
+			Target = "$env:USERPROFILE\.claude\statusline.mjs"
+			Label  = 'Claude statusline'
+		},
+		@{
+			Source = "$DotfilesRoot\claude\hooks\block-shell-edits.mjs"
+			Target = "$env:USERPROFILE\.claude\hooks\block-shell-edits.mjs"
+			Label  = 'Claude hook block-shell-edits'
 		}
 	)
 }
