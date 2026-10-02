@@ -115,7 +115,7 @@ foreach ($link in $Links) {
 Write-Host ""
 Write-Host "=== Instalacion completa ===" -ForegroundColor Magenta
 Write-Host ""
-Write-Host "Pasos manuales restantes (ver README.md):" -ForegroundColor Cyan
+Write-Host "Pasos manuales restantes (ver README.es.md):" -ForegroundColor Cyan
 Write-Host "  1. Configurar git con tu nombre, email y defaults"
 Write-Host "  2. Restaurar extensiones de VS Code:"
 Write-Host "     Get-Content `"$DotfilesRoot\vscode\extensions.txt`" | ForEach-Object { code --install-extension `$_ }"

@@ -8,11 +8,19 @@ paths:
 Aplica a `README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/` y los `README.md`
 de cada carpeta.
 
+## README bilingüe
+
+- `README.md` (inglés) es el README principal; `README.es.md` es su espejo en español.
+- Mismo contenido: comandos, tablas y enlaces idénticos. Arriba de ambos, el selector `English | Español`.
+- Se traduce el texto, incluido el `alt` de imágenes y badges (lo leen los lectores de pantalla); comandos, rutas y URLs quedan idénticos.
+- Son una sola información en dos idiomas: se actualizan **en el mismo commit**; si cambias uno, cambia el otro.
+- El resto (`CONTRIBUTING.md`, `CHANGELOG.md`, `docs/`, los `README.md` de subcarpetas), los comentarios de código y los mensajes de commit siguen en español.
+
 ## Estilo
 
 - **Sin iconos ni emojis.** Texto sobrio.
 - Lenguaje directo y simple. Sin relleno ni marketing.
-- En español. Términos técnicos, comandos y rutas tal cual.
+- En español, salvo el **README principal** (bilingüe, ver abajo). Términos técnicos, comandos y rutas tal cual.
 - Escaneable: secciones cortas, títulos claros, lo importante arriba.
 - El lector debe poder reproducir el setup sin leerlo todo.
 

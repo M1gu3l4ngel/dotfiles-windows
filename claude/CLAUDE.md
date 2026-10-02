@@ -5,6 +5,11 @@ El detalle de la máquina (discos, cachés, variables, rustup, robocopy, qué no
 `~/.claude/entorno.md`: **léelo antes de operar fuera de un repo** (mover/borrar/instalar en
 disco, tocar cachés, WSL, Docker o herramientas globales).
 
+## README en repos públicos
+- Bilingüe: `README.md` en inglés (portada) y `README.es.md` en español, con selector `English | Español` arriba en ambos. Mismo contenido; un cambio en uno va también al otro en el mismo commit.
+- Se traduce el texto, incluido el `alt` de imágenes y badges; no se tocan comandos, rutas ni URLs (idénticos en ambos).
+- El resto (docs, comentarios, commits) sigue en español. Repos privados: todo en español, sin README en inglés.
+
 ## Disco: el trabajo va en `D:`
 - `C:` es solo Windows y programas. **Nada de trabajo nuevo en `C:`** (proyectos, cachés, clones, descargas, temporales grandes).
 - Proyectos con git en `D:\Dev\projects\`; experimentos sin git en `D:\Dev\scratch\` (desechable). Escribe siempre `D:\Dev` (mayúscula: WSL y git distinguen).

@@ -1,15 +1,17 @@
 # dotfiles-windows
 
-Setup de Windows 11 para desarrollo: PowerShell, oh-my-posh, Windows Terminal,
-VS Code, WSL y el toolchain de desarrollo, con instalación en un comando.
+**English** | [Español](README.es.md)
+
+Windows 11 development setup: PowerShell, oh-my-posh, Windows Terminal,
+VS Code, WSL and the development toolchain, with one-command install.
 
 [![CI](https://github.com/M1gu3l4ngel/dotfiles-windows/actions/workflows/ci.yml/badge.svg)](https://github.com/M1gu3l4ngel/dotfiles-windows/actions/workflows/ci.yml)
 
-![Escritorio](assets/preview.png)
+![Desktop](assets/preview.png)
 
-## Reproducir en un comando
+## Reproduce in one command
 
-En una PC nueva (pedirá UAC para WSL, Docker y algunas apps). Desde PowerShell:
+On a new PC (it will prompt for UAC for WSL, Docker and some apps). From PowerShell:
 
 ```powershell
 git clone https://github.com/M1gu3l4ngel/dotfiles-windows.git $env:USERPROFILE\dotfiles
@@ -17,131 +19,131 @@ cd $env:USERPROFILE\dotfiles
 .\bootstrap.ps1
 ```
 
-Para ver qué haría sin cambiar nada: `.\bootstrap.ps1 -DryRun`.
+To preview what it would do without changing anything: `.\bootstrap.ps1 -DryRun`.
 
-Después, completa los pasos manuales (claves GPG/SSH) que el propio script lista.
+Afterwards, complete the manual steps (GPG/SSH keys) that the script itself lists.
 
-## Requisitos previos
+## Prerequisites
 
-- Windows 10/11 con `winget` (App Installer, de la Microsoft Store).
-- **git** para clonar el repo. Si la PC no lo trae (recién formateada), instálalo
-  primero y reabre la terminal: `winget install Git.Git`. El `bootstrap.ps1`
-  instala y actualiza todo lo demás de forma idempotente (git incluido: si ya
-  está, lo salta).
-- **Developer Mode** activado (Settings → Privacy & security → For developers) o
-  ejecutar PowerShell como administrador: necesario para crear los symlinks.
-- Recomendado: ejecutar `bootstrap.ps1` como administrador (WSL y Docker lo piden).
+- Windows 10/11 with `winget` (App Installer, from the Microsoft Store).
+- **git** to clone the repo. If the PC doesn't have it (freshly formatted), install
+  it first and reopen the terminal: `winget install Git.Git`. `bootstrap.ps1`
+  installs and updates everything else idempotently (git included: if it's already
+  there, it skips it).
+- **Developer Mode** enabled (Settings → Privacy & security → For developers) or
+  run PowerShell as administrator: required to create the symlinks.
+- Recommended: run `bootstrap.ps1` as administrator (WSL and Docker require it).
 
-## Qué hace bootstrap.ps1
+## What bootstrap.ps1 does
 
-Es idempotente: cada paso comprueba si ya está hecho, así que se puede re-ejecutar
-sin romper nada (por ejemplo tras un reinicio).
+It is idempotent: each step checks whether it is already done, so it can be re-run
+without breaking anything (for example after a reboot).
 
-| Paso | Qué instala o configura |
+| Step | What it installs or configures |
 |---|---|
-| 1 | Set esencial de winget: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, WSL y CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim) |
-| 2 | CaskaydiaCove Nerd Font (descarga verificada por SHA-256) |
-| 3 | Variables de entorno hacia `D:` (o `C:` si no hay `D:`) |
-| 4 | Node (nvm-windows) + pnpm + Claude Code en `<disco>\Dev\npm-global` |
-| 5 | WSL Ubuntu (requiere reinicio) |
-| 6 | git: nombre, email noreply y defaults |
-| 7 | Symlinks de configuración (`install.ps1`) |
-| 8 | Muestra los pasos manuales que implican secretos (GPG/SSH) |
+| 1 | Essential winget set: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, WSL and CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim) |
+| 2 | CaskaydiaCove Nerd Font (download verified by SHA-256) |
+| 3 | Environment variables pointing to `D:` (or `C:` if there is no `D:`) |
+| 4 | Node (nvm-windows) + pnpm + Claude Code in `<disk>\Dev\npm-global` |
+| 5 | WSL Ubuntu (requires a reboot) |
+| 6 | git: name, noreply email and defaults |
+| 7 | Configuration symlinks (`install.ps1`) |
+| 8 | Shows the manual steps that involve secrets (GPG/SSH) |
 
-Solo instala el **entorno**. Las apps personales no se tocan (ver `apps/`).
+It only installs the **environment**. Personal apps are left untouched (see `apps/`).
 
-## Instalar solo las configuraciones
+## Install only the configurations
 
-Si ya tienes el stack instalado y solo quieres estas configs:
+If you already have the stack installed and only want these configs:
 
 ```powershell
 .\install.ps1
 ```
 
-Antes de crear cada enlace, `install.ps1` renombra tu archivo existente con el
-sufijo `.pre-dotfiles.bak`. Para volver atrás, usa `uninstall.ps1` (abajo).
+Before creating each link, `install.ps1` renames your existing file with the
+`.pre-dotfiles.bak` suffix. To roll back, use `uninstall.ps1` (below).
 
-## Desinstalar
+## Uninstall
 
-Revierte los symlinks y restaura tus archivos originales (los `.pre-dotfiles.bak`):
+Reverts the symlinks and restores your original files (the `.pre-dotfiles.bak` ones):
 
 ```powershell
-.\uninstall.ps1 -DryRun   # ver qué haría sin tocar nada
-.\uninstall.ps1           # revertir de verdad
+.\uninstall.ps1 -DryRun   # preview without touching anything
+.\uninstall.ps1           # actually revert
 ```
 
-No desinstala apps ni toca variables de entorno o WSL.
+It does not uninstall apps or touch environment variables or WSL.
 
-## Pasos manuales (implican secretos, no se automatizan)
+## Manual steps (involve secrets, not automated)
 
-1. Claves SSH y GPG, y firma de commits: [docs/firma-gpg.md](docs/firma-gpg.md).
-2. Restaurar las extensiones de VS Code:
+1. SSH and GPG keys, and commit signing: [docs/firma-gpg.md](docs/firma-gpg.md).
+2. Restore the VS Code extensions:
 
    ```powershell
    Get-Content .\vscode\extensions.txt | ForEach-Object { code --install-extension $_ }
    ```
 
-## Estructura
+## Structure
 
-| Ruta | Contenido |
+| Path | Contents |
 |---|---|
-| `bootstrap.ps1` | Instalación del entorno en un comando |
-| `install.ps1` | Symlinks de configuración |
-| `uninstall.ps1` | Revertir los symlinks y restaurar los backups (`-DryRun` para simular) |
-| `lib/` | Código compartido (el mapeo de symlinks) |
-| `powershell/` | Perfil de PowerShell (PS 7 y legacy, mismo archivo) |
-| `bash/` | Perfil de Git Bash (mismo prompt que PowerShell) |
-| `oh-my-posh/` | Tema del prompt (`capr4n`, compartido con Parrot) |
-| `windows-terminal/` | Settings de Windows Terminal |
-| `vscode/` | Settings, keybindings y lista de extensiones |
-| `apps/` | Snapshot de referencia de aplicaciones |
-| `docs/` | Guías detalladas |
-| `.claude/rules/` | Convenciones del proyecto (las carga Claude Code) |
+| `bootstrap.ps1` | One-command environment install |
+| `install.ps1` | Configuration symlinks |
+| `uninstall.ps1` | Revert the symlinks and restore the backups (`-DryRun` to simulate) |
+| `lib/` | Shared code (the symlink mapping) |
+| `powershell/` | PowerShell profile (PS 7 and legacy, same file) |
+| `bash/` | Git Bash profile (same prompt as PowerShell) |
+| `oh-my-posh/` | Prompt theme (`capr4n`, shared with Parrot) |
+| `windows-terminal/` | Windows Terminal settings |
+| `vscode/` | Settings, keybindings and the extension list |
+| `apps/` | Reference snapshot of applications |
+| `docs/` | Detailed guides |
+| `.claude/rules/` | Project conventions (loaded by Claude Code) |
 
-## Reproducibilidad entre máquinas
+## Reproducibility across machines
 
-El repo detecta el disco de trabajo (`D:` o `C:`) y no depende de rutas fijas de
-usuario, así que clonarlo y correr `bootstrap.ps1` deja otra PC con el mismo
-entorno. Las apps personales y los secretos se restauran aparte (imagen del
-sistema y claves nuevas).
+The repo detects the work disk (`D:` or `C:`) and does not depend on fixed user
+paths, so cloning it and running `bootstrap.ps1` leaves another PC with the same
+environment. Personal apps and secrets are restored separately (system image and
+new keys).
 
-## Snapshot de aplicaciones
+## Application snapshot
 
-`apps/winget-dev.json` lista las apps de entorno/desarrollo, reinstalables con
-`winget import`. Las apps personales no se versionan: se restauran con la imagen
-del sistema. Detalle en [apps/README.md](apps/README.md).
+`apps/winget-dev.json` lists the environment/development apps, reinstallable with
+`winget import`. Personal apps are not versioned: they are restored with the system
+image. Details in [apps/README.md](apps/README.md).
 
-## Nombre visual del prompt (opcional)
+## Visual prompt name (optional)
 
-Por defecto el prompt muestra tu usuario de Windows. Si prefieres mostrar otro
-nombre (solo en pantalla, sin tocar el sistema), usa el ayudante:
+By default the prompt shows your Windows username. If you prefer to show a different
+name (on screen only, without touching the system), use the helper:
 
 ```powershell
 .\tools\set-prompt-name.ps1
 ```
 
-Te pregunta el nombre (Enter en blanco = tu usuario real) y lo guarda en la
-variable `POSH_NAME`, que el tema lee. Es puramente decorativo: no afecta rutas,
-comandos ni git.
+It asks for the name (blank Enter = your real username) and saves it in the
+`POSH_NAME` variable, which the theme reads. It is purely decorative: it does not
+affect paths, commands or git.
 
-## Solución de problemas
+## Troubleshooting
 
-| Síntoma | Causa | Solución |
+| Symptom | Cause | Fix |
 |---|---|---|
-| `install.ps1` falla al crear symlinks | Developer Mode apagado | Activarlo, o ejecutar como administrador |
-| El prompt no aparece en una terminal nueva | El perfil no se cargó | `. $PROFILE`, o reabrir la terminal |
-| Iconos como cuadrados | Falta CaskaydiaCove Nerd Font | Re-ejecutar `bootstrap.ps1` |
-| `nvm` no reconocido tras el bootstrap | PATH no refrescado | Reabrir PowerShell y volver a correr `bootstrap.ps1` |
-| GitHub muestra "Unverified" | El UID de la clave GPG no tiene el email noreply | [docs/firma-gpg.md](docs/firma-gpg.md) |
+| `install.ps1` fails to create symlinks | Developer Mode off | Enable it, or run as administrator |
+| The prompt does not appear in a new terminal | The profile did not load | `. $PROFILE`, or reopen the terminal |
+| Icons show as squares | Missing CaskaydiaCove Nerd Font | Re-run `bootstrap.ps1` |
+| `nvm` not recognized after bootstrap | PATH not refreshed | Reopen PowerShell and run `bootstrap.ps1` again |
+| GitHub shows "Unverified" | The GPG key UID does not have the noreply email | [docs/firma-gpg.md](docs/firma-gpg.md) |
 
-## Documentación y contribución
+## Documentation and contributing
 
-Guías en [docs/](docs/README.md). Convenciones en `.claude/rules/`. Para contribuir
-o modificar el repo: [CONTRIBUTING.md](CONTRIBUTING.md).
+Guides in [docs/](docs/README.md). Conventions in `.claude/rules/`. To contribute
+or modify the repo: [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Créditos y licencia
+## Credits and license
 
-El prompt de oh-my-posh y la paleta de colores se comparten con
+The oh-my-posh prompt and the color palette are shared with
 [dotfiles-parrot](https://github.com/M1gu3l4ngel/dotfiles-parrot).
 
-Licencia [MIT](LICENSE).
+Licensed [MIT](LICENSE).
