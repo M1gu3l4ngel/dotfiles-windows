@@ -1,42 +1,44 @@
-# apps — snapshot de aplicaciones (referencia)
+**English** | [Español](README.es.md)
 
-Esta carpeta guarda **qué aplicaciones hay instaladas**, como referencia. **No se
-auto-instalan**: este repo es para el *entorno*, no para las apps personales.
+# apps — application snapshot (reference)
 
-## Qué hay aquí
+This folder records **which applications are installed**, as a reference. **They
+are not auto-installed**: this repo is for the *environment*, not for personal apps.
 
-- **`winget-dev.json`** — snapshot **público** con solo las apps de **entorno y
-  desarrollo**. Es seguro de publicar. Para reinstalarlas de forma selectiva en
-  una máquina nueva:
+## What is here
+
+- **`winget-dev.json`**: **public** snapshot with only the **environment and
+  development** apps. It is safe to publish. To reinstall them selectively on a
+  new machine:
 
   ```powershell
   winget import apps\winget-dev.json --accept-package-agreements --accept-source-agreements
   ```
 
-- **`winget-full.local.json`** — snapshot **completo** de la máquina (incluye las
-  apps personales). Está **gitignored** (`*.local.json`): es tu registro privado,
-  **no se publica**. Para regenerarlo:
+- **`winget-full.local.json`**: **complete** snapshot of the machine (personal
+  apps included). It is **gitignored** (`*.local.json`): it is your private
+  record and **is not published**. To regenerate it:
 
   ```powershell
   winget export -o apps\winget-full.local.json
   ```
 
-## Qué NO está aquí (y por qué)
+## What is NOT here (and why)
 
-- **El set esencial ya lo instala `bootstrap.ps1`** (Git, PowerShell, Windows
-  Terminal, VS Code, oh-my-posh, GnuPG, Rust, Python, Docker, WSL y CLI tools).
-  `winget-dev.json` es el registro de las demás herramientas de dev; el bootstrap
-  y este snapshot se complementan, no se pisan.
-- **Apps personales** (Spotify, Steam, juegos, VPN, Telegram, Teams, Office…): no
-  van en un repo público. Se restauran con la **imagen del sistema** (capa 4 de
-  la estrategia de backup) o a mano.
-- **Runtimes del sistema** (VCRedist, UI.Xaml, WindowsAppRuntime…): se instalan
-  solos como dependencias; no tiene sentido listarlos.
+- **The essential set is already installed by `bootstrap.ps1`** (Git, PowerShell,
+  Windows Terminal, VS Code, oh-my-posh, GnuPG, Rust, Python, Docker, WSL and CLI
+  tools). `winget-dev.json` records the other dev tools; the bootstrap and this
+  snapshot complement each other, they do not overlap.
+- **Personal apps** (Spotify, Steam, games, VPN, Telegram, Teams, Office…): they
+  do not belong in a public repo. They are restored with the **system image**
+  (layer 4 of the backup strategy) or by hand.
+- **System runtimes** (VCRedist, UI.Xaml, WindowsAppRuntime…): they install
+  themselves as dependencies; there is no point in listing them.
 
-## Mantenerlo al día
+## Keeping it up to date
 
-Cuando instales o quites apps de desarrollo, regenera el completo y vuelve a curar
-el público (añadiendo/quitando IDs en `winget-dev.json`):
+When you install or remove development apps, regenerate the complete snapshot and
+curate the public one again (adding/removing IDs in `winget-dev.json`):
 
 ```powershell
 winget export -o apps\winget-full.local.json

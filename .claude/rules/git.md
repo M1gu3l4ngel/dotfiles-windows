@@ -29,7 +29,7 @@ type(scope): descripción en español
 - `user.email` = el **noreply** de GitHub, no el correo personal (queda público
   en cada commit).
 - Commits y tags firmados con GPG (`commit.gpgsign`, `tag.gpgsign`). El setup
-  completo está en `docs/firma-gpg.md`.
+  completo está en `docs/gpg-signing.es.md`.
 
 ## `.gitconfig`
 

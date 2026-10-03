@@ -1,10 +1,12 @@
+**English** | [Español](README.es.md)
+
 # docs
 
-Guías detalladas del repo.
+Detailed guides for the repo.
 
-| Guía | Contenido |
+| Guide | Contents |
 |---|---|
-| [firma-gpg.md](firma-gpg.md) | Firma de commits con GPG: caché de la passphrase, pinentry gráfico, "Verified" en GitHub, y cómo reproducirlo en otra máquina |
+| [gpg-signing.md](gpg-signing.md) | Commit signing with GPG: passphrase cache, graphical pinentry, "Verified" on GitHub, and how to reproduce it on another machine |
 
-Para la instalación y el uso general, ver el [README](../README.md) ([español](../README.es.md)). Para las
-convenciones del proyecto, ver `.claude/rules/`.
+For installation and general usage, see the [README](../README.md). For the
+project conventions, see `.claude/rules/`.

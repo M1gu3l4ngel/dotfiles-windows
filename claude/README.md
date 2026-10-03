@@ -1,38 +1,42 @@
-# Capa global de Claude Code
+**English** | [Español](README.es.md)
 
-Comportamiento **universal** de Claude Code, igual en cualquier proyecto, PC y sistema
-operativo. Lo específico de un proyecto vive en el repo de ese proyecto; lo específico de una
-máquina se queda local (no se versiona).
+# Global Claude Code layer
 
-## Qué hay aquí (genérico, sin datos personales)
+**Universal** Claude Code behavior, the same on any project, PC and operating
+system. What is specific to a project lives in that project's repo; what is
+specific to a machine stays local (it is not versioned).
 
-| Archivo | Enlazado a | Qué es |
+## What is here (generic, no personal data)
+
+| File | Linked to | What it is |
 |---|---|---|
-| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Reglas universales: disco, editar con Edit/Write, confirmar antes de borrar, interacción, compactación |
-| `statusline.mjs` | `~/.claude/statusline.mjs` | Barra de estado (modelo, contexto en tokens, carpeta) |
-| `hooks/block-shell-edits.mjs` | `~/.claude/hooks/block-shell-edits.mjs` | Hook `PreToolUse` que impone editar con Edit/Write (bloquea `sed -i`, redirecciones, heredocs… y deja pasar temporales). Portable Windows/Linux |
-| `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos + registro del hook + `skillOverrides` |
-| `check-budget.mjs` | — (script) | Guarda de presupuesto: cuenta líneas de `CLAUDE.md`/`statusline`/`hook` y falla si exceden. `node claude/check-budget.mjs`. Portable |
+| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Universal rules: bilingual documentation, disk, editing with Edit/Write, confirming before deleting, interaction, compaction |
+| `statusline.mjs` | `~/.claude/statusline.mjs` | Status line (model, context in tokens, folder) |
+| `hooks/block-shell-edits.mjs` | `~/.claude/hooks/block-shell-edits.mjs` | `PreToolUse` hook that enforces editing with Edit/Write (blocks `sed -i`, redirections, heredocs… and lets temporary files through). Portable Windows/Linux |
+| `settings.template.json` | — (template) | Portable base for `settings.json`: generic secret `deny`/`ask` rules + hook registration + `skillOverrides` |
+| `check-budget.mjs` | — (script) | Budget guard: counts the lines of `CLAUDE.md`/`statusline`/`hook` and fails if they exceed it. `node claude/check-budget.mjs`. Portable |
 
-## Qué NO se versiona (queda local, por máquina)
+## What is NOT versioned (stays local, per machine)
 
-- **`~/.claude/entorno.md`** — detalle físico de la máquina (discos, rutas, usuario) y datos
-  privados. Cada PC tiene el suyo. **Nunca** va a un repo público.
-- **`~/.claude/settings.json`** — tiene rutas con tu usuario, `autoMode` (que genera cada
-  máquina y solo se lee del settings global) y plugins. Se queda local.
-- Historial, sesiones, memoria (`~/.claude/projects/**`), cachés, `file-history`.
+- **`~/.claude/entorno.md`**: the machine's physical details (disks, paths, user)
+  and private data. Each PC has its own. It **never** goes into a public repo.
+- **`~/.claude/settings.json`**: it has paths with your username, `autoMode` (which
+  each machine generates and which is only read from the global settings) and
+  plugins. It stays local.
+- History, sessions, memory (`~/.claude/projects/**`), caches, `file-history`.
 
-## Montar en una máquina nueva (Windows o Linux)
+## Setting up a new machine (Windows or Linux)
 
-1. Clonar el repo y correr el instalador: enlaza los 3 archivos de arriba a `~/.claude/`.
-   - Windows: `./install.ps1` (necesita Developer Mode o admin para symlinks).
-2. Crear `~/.claude/settings.json` a partir de `settings.template.json`:
-   - Reemplazar `REEMPLAZA_RUTA_HOME` por el home real (Windows `C:/Users/<tu-usuario>`,
-     Linux `/home/<tu-usuario>`).
-   - Opcional (más fiable en Windows): añadir también rutas **absolutas** de tus secretos,
-     p.ej. `Read(//d/Dev/security-keys/**)`, junto a los patrones `**/` genéricos.
-3. Crear tu `~/.claude/entorno.md` local con el detalle de esa máquina (no se versiona).
+1. Clone the repo and run the installer: it links the 3 files above into `~/.claude/`.
+    - Windows: `./install.ps1` (needs Developer Mode or admin for symlinks).
+2. Create `~/.claude/settings.json` from `settings.template.json`:
+    - Replace `REEMPLAZA_RUTA_HOME` with the real home (Windows `C:/Users/<user>`,
+      Linux `/home/<user>`).
+    - Optional (more reliable on Windows): also add **absolute** paths to your
+      secrets, for example `Read(//d/Dev/security-keys/**)`, next to the generic `**/`
+      patterns.
+3. Create your local `~/.claude/entorno.md` with that machine's details (not versioned).
 
-Los patrones de secretos usan `**/` (portables Windows/Linux) y no contienen ningún dato
-personal. El `deny` bloquea en seco claves/credenciales; `.env*` queda en `ask` (pregunta
-antes de leer, para poder guiar sin exponer valores en el contexto).
+The secret patterns use `**/` (portable Windows/Linux) and contain no personal
+data. `deny` blocks keys/credentials outright; `.env*` stays in `ask` (it asks
+before reading, so it can guide you without exposing values in the context).

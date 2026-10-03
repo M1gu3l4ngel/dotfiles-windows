@@ -1,65 +1,81 @@
-# Contribuir
+**English** | [Español](CONTRIBUTING.es.md)
 
-Es un repo personal, pero sigue un flujo estándar para mantenerlo limpio y
+# Contributing
+
+It is a personal repo, but it follows a standard flow to keep it clean and
 reproducible.
 
-## Flujo
+## Flow
 
-1. Crea una rama desde `main`.
-2. Haz los cambios siguiendo las convenciones de abajo.
-3. Ejecuta las comprobaciones desde la raíz del repo. Deben pasar todas:
+1. Create a branch from `main`.
+2. Make the changes following the conventions below.
+3. Run the checks from the repo root. They must all pass:
 
    ```powershell
    .\tools\check.ps1
    ```
 
-4. Haz un commit siguiendo el formato de commits.
-5. Abre un pull request. El CI ejecuta las mismas comprobaciones y marca el
-   resultado en GitHub.
+4. Make a commit following the commit format.
+5. Open a pull request. CI runs the same checks and reports the result on
+   GitHub.
 
-Si el cambio es visible para el usuario, añádelo a `CHANGELOG.md` en la sección
-"Sin publicar".
+If the change is visible to the user, add it to the changelog
+([CHANGELOG.md](CHANGELOG.md) and its Spanish pair) under the
+"Unreleased" / "Sin publicar" section.
 
 ## Commits
 
-Formato [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/) en
-una sola línea de 72 caracteres como máximo:
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format on
+a single line of 72 characters at most, with the description in Spanish:
 
 ```
-type(scope): descripción en español
+type(scope): <description>
 ```
 
-- `type` en inglés: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
-- `scope` opcional: el componente afectado (`install`, `bootstrap`, `vscode`...).
-- **Un solo commit** por conjunto de cambios, aunque toque varios archivos.
+- `type` in English: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
+- `scope` optional: the affected component (`install`, `bootstrap`, `vscode`...).
+- **A single commit** per set of changes, even if it touches several files.
 
-El repo es público y cada commit publica el email del autor: usa el **email
-noreply** de GitHub y **firma los commits con GPG**. Cómo configurarlo:
-[docs/firma-gpg.md](docs/firma-gpg.md).
+The repo is public and every commit publishes the author's email: use the GitHub
+**noreply email** and **sign commits with GPG**. How to set it up:
+[docs/gpg-signing.md](docs/gpg-signing.md).
 
-## Convenciones
+## Documentation in two languages
 
-Están en `.claude/rules/`. Son Markdown normal: sirven igual para personas y para
-Claude Code, que las carga automáticamente.
+All documentation exists in English (`X.md`) and Spanish (`X.es.md`), with the
+language selector on the first line. When you change a document, change its
+pair in the same commit. `.\tools\check.ps1` (`tools\check-docs.ps1`) fails if
+they do not share the same structure (sections, tables, lists, links), if their
+code blocks differ (commands are not translated) or if there are broken links
+or anchors.
 
-| Archivo | Qué define |
+Code comments, commit messages and the rules in `.claude/rules/` are written in
+Spanish only.
+
+## Conventions
+
+They live in `.claude/rules/`. They are plain Markdown: they work the same for
+people and for Claude Code, which loads them automatically.
+
+| File | What it defines |
 |---|---|
-| `security.md` | Datos personales y de empresa, secretos, descargas verificadas |
-| `git.md` | Commits, formato, firma, email noreply |
-| `file-edits.md` | Editar con Edit/Write, archivos protegidos |
-| `powershell.md` | Convenciones de PowerShell |
-| `documentation.md` | Estilo de la documentación |
-| `environment.md` | Discos, Developer Mode, symlinks, WSL |
+| `security.md` | Personal and company data, secrets, verified downloads |
+| `git.md` | Commits, format, signing, noreply email |
+| `file-edits.md` | Editing with Edit/Write, protected files |
+| `powershell.md` | PowerShell conventions |
+| `documentation.md` | Documentation style and the two-language rule |
+| `environment.md` | Disks, Developer Mode, symlinks, WSL |
 
-Lo más importante:
+The most important points:
 
-- Nunca incluyas datos personales ni de empresa (usuario, emails, IPs,
-  fingerprints, endpoints de Stout). Revisa `vscode/settings.json` antes de
-  commitear: las extensiones escriben keys ahí.
-- Lo que no venga de winget se descarga en versión fija y se verifica con SHA-256.
-- La documentación va sobria, sin emojis.
+- Never include personal or company data (username, emails, IPs, fingerprints,
+  internal endpoints). Review `vscode/settings.json` before committing:
+  extensions write keys there.
+- Anything that does not come from winget is downloaded at a pinned version and
+  verified with SHA-256.
+- Documentation stays plain, without emojis.
 
-## Reportar problemas
+## Reporting issues
 
-Abre un issue con qué esperabas, qué pasó, versión de Windows y los pasos para
-reproducirlo (con captura si es visual).
+Open an issue with what you expected, what happened, the Windows version and the
+steps to reproduce it (with a screenshot if it is visual).

@@ -1,6 +1,6 @@
-# dotfiles-windows
-
 **English** | [Español](README.es.md)
+
+# dotfiles-windows
 
 Windows 11 development setup: PowerShell, oh-my-posh, Windows Terminal,
 VS Code, WSL and the development toolchain, with one-command install.
@@ -65,18 +65,20 @@ Before creating each link, `install.ps1` renames your existing file with the
 
 ## Uninstall
 
-Reverts the symlinks and restores your original files (the `.pre-dotfiles.bak` ones):
+Reverts the symlinks and restores your original files (the `.pre-dotfiles.bak`
+ones). With `-DryRun` it only shows what it would do, without touching anything;
+without it, it reverts for real:
 
 ```powershell
-.\uninstall.ps1 -DryRun   # preview without touching anything
-.\uninstall.ps1           # actually revert
+.\uninstall.ps1 -DryRun
+.\uninstall.ps1
 ```
 
 It does not uninstall apps or touch environment variables or WSL.
 
 ## Manual steps (involve secrets, not automated)
 
-1. SSH and GPG keys, and commit signing: [docs/firma-gpg.md](docs/firma-gpg.md).
+1. SSH and GPG keys, and commit signing: [docs/gpg-signing.md](docs/gpg-signing.md).
 2. Restore the VS Code extensions:
 
    ```powershell
@@ -134,7 +136,7 @@ affect paths, commands or git.
 | The prompt does not appear in a new terminal | The profile did not load | `. $PROFILE`, or reopen the terminal |
 | Icons show as squares | Missing CaskaydiaCove Nerd Font | Re-run `bootstrap.ps1` |
 | `nvm` not recognized after bootstrap | PATH not refreshed | Reopen PowerShell and run `bootstrap.ps1` again |
-| GitHub shows "Unverified" | The GPG key UID does not have the noreply email | [docs/firma-gpg.md](docs/firma-gpg.md) |
+| GitHub shows "Unverified" | The GPG key UID does not have the noreply email | [docs/gpg-signing.md](docs/gpg-signing.md) |
 
 ## Documentation and contributing
 

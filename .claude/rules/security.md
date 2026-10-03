@@ -12,14 +12,14 @@ para siempre en el historial.
 - Usar placeholders (`<TU_FINGERPRINT>`, `<usuario>`) o valores en tiempo de
   ejecución (`$env:USERPROFILE`, `[Environment]::GetFolderPath(...)`).
 - Los commits se firman con GPG y usan el **email noreply** de GitHub, no el
-  personal. Ver `docs/firma-gpg.md`.
+  personal. Ver `docs/gpg-signing.es.md`.
 
 ## Ojo con vscode/settings.json
 
 Varias extensiones (mssql, generadores de commits, etc.) escriben conexiones y
 **API keys dentro de `vscode/settings.json`**, que sí se versiona. Antes de
 commitear, revisar ese archivo en busca de `mssql.connections`, `*.apiKey`,
-tokens y correos. Ya se filtraron datos de Stout y una API key por esto.
+tokens y correos. Ya se filtraron datos de la empresa y una API key por esto.
 
 ## Descargas externas
 

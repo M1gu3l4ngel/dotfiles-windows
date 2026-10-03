@@ -5,22 +5,36 @@ paths:
 
 # Documentación
 
-Aplica a `README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/` y los `README.md`
-de cada carpeta.
+Aplica a los `README`, `CONTRIBUTING`, `CHANGELOG` y `docs/`. No a `CLAUDE.md`
+ni a `.claude/rules/` (instrucciones para el agente, solo en español).
 
-## README bilingüe
+## Idioma: toda la documentación es bilingüe
 
-- `README.md` (inglés) es el README principal; `README.es.md` es su espejo en español.
-- Mismo contenido: comandos, tablas y enlaces idénticos. Arriba de ambos, el selector `English | Español`.
-- Se traduce el texto, incluido el `alt` de imágenes y badges (lo leen los lectores de pantalla); comandos, rutas y URLs quedan idénticos.
-- Son una sola información en dos idiomas: se actualizan **en el mismo commit**; si cambias uno, cambia el otro.
-- El resto (`CONTRIBUTING.md`, `CHANGELOG.md`, `docs/`, los `README.md` de subcarpetas), los comentarios de código y los mensajes de commit siguen en español.
+- Pareja por documento: `X.md` en inglés (el nombre que reconoce GitHub y el
+  que ve el visitante) y `X.es.md` en español, en la misma carpeta. Nombres de
+  archivo en inglés. Un documento nuevo nace con su pareja.
+- Línea 1, el selector: `**English** | [Español](X.es.md)` en el inglés y
+  `[English](X.md) | **Español**` en el español.
+- Mismo contenido y misma estructura: secciones, tablas, listas y enlaces en
+  el mismo orden. Cada idioma enlaza a su idioma (`x.es.md` desde el
+  español); las anclas siguen al título traducido.
+- Se traduce el texto, incluido el `alt` de imágenes y badges (lo leen los
+  lectores de pantalla). Los bloques de código son idénticos byte a byte:
+  comandos, rutas, URLs y placeholders en inglés neutro (`<user>`,
+  `<your-noreply>`), explicados en el texto de cada idioma. Los textos que
+  muestra el programa (mensajes, salidas) se citan tal cual.
+- Un cambio en uno va también al otro, en el mismo commit.
+  `tools/check.ps1` (`tools/check-docs.ps1`) falla si falta una pareja o un
+  selector, si difieren títulos, filas de tabla, elementos de lista, enlaces
+  o bloques de código, o si hay enlaces o anclas rotos.
+- Solo en español: comentarios de código, mensajes de commit y la salida de
+  los scripts.
 
 ## Estilo
 
 - **Sin iconos ni emojis.** Texto sobrio.
 - Lenguaje directo y simple. Sin relleno ni marketing.
-- En español, salvo el **README principal** (bilingüe, ver abajo). Términos técnicos, comandos y rutas tal cual.
+- Términos técnicos, comandos y rutas tal cual.
 - Escaneable: secciones cortas, títulos claros, lo importante arriba.
 - El lector debe poder reproducir el setup sin leerlo todo.
 

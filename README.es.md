@@ -1,6 +1,6 @@
-# dotfiles-windows
-
 [English](README.md) | **Español**
+
+# dotfiles-windows
 
 Setup de Windows 11 para desarrollo: PowerShell, oh-my-posh, Windows Terminal,
 VS Code, WSL y el toolchain de desarrollo, con instalación en un comando.
@@ -44,7 +44,7 @@ sin romper nada (por ejemplo tras un reinicio).
 | 1 | Set esencial de winget: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, WSL y CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim) |
 | 2 | CaskaydiaCove Nerd Font (descarga verificada por SHA-256) |
 | 3 | Variables de entorno hacia `D:` (o `C:` si no hay `D:`) |
-| 4 | Node (nvm-windows) + pnpm + Claude Code en `<disco>\Dev\npm-global` |
+| 4 | Node (nvm-windows) + pnpm + Claude Code en `<disk>\Dev\npm-global` |
 | 5 | WSL Ubuntu (requiere reinicio) |
 | 6 | git: nombre, email noreply y defaults |
 | 7 | Symlinks de configuración (`install.ps1`) |
@@ -65,18 +65,19 @@ sufijo `.pre-dotfiles.bak`. Para volver atrás, usa `uninstall.ps1` (abajo).
 
 ## Desinstalar
 
-Revierte los symlinks y restaura tus archivos originales (los `.pre-dotfiles.bak`):
+Revierte los symlinks y restaura tus archivos originales (los `.pre-dotfiles.bak`).
+Con `-DryRun` solo muestra qué haría, sin tocar nada; sin él, revierte de verdad:
 
 ```powershell
-.\uninstall.ps1 -DryRun   # ver qué haría sin tocar nada
-.\uninstall.ps1           # revertir de verdad
+.\uninstall.ps1 -DryRun
+.\uninstall.ps1
 ```
 
 No desinstala apps ni toca variables de entorno o WSL.
 
 ## Pasos manuales (implican secretos, no se automatizan)
 
-1. Claves SSH y GPG, y firma de commits: [docs/firma-gpg.md](docs/firma-gpg.md).
+1. Claves SSH y GPG, y firma de commits: [docs/gpg-signing.es.md](docs/gpg-signing.es.md).
 2. Restaurar las extensiones de VS Code:
 
    ```powershell
@@ -111,7 +112,7 @@ sistema y claves nuevas).
 
 `apps/winget-dev.json` lista las apps de entorno/desarrollo, reinstalables con
 `winget import`. Las apps personales no se versionan: se restauran con la imagen
-del sistema. Detalle en [apps/README.md](apps/README.md).
+del sistema. Detalle en [apps/README.es.md](apps/README.es.md).
 
 ## Nombre visual del prompt (opcional)
 
@@ -134,12 +135,12 @@ comandos ni git.
 | El prompt no aparece en una terminal nueva | El perfil no se cargó | `. $PROFILE`, o reabrir la terminal |
 | Iconos como cuadrados | Falta CaskaydiaCove Nerd Font | Re-ejecutar `bootstrap.ps1` |
 | `nvm` no reconocido tras el bootstrap | PATH no refrescado | Reabrir PowerShell y volver a correr `bootstrap.ps1` |
-| GitHub muestra "Unverified" | El UID de la clave GPG no tiene el email noreply | [docs/firma-gpg.md](docs/firma-gpg.md) |
+| GitHub muestra "Unverified" | El UID de la clave GPG no tiene el email noreply | [docs/gpg-signing.es.md](docs/gpg-signing.es.md) |
 
 ## Documentación y contribución
 
-Guías en [docs/](docs/README.md). Convenciones en `.claude/rules/`. Para contribuir
-o modificar el repo: [CONTRIBUTING.md](CONTRIBUTING.md).
+Guías en [docs/](docs/README.es.md). Convenciones en `.claude/rules/`. Para
+contribuir o modificar el repo: [CONTRIBUTING.es.md](CONTRIBUTING.es.md).
 
 ## Créditos y licencia
 

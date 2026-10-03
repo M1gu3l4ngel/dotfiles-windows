@@ -1,49 +1,64 @@
+**English** | [Español](CHANGELOG.es.md)
+
 # Changelog
 
-Cambios relevantes del proyecto. El formato sigue
-[Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y las versiones siguen
-[versionado semántico](https://semver.org/lang/es/).
+Notable changes to the project. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow
+[semantic versioning](https://semver.org/).
 
-## [Sin publicar]
+## [Unreleased]
 
-### Añadido
+### Added
 
-- `uninstall.ps1` + `lib/links.ps1`: desinstalador que revierte los symlinks y
-  restaura los backups (con `-DryRun`); el mapeo de symlinks se comparte entre
-  `install.ps1` y `uninstall.ps1` para que no se desincronicen.
-- `tools/check.ps1` + `PSScriptAnalyzerSettings.psd1`: comprobaciones locales de
-  calidad (sintaxis, PSScriptAnalyzer, JSON, higiene del repo público, LF).
-- CI en GitHub Actions (windows-latest): corre `tools/check.ps1` en cada push y
-  pull request, con las acciones fijadas por SHA de commit y permisos mínimos.
-- `bootstrap.ps1`: instalación del entorno en un comando, idempotente, con modo
-  `-DryRun`. Instala el set esencial de winget, fuentes Nerd verificadas por
-  SHA-256, toolchain de Node, variables de entorno, WSL y los symlinks.
-- `.gitattributes` (finales de línea LF en todo el repo) y `.editorconfig`.
-- `apps/`: snapshot de referencia de aplicaciones — `winget-dev.json` (público,
-  solo entorno/dev) y `winget-full.local.json` (completo, gitignored).
-- `.claude/rules/`: reglas modulares (security, git, file-edits, powershell,
-  documentation, environment), que Claude Code carga solas.
-- `CONTRIBUTING.md` y `CHANGELOG.md`.
-- `bash/`: perfil de Git Bash con el mismo prompt (oh-my-posh).
+- Full documentation in English and Spanish: each `X.md` document (English, the
+  one GitHub shows) has its `X.es.md` pair, with a language selector. This
+  covers the README, `CONTRIBUTING`, this changelog, `docs/` and the READMEs of
+  `apps/` and `claude/`. `tools/check.ps1` (`tools/check-docs.ps1`) fails if a
+  pair is missing, if they differ in structure, links or code blocks, or if
+  there are broken links or anchors.
+- Global Claude Code layer (`claude/`): universal `CLAUDE.md`, status line, a
+  hook that enforces editing with Edit/Write, a `settings.json` template
+  (secrets in `deny`/`ask`) and `check-budget.mjs`, linked by `install.ps1`.
+- `uninstall.ps1` + `lib/links.ps1`: uninstaller that reverts the symlinks and
+  restores the backups (with `-DryRun`); the symlink mapping is shared between
+  `install.ps1` and `uninstall.ps1` so they never drift apart.
+- `tools/check.ps1` + `PSScriptAnalyzerSettings.psd1`: local quality checks
+  (syntax, PSScriptAnalyzer, JSON, public repo hygiene, LF).
+- CI on GitHub Actions (windows-latest): runs `tools/check.ps1` on every push and
+  pull request, with actions pinned by commit SHA and minimal permissions.
+- `bootstrap.ps1`: one-command environment install, idempotent, with a `-DryRun`
+  mode. Installs the essential winget set, Nerd fonts verified by SHA-256, the
+  Node toolchain, environment variables, WSL and the symlinks.
+- `.gitattributes` (LF line endings across the repo) and `.editorconfig`.
+- `apps/`: reference snapshot of applications: `winget-dev.json` (public,
+  environment/dev only) and `winget-full.local.json` (complete, gitignored).
+- `.claude/rules/`: modular rules (security, git, file-edits, powershell,
+  documentation, environment), which Claude Code loads on its own.
+- `CONTRIBUTING.md` and `CHANGELOG.md`.
+- `bash/`: Git Bash profile with the same prompt (oh-my-posh).
 
-### Cambiado
+### Changed
 
-- Perfil de PowerShell ~48% más rápido: Terminal-Icons se carga diferido (OnIdle).
-- Prompt (oh-my-posh): texto oscuro uniforme, consistente en VS Code, Windows
-  Terminal y Parrot.
-- Scripts `.ps1` en ASCII puro (sin BOM) para compatibilidad con PowerShell 5.1.
-- `install.ps1`: backup con fecha si ya existe uno, validación de capacidad de
-  symlink antes de tocar nada, y comparación de rutas robusta.
-- `bash/.bashrc`: la ubicación del repo se deriva del symlink (funciona aunque no
-  se clone en `~/dotfiles`).
-- Fuente actualizada a **CaskaydiaCove Nerd Font** (Nerd Fonts v3.5.1); antes se
-  documentaba Hack.
-- Documentación reescrita en estilo sobrio, sin emojis.
-- `CLAUDE.md` dividido en reglas modulares bajo `.claude/rules/`.
+- PowerShell profile ~48% faster: Terminal-Icons is loaded lazily (OnIdle).
+- Prompt (oh-my-posh): uniform dark text, consistent across VS Code, Windows
+  Terminal and Parrot.
+- `.ps1` scripts in pure ASCII (no BOM) for PowerShell 5.1 compatibility.
+- `install.ps1`: dated backup if one already exists, symlink capability check
+  before touching anything, and robust path comparison.
+- `bash/.bashrc`: the repo location is derived from the symlink (works even if it
+  is not cloned into `~/dotfiles`).
+- Font updated to **CaskaydiaCove Nerd Font** (Nerd Fonts v3.5.1); Hack was
+  documented before.
+- Documentation rewritten in a plain style, without emojis.
+- `CLAUDE.md` split into modular rules under `.claude/rules/`.
 
-### Seguridad
+### Security
 
-- Purga del historial con `git-filter-repo`: se eliminaron de **todos** los
-  commits una API key filtrada y datos de conexión de Stout (servidor de Fabric,
-  correo corporativo, IDs de Azure) que estaban públicos desde el commit inicial.
-- `vscode/settings.json` saneado; `*.local.json` añadido a `.gitignore`.
+- `tools/check.ps1` no longer writes the sensitive literals it looks for into
+  the repo: it reads them from `tools/hygiene-patterns.local` (ignored by git)
+  or from the `DOTFILES_HYGIENE_PATTERNS` variable. They were purged from the
+  history, commit authorship included.
+- History purge with `git-filter-repo`: a leaked API key and company connection
+  data (Fabric server, corporate email, Azure IDs) that had been public since the
+  initial commit were removed from **every** commit.
+- `vscode/settings.json` sanitized; `*.local.json` added to `.gitignore`.

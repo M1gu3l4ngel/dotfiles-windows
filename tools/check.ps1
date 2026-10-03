@@ -9,7 +9,8 @@
   3. JSON valido (archivos de JSON puro)
   4. Higiene del repo publico: sin rutas C:\Users\<usuario> ni datos de empresa
   5. Finales de linea LF (sin CRLF)
-  6. Secretos con gitleaks (si esta instalado)
+  6. Documentacion bilingue sincronizada (tools/check-docs.ps1)
+  7. Secretos con gitleaks (si esta instalado)
 
   Sale con codigo distinto de 0 si alguna comprobacion falla.
 
@@ -116,7 +117,17 @@ foreach ($rel in ($tracked | Where-Object { $_ -notmatch $binExt })) {
 if ($crlf.Count -eq 0) { Pass 'Finales de linea LF' }
 else { Fail "CRLF encontrado en: $($crlf -join ', ')" }
 
-# ----- 6. SECRETOS (gitleaks, si esta disponible) -----
+# ----- 6. DOCUMENTACION BILINGUE -----
+# Cada X.md (ingles) tiene su X.es.md (espanol) con la misma estructura, enlaces
+# y bloques de codigo. Detalle de que compara en tools/check-docs.ps1.
+$docsOut = & (Join-Path $PSScriptRoot 'check-docs.ps1') -Root $repo
+if ($LASTEXITCODE -eq 0) { Pass ($docsOut -join ' ') }
+else {
+	Fail 'Documentacion bilingue desincronizada:'
+	$docsOut | ForEach-Object { Write-Host "       $_" }
+}
+
+# ----- 7. SECRETOS (gitleaks, si esta disponible) -----
 if (Get-Command gitleaks -ErrorAction SilentlyContinue) {
 	gitleaks git --no-banner --redact $repo 2>&1 | Out-Null
 	if ($LASTEXITCODE -eq 0) { Pass 'gitleaks: sin secretos en el historial' }

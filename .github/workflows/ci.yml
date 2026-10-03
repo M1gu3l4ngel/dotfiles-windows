@@ -1,6 +1,7 @@
 # .github/workflows/ci.yml
 # CI del repo: en cada push a main y en cada pull request corre tools/check.ps1
-# (sintaxis, PSScriptAnalyzer, JSON, higiene del repo publico, LF y gitleaks).
+# (sintaxis, PSScriptAnalyzer, JSON, higiene del repo publico, LF, documentacion
+# bilingue y gitleaks).
 # El resultado aparece como check junto a cada commit. En local: .\tools\check.ps1
 name: CI
 
