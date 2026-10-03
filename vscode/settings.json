@@ -30,8 +30,10 @@
 	"terminal.integrated.defaultProfile.windows": "PowerShell",
 	"explorer.confirmDelete": false,
 	"security.workspace.trust.banner": "never",
-	"files.autoSaveDelay": 600,
-	"files.autoSave": "afterDelay",
+	// Guardar al cambiar de pestaña o de ventana, no por tiempo: el formateo al
+	// guardar no se ejecuta en los guardados automáticos por retardo ("afterDelay").
+	"files.autoSave": "onFocusChange",
+	"files.eol": "\n",
 	"css.enabledLanguages": ["html"],
 	"explorer.confirmDragAndDrop": false,
 	"auto-close-tag.enableAutoCloseTag": true,
@@ -79,22 +81,10 @@
 	"git.enableSmartCommit": true,
 	"php.validate.executablePath": "C:\\PHP\\php.exe",
 	"symbols.hidesExplorerArrows": false,
-	"[javascript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"[html]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"[css]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
 	"editor.stickyScroll.enabled": false,
-	"[scss]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"[typescriptreact]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
+	// El estilo no vive aquí sino en archivos que también lee el CLI de Prettier:
+	// el .prettierrc de cada proyecto o, si no tiene, el global (format/, enlazado
+	// en ~ y en <disco>\Dev). Así el editor, la terminal y el CI formatean igual.
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.formatOnPaste": true,
 	"mssql.connectionGroups": [
@@ -103,8 +93,13 @@
 			"id": "ROOT"
 		}
 	],
+	// Lo que Prettier no formatea, con su herramienta nativa. shfmt sin flags lee
+	// el .editorconfig del proyecto (sangría y switch_case_indent).
+	"[shellscript]": {
+		"editor.defaultFormatter": "mkhl.shfmt"
+	},
 	"[sql]": {
-		"editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
+		"editor.defaultFormatter": "mtxr.sqltools"
 	},
 	"sonarlint.connectedMode.connections.sonarcloud": [
 		{
@@ -117,25 +112,6 @@
 	"aiCommit.language": "es",
 	"claudeCode.preferredLocation": "panel",
 	"sqltools.highlightQuery": false,
-	"prettier.arrowParens": "always",
-	"prettier.bracketSameLine": false,
-	"prettier.bracketSpacing": true,
-	"prettier.semi": true,
-	"prettier.singleQuote": false,
-	"prettier.jsxSingleQuote": false,
-	"prettier.quoteProps": "as-needed",
-	"prettier.trailingComma": "all",
-	"prettier.singleAttributePerLine": false,
-	"prettier.htmlWhitespaceSensitivity": "css",
-	"prettier.vueIndentScriptAndStyle": false,
-	"prettier.proseWrap": "preserve",
-	"prettier.endOfLine": "lf",
-	"prettier.insertPragma": false,
-	"prettier.printWidth": 100,
-	"prettier.requirePragma": false,
-	"prettier.tabWidth": 2,
-	"prettier.useTabs": true,
-	"prettier.embeddedLanguageFormatting": "auto",
 	"json.schemaDownload.trustedDomains": {
 		"https://developer.microsoft.com/json-schemas/": true,
 		"https://json-schema.org/": true,
@@ -146,8 +122,6 @@
 		"https://ui.shadcn.com/schema.json": true,
 		"https://www.schemastore.org/": true
 	},
-	"Prettier-SQL.tabSizeOverride": 2,
-	"Prettier-SQL.expressionWidth": 100,
 	"mssql.connections": [],
 	"sqltools.results.limit": 100,
 	"mssql.openQueryResultsInTabByDefaultDoNotShowPrompt": true,

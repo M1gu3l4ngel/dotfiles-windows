@@ -12,6 +12,12 @@ function Get-DotfilesLink {
 		[Parameter(Mandatory)][string]$DocumentsPath
 	)
 
+	# Carpeta de trabajo, con la misma regla que Get-WorkDrive de bootstrap.ps1:
+	# los proyectos viven en <disco>\Dev, fuera del perfil. Prettier y EditorConfig
+	# buscan su configuracion subiendo carpetas, asi que el estilo global se enlaza
+	# en el perfil (~) y tambien aqui, o no alcanzaria a los proyectos.
+	$workDev = if (Test-Path 'D:\') { 'D:\Dev' } else { 'C:\Dev' }
+
 	@(
 		@{
 			Source = "$DotfilesRoot\powershell\Microsoft.PowerShell_profile.ps1"
@@ -72,6 +78,28 @@ function Get-DotfilesLink {
 			Source = "$DotfilesRoot\claude\hooks\block-shell-edits.mjs"
 			Target = "$env:USERPROFILE\.claude\hooks\block-shell-edits.mjs"
 			Label  = 'Claude hook block-shell-edits'
+		},
+		# Estilo global (copia de dotfiles-parrot, no un enlace a el): solo cubre
+		# proyectos sin .prettierrc ni .editorconfig propios.
+		@{
+			Source = "$DotfilesRoot\format\prettierrc.json"
+			Target = "$env:USERPROFILE\.prettierrc.json"
+			Label  = 'Prettier global (perfil)'
+		},
+		@{
+			Source = "$DotfilesRoot\format\prettierrc.json"
+			Target = "$workDev\.prettierrc.json"
+			Label  = 'Prettier global (carpeta de trabajo)'
+		},
+		@{
+			Source = "$DotfilesRoot\format\editorconfig"
+			Target = "$env:USERPROFILE\.editorconfig"
+			Label  = 'EditorConfig global (perfil)'
+		},
+		@{
+			Source = "$DotfilesRoot\format\editorconfig"
+			Target = "$workDev\.editorconfig"
+			Label  = 'EditorConfig global (carpeta de trabajo)'
 		}
 	)
 }

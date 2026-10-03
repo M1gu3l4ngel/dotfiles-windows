@@ -41,7 +41,7 @@ sin romper nada (por ejemplo tras un reinicio).
 
 | Paso | Qué instala o configura |
 |---|---|
-| 1 | Set esencial de winget: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, WSL y CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim) |
+| 1 | Set esencial de winget: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, WSL y CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt) |
 | 2 | CaskaydiaCove Nerd Font (descarga verificada por SHA-256) |
 | 3 | Variables de entorno hacia `D:` (o `C:` si no hay `D:`) |
 | 4 | Node (nvm-windows) + pnpm + Claude Code en `<disk>\Dev\npm-global` |
@@ -97,6 +97,7 @@ No desinstala apps ni toca variables de entorno o WSL.
 | `oh-my-posh/` | Tema del prompt (`capr4n`, compartido con Parrot) |
 | `windows-terminal/` | Settings de Windows Terminal |
 | `vscode/` | Settings, keybindings y lista de extensiones |
+| `format/` | Estilo global de Prettier y EditorConfig para proyectos sin el suyo ([docs/formatting.es.md](docs/formatting.es.md)) |
 | `apps/` | Snapshot de referencia de aplicaciones |
 | `docs/` | Guías detalladas |
 | `.claude/rules/` | Convenciones del proyecto (las carga Claude Code) |

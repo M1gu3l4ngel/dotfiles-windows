@@ -16,6 +16,14 @@ Notable changes to the project. The format follows
   `apps/` and `claude/`. `tools/check.ps1` (`tools/check-docs.ps1`) fails if a
   pair is missing, if they differ in structure, links or code blocks, or if
   there are broken links or anchors.
+- Global formatting style (`format/`, a copy of the one in dotfiles-parrot):
+  `.prettierrc.json` and `.editorconfig` linked into the profile and into
+  `<disk>\Dev`, for projects without their own configuration (tabs, double
+  quotes, 100 columns). A project with its own never uses the global one. The
+  repo has its own `.prettierrc.json` and `.prettierignore`.
+- VS Code formats shell with shfmt (`bootstrap.ps1` installs it) and SQL with
+  SQLTools, reads `.editorconfig` (EditorConfig extension) and saves on focus
+  change so that formatting on save always runs.
 - Global Claude Code layer (`claude/`): universal `CLAUDE.md`, status line, a
   hook that enforces editing with Edit/Write, a `settings.json` template
   (secrets in `deny`/`ask`) and `check-budget.mjs`, linked by `install.ps1`.

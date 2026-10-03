@@ -1,0 +1,21 @@
+# .prettierignore
+# Archivos del repo que Prettier no debe reformatear al guardar en VS Code.
+# El estilo del repo esta en .prettierrc.json (tabuladores, como .editorconfig);
+# sin el, el repo heredaria el estilo global de ~/.prettierrc.json.
+
+# ----- MARKDOWN -----
+# Las listas anidadas van con 4 espacios (.claude/rules/documentation.md) y
+# Prettier las realinea a 2. tools/check-docs.ps1 vigila su estructura.
+*.md
+
+# ----- COMPARTIDOS CON DOTFILES-PARROT -----
+# Identicos byte a byte en los dos repos (la capa de Claude Code entera, el
+# tema del prompt y el estilo global): reformatearlos aqui los separaria.
+claude/
+oh-my-posh/capr4n.omp.json
+format/
+
+# ----- GENERADOS -----
+# Salida de `winget export` (curada a mano): conserva el formato de winget para
+# que regenerarlo no produzca diffs de formato.
+apps/winget-dev.json

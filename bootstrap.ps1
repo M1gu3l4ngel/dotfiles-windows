@@ -44,7 +44,7 @@ $WingetEssential = @(
 	'JanDeDobbeleer.OhMyPosh', 'GnuPG.Gpg4win', 'Rustlang.Rustup', 'Python.Python.3.13',
 	'Docker.DockerDesktop', 'CoreyButler.NVMforWindows',
 	'junegunn.fzf', 'BurntSushi.ripgrep.MSVC', 'sharkdp.bat', 'sharkdp.fd', 'jqlang.jq',
-	'lsd-rs.lsd', 'Neovim.Neovim'
+	'lsd-rs.lsd', 'Neovim.Neovim', 'mvdan.shfmt'
 )
 
 # --- Fuentes Nerd ---

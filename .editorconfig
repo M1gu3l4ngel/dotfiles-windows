@@ -19,6 +19,15 @@ indent_size = 4
 trim_trailing_whitespace = false
 
 # ----- SHELL (Git Bash): espacios, como el estilo actual de los .bashrc -----
+# switch_case_indent es clave propia de shfmt: indenta los `case` (equivale a
+# `-ci`). shfmt solo lee .editorconfig cuando se ejecuta sin flags, como hace la
+# extension mkhl.shfmt de VS Code.
 [{.bashrc,.bash_profile,*.sh}]
 indent_style = space
 indent_size = 4
+switch_case_indent = true
+
+# ----- YAML: la especificacion prohibe tabuladores para indentar -----
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2

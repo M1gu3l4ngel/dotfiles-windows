@@ -4,7 +4,7 @@
 # Solo para shells interactivos: evita que oh-my-posh interfiera en scripts.
 case $- in
     *i*) ;;
-      *) return;;
+    *) return ;;
 esac
 
 # oh-my-posh — mismo tema que PowerShell y WSL. La ubicación del repo se deriva

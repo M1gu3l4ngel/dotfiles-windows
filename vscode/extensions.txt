@@ -4,6 +4,7 @@ bradlc.vscode-tailwindcss
 burkeholland.simple-react-snippets
 christian-kohler.path-intellisense
 ecmel.vscode-html-css
+editorconfig.editorconfig
 esbenp.prettier-vscode
 exodiusstudios.comment-anchors
 fabiospampinato.vscode-monokai-night
@@ -15,6 +16,7 @@ mechatroner.rainbow-csv
 mhutchie.git-graph
 miguelsolorio.fluent-icons
 miguelsolorio.symbols
+mkhl.shfmt
 ms-ceintl.vscode-language-pack-es
 ms-dotnettools.vscode-dotnet-runtime
 ms-mssql.mssql
