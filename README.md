@@ -129,6 +129,18 @@ It asks for the name (blank Enter = your real username) and saves it in the
 `POSH_NAME` variable, which the theme reads. It is purely decorative: it does not
 affect paths, commands or git.
 
+For a single terminal, without saving it (for example, for a screenshot), set
+the variable in that session. The prompt and the tab title change on the next
+line, and everything reverts when you close it:
+
+```powershell
+$env:POSH_NAME = 'demo-user'
+```
+
+In Git Bash: `export POSH_NAME=demo-user`. To go back to your username in the
+same terminal: `Remove-Item Env:POSH_NAME` (PowerShell) or `unset POSH_NAME`
+(Git Bash).
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |

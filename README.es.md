@@ -128,6 +128,18 @@ Te pregunta el nombre (Enter en blanco = tu usuario real) y lo guarda en la
 variable `POSH_NAME`, que el tema lee. Es puramente decorativo: no afecta rutas,
 comandos ni git.
 
+Para una sola terminal, sin guardarlo (por ejemplo, para una captura), pon la
+variable en esa sesión. El prompt y el título de la pestaña cambian en la
+siguiente línea, y todo vuelve a la normalidad al cerrarla:
+
+```powershell
+$env:POSH_NAME = 'demo-user'
+```
+
+En Git Bash: `export POSH_NAME=demo-user`. Para volver a tu usuario en la misma
+terminal: `Remove-Item Env:POSH_NAME` (PowerShell) o `unset POSH_NAME`
+(Git Bash).
+
 ## Solución de problemas
 
 | Síntoma | Causa | Solución |

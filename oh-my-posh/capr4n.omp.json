@@ -1,6 +1,6 @@
 {
 	"$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
-	"console_title_template": "{{if .Root}} ⚡ {{end}}{{.UserName}} ➔ 📁{{.Folder}}",
+	"console_title_template": "{{if .Root}} ⚡ {{end}}{{ if .Env.POSH_NAME }}{{ .Env.POSH_NAME }}{{ else }}{{ .UserName }}{{ end }} ➔ 📁{{ if eq .PWD \"~\" }}~{{ else }}{{ .Folder }}{{ end }}",
 	"blocks": [
 		{
 			"type": "prompt",
@@ -53,7 +53,7 @@
 						"fetch_status": true,
 						"fetch_upstream_icon": true
 					},
-					"template": " {{ .HEAD }}{{ if .Working.Changed }} {{ end }}{{ if .Staging.Changed }} ✚{{ end }}{{ if gt .Ahead 0 }} ↑ {{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ↓ {{ .Behind }}{{ end }} ",
+					"template": " {{ .HEAD }}{{ if .Working.Changed }} \uf044{{ end }}{{ if .Staging.Changed }} ✚{{ end }}{{ if gt .Ahead 0 }} ↑ {{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ↓ {{ .Behind }}{{ end }} ",
 					"foreground": "#193549",
 					"powerline_symbol": "\ue0b0",
 					"background": "#95ffa4",

@@ -50,6 +50,12 @@ Cambios relevantes del proyecto. El formato sigue
 - Perfil de PowerShell ~48% más rápido: Terminal-Icons se carga diferido (OnIdle).
 - Prompt (oh-my-posh): texto oscuro uniforme, consistente en VS Code, Windows
   Terminal y Parrot.
+- Tema del prompt sincronizado con dotfiles-parrot: el título de la pestaña usa
+  `POSH_NAME` como el prompt y muestra `~` en la carpeta de inicio en vez de su
+  nombre (las capturas ya no enseñan el usuario real) y el
+  icono de cambios de git es el escape `` en vez de un glifo literal. El
+  README explica cómo cambiar el nombre en una sola terminal (`$env:POSH_NAME`),
+  como en Parrot.
 - Scripts `.ps1` en ASCII puro (sin BOM) para compatibilidad con PowerShell 5.1.
 - `install.ps1`: backup con fecha si ya existe uno, validación de capacidad de
   symlink antes de tocar nada, y comparación de rutas robusta.
