@@ -23,6 +23,13 @@
           { "type": "command", "command": "node REEMPLAZA_RUTA_HOME/.claude/hooks/block-shell-edits.mjs", "timeout": 10 }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node REEMPLAZA_RUTA_HOME/.claude/hooks/reply-in-spanish.mjs", "timeout": 10 }
+        ]
+      }
     ]
   },
   "autoCompactWindow": 400000,

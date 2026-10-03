@@ -16,6 +16,7 @@ const BUDGETS = [
   { file: 'CLAUDE.md', maxLines: 50 },
   { file: 'statusline.mjs', maxLines: 120 },
   { file: 'hooks/block-shell-edits.mjs', maxLines: 160 },
+  { file: 'hooks/reply-in-spanish.mjs', maxLines: 120 },
 ];
 
 let failed = false;

@@ -79,6 +79,11 @@ function Get-DotfilesLink {
 			Target = "$env:USERPROFILE\.claude\hooks\block-shell-edits.mjs"
 			Label  = 'Claude hook block-shell-edits'
 		},
+		@{
+			Source = "$DotfilesRoot\claude\hooks\reply-in-spanish.mjs"
+			Target = "$env:USERPROFILE\.claude\hooks\reply-in-spanish.mjs"
+			Label  = 'Claude hook reply-in-spanish'
+		},
 		# Estilo global (copia de dotfiles-parrot, no un enlace a el): solo cubre
 		# proyectos sin .prettierrc ni .editorconfig propios.
 		@{
