@@ -10,6 +10,10 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- Task artifact: `claude/tasks-artifact.template.html` (fixed design) and the
+  `CLAUDE.md` rule that asks for it on multi-block work.
+- README: "Keeping another PC up to date" section (`git pull`, and when to
+  re-run `install.ps1` or `bootstrap.ps1`).
 - Full documentation in English and Spanish: each `X.md` document (English, the
   one GitHub shows) has its `X.es.md` pair, with a language selector. This
   covers the README, `CONTRIBUTING`, this changelog, `docs/` and the READMEs of

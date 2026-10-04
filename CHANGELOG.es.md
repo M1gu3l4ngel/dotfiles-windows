@@ -10,6 +10,10 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Añadido
 
+- Artefacto de tareas: `claude/tasks-artifact.template.html` (diseño fijo) y la
+  regla de `CLAUDE.md` que lo pide en los trabajos de varios bloques.
+- README: sección "Mantener otra PC al día" (`git pull`, y cuándo volver a
+  correr `install.ps1` o `bootstrap.ps1`).
 - Documentación completa en inglés y español: cada documento `X.md` (inglés, el
   que muestra GitHub) tiene su pareja `X.es.md`, con selector de idioma. Incluye
   el README, `CONTRIBUTING`, este changelog, `docs/` y los README de `apps/` y

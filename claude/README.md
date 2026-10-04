@@ -16,6 +16,7 @@ specific to a machine stays local (it is not versioned).
 | `hooks/reply-in-spanish.mjs` | `~/.claude/hooks/reply-in-spanish.mjs` | `Stop` hook that blocks a reply written in English and asks to redo it in Spanish (ignores code, paths and identifiers). Portable Windows/Linux |
 | `settings.template.json` | — (template) | Portable base for `settings.json`: generic secret `deny`/`ask` rules + hook registration + `skillOverrides` |
 | `check-budget.mjs` | — (script) | Budget guard: counts the lines of `CLAUDE.md`/`statusline`/`hook` and fails if they exceed it. `node claude/check-budget.mjs`. Portable |
+| `tasks-artifact.template.html` | — (template) | Fixed design of the task artifact that `CLAUDE.md` asks for on multi-block work: Claude copies it, fills in the content and does not redesign it |
 
 ## What is NOT versioned (stays local, per machine)
 

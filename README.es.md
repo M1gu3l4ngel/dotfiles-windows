@@ -109,6 +109,28 @@ usuario, así que clonarlo y correr `bootstrap.ps1` deja otra PC con el mismo
 entorno. Las apps personales y los secretos se restauran aparte (imagen del
 sistema y claves nuevas).
 
+## Mantener otra PC al día
+
+Con una PC ya montada, llevarle un cambio hecho en otra es un `git pull`. En la
+PC donde hiciste el cambio, haz commit y push. En la otra:
+
+```powershell
+cd $env:USERPROFILE\dotfiles
+git pull
+```
+
+Las configuraciones son symlinks hacia el repo, así que lo que traes se aplica
+al momento (reabre la terminal o VS Code para verlo). Solo dos casos piden un
+paso más, y los dos scripts son idempotentes:
+
+- El pull cambió `lib/links.ps1` (hay enlaces nuevos): ejecuta `.\install.ps1`.
+- El pull cambió `bootstrap.ps1` (hay herramientas nuevas): ejecuta
+  `.\bootstrap.ps1`, que también corre `install.ps1`.
+
+Lo que no se versiona no viaja: las claves, los archivos locales de Claude Code
+(`settings.json`, `entorno.md`) y `POSH_NAME`. Las extensiones nuevas de VS Code
+se instalan con el comando de los pasos manuales.
+
 ## Snapshot de aplicaciones
 
 `apps/winget-dev.json` lista las apps de entorno/desarrollo, reinstalables con
