@@ -23,7 +23,7 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 - Sin `.git` → copia y verifica recuento + bytes antes de borrar. `Remove-Item -Force` no usa papelera y atraviesa junctions (ver `entorno.md`).
 
 ## Interacción
-- Commits: sugiere **1 commit de 1 línea** (Conventional Commits); **nunca ejecutes git tú** — el usuario commitea y pushea.
+- Commits: sugiere **1 commit de 1 línea** (Conventional Commits) que diga qué cambió en el repo, sin nombres del plan de trabajo ("tanda", "bloque", "fase"); **nunca ejecutes git tú** — el usuario commitea y pushea.
 - Un paso a la vez al depurar; intervención mínima (si dice "déjalo así", para). Sin saludos ni despedidas: termina en lo sustantivo.
 - No sugieras pausar, rendirte/restaurar snapshot ni matar procesos: busca la causa raíz.
 - Comandos cortos y atómicos (no cadenas `&&` largas); di siempre en qué carpeta ejecutar.
@@ -31,10 +31,16 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 ## Artefacto de tareas
 - Un trabajo de varios bloques empieza creando (o reutilizando) su artefacto de tareas, antes de tocar código, desde `~/dotfiles/claude/tasks-artifact.template.html`: se rellena el contenido y **no se rediseña**.
 - Se republica al cerrar cada bloque o al cambiar las tareas del repo, que siguen siendo la fuente de verdad. Lo que le toca probar al usuario no se quita hasta que diga que lo probó.
+- **«En curso» marca solo lo que se está haciendo ahora.** Al empezar una tarea se marca su grupo y se desmarca el anterior, en la misma publicación; nunca queda la marca en un grupo que no se está tocando ni un trabajo en marcha sin ella.
+- **«Por probar» se llena al cerrar cada tarea** con lo que el usuario debe ver en el navegador, un ítem por comprobación; no va en notas sueltas de otros grupos.
 
 ## Formato
 - El estilo de un proyecto es su `.prettierrc` y su `.editorconfig`; los globales (dotfiles, `format/`, enlazados en `~` y en `D:\Dev`) solo cubren proyectos sin configuración propia. Al crear un proyecto compartido o con CI, dale la suya.
-- Formatea solo los archivos que editaste, con el Prettier del proyecto (`pnpm exec prettier --write <archivos>`), nunca con un glob: reformatear archivos ajenos al cambio ensucia el diff y rompe los generados.
+- Formatea solo los archivos que editaste, con el Prettier del proyecto (`pnpm exec prettier --write <archivos>`), nunca con un glob ni una lista calculada (`$(…)`, `xargs`): reformatear archivos ajenos al cambio ensucia el diff y rompe los generados.
+
+## Nombres
+- Un nombre es un contrato: quien lo lee decide qué hace sin abrirlo. Un efecto que el nombre no anuncia se arregla renombrando, no con un comentario. Si el proyecto tiene su propia regla de nombres, manda la del proyecto.
+- `get` devuelve el valor o lanza, nunca vacío; lo que puede no existir es `find`. Una pregunta (`is`, `has`, `can`) devuelve booleano y no cambia nada.
 
 ## pnpm
 - No cambies el `packageManager` de un proyecto sin pedirlo (reescribe el lockfile y desincroniza el CI). No toques los `overrides` de `pnpm-workspace.yaml`: tapan CVEs.

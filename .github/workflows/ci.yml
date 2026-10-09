@@ -40,7 +40,9 @@ jobs:
           Install-Module -Name PSScriptAnalyzer -Scope CurrentUser -Force
 
       # gitleaks no viene en el runner: se descarga en version fijada y se verifica
-      # su SHA-256 antes de usarlo.
+      # su SHA-256 antes de usarlo. Va a la carpeta temporal del runner, fuera del
+      # repo: el zip trae un README.md, y dentro del repo el check de documentacion
+      # bilingue lo toma por un documento sin pareja en espanol.
       - name: Instalar gitleaks
         shell: pwsh
         env:
@@ -48,11 +50,13 @@ jobs:
           GITLEAKS_SHA256: "d29144deff3a68aa93ced33dddf84b7fdc26070add4aa0f4513094c8332afc4e"
         run: |
           $url = "https://github.com/gitleaks/gitleaks/releases/download/v${env:GITLEAKS_VERSION}/gitleaks_${env:GITLEAKS_VERSION}_windows_x64.zip"
-          Invoke-WebRequest -Uri $url -OutFile gitleaks.zip
-          $hash = (Get-FileHash gitleaks.zip -Algorithm SHA256).Hash.ToLower()
+          $zip = Join-Path $env:RUNNER_TEMP 'gitleaks.zip'
+          $bin = Join-Path $env:RUNNER_TEMP 'gitleaks-bin'
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
           if ($hash -ne $env:GITLEAKS_SHA256) { throw "SHA-256 de gitleaks no coincide" }
-          Expand-Archive -Path gitleaks.zip -DestinationPath gitleaks-bin -Force
-          Add-Content -Path $env:GITHUB_PATH -Value "$PWD\gitleaks-bin"
+          Expand-Archive -Path $zip -DestinationPath $bin -Force
+          Add-Content -Path $env:GITHUB_PATH -Value $bin
 
       - name: Ejecutar comprobaciones
         shell: pwsh
