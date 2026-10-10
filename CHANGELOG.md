@@ -10,6 +10,14 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- Global hook `claude/hooks/block-forbidden-commands.mjs`: blocks write git,
+  `prettier --write` with a glob and `robocopy /MIR` without `/XJ`, and asks
+  before a recursive delete outside a temporary folder. Linked by `install.ps1`
+  and registered in `settings.template.json`.
+- Global `CLAUDE.md`: context hygiene, delegation and findings rules (budget
+  raised to 60 lines); `settings.template.json` caps Bash and MCP output.
+- `.github/dependabot.yml`: a monthly pull request with the updates of the CI
+  actions, which are pinned by commit SHA.
 - Task artifact: `claude/tasks-artifact.template.html` (fixed design) and the
   `CLAUDE.md` rule that asks for it on multi-block work.
 - README: "Keeping another PC up to date" section (`git pull`, and when to

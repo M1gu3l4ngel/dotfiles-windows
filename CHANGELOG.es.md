@@ -10,6 +10,15 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Añadido
 
+- Hook global `claude/hooks/block-forbidden-commands.mjs`: bloquea el git de
+  escritura, `prettier --write` con un glob y `robocopy /MIR` sin `/XJ`, y
+  pregunta antes de un borrado recursivo fuera de un temporal. Lo enlaza
+  `install.ps1` y se registra en `settings.template.json`.
+- `CLAUDE.md` global: reglas de higiene de contexto, delegación y hallazgos
+  (presupuesto subido a 60 líneas); `settings.template.json` limita la salida
+  de Bash y de MCP.
+- `.github/dependabot.yml`: un pull request mensual con las subidas de las
+  acciones del CI, que van fijadas por SHA de commit.
 - Artefacto de tareas: `claude/tasks-artifact.template.html` (diseño fijo) y la
   regla de `CLAUDE.md` que lo pide en los trabajos de varios bloques.
 - README: sección "Mantener otra PC al día" (`git pull`, y cuándo volver a

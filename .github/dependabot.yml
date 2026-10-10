@@ -1,0 +1,25 @@
+# .github/dependabot.yml
+# Mantiene al dia las acciones del workflow de CI.
+#
+# Las acciones van fijadas por SHA de commit y no por etiqueta: una etiqueta puede
+# moverse a otro codigo sin que este repo cambie una linea; un SHA no. El precio es
+# que nadie se entera de las versiones nuevas, y esto lo cubre: una vez al mes abre
+# UN pull request con todas las subidas juntas, y sube a la vez el SHA y el
+# comentario de version que lo acompana.
+#
+# `cooldown` deja pasar siete dias desde que se publica una version antes de
+# proponerla: es la ventana en la que una publicacion comprometida suele detectarse
+# y retirarse.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(ci)"

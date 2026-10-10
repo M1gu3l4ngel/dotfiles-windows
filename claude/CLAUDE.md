@@ -28,6 +28,14 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 - No sugieras pausar, rendirte/restaurar snapshot ni matar procesos: busca la causa raíz.
 - Comandos cortos y atómicos (no cadenas `&&` largas); di siempre en qué carpeta ejecutar.
 
+## Contexto y delegación
+- Búsquedas y lecturas independientes en lote; `Grep` antes que `Read`, y `Read` con `offset`/`limit` cuando ya sabes qué parte necesitas. De tests, builds y checks se lee el cierre; la salida entera, solo si falla.
+- El trabajo se hace en la sesión principal. Un subagente solo si el usuario lo pide y nunca para implementar: solo lectura. Su encargo lleva las rutas que puede leer, las reglas que le aplican (copiadas), cuándo ha terminado y el formato y el tope de la respuesta.
+
+## Hallazgos
+- Al empezar en una zona se lee lo que hay y se avisa lo que está mal aunque nadie lo pida (o «sin hallazgos»): una línea por hallazgo, con archivo, qué pasa y qué se recomienda. Lo pequeño se arregla en el mismo cambio y se dice; lo demás se propone y decide el usuario.
+- Saber algo y no decirlo es el fallo: un hueco de verificación o una limitación conocida se avisa la primera vez que aparece, y al cerrar se repite lo que quedó sin resolver.
+
 ## Artefacto de tareas
 - Un trabajo de varios bloques empieza creando (o reutilizando) su artefacto de tareas, antes de tocar código, desde `~/dotfiles/claude/tasks-artifact.template.html`: se rellena el contenido y **no se rediseña**.
 - Se republica al cerrar cada bloque o al cambiar las tareas del repo, que siguen siendo la fuente de verdad. Lo que le toca probar al usuario no se quita hasta que diga que lo probó.

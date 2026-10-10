@@ -80,6 +80,11 @@ function Get-DotfilesLink {
 			Label  = 'Claude hook block-shell-edits'
 		},
 		@{
+			Source = "$DotfilesRoot\claude\hooks\block-forbidden-commands.mjs"
+			Target = "$env:USERPROFILE\.claude\hooks\block-forbidden-commands.mjs"
+			Label  = 'Claude hook block-forbidden-commands'
+		},
+		@{
 			Source = "$DotfilesRoot\claude\hooks\reply-in-spanish.mjs"
 			Target = "$env:USERPROFILE\.claude\hooks\reply-in-spanish.mjs"
 			Label  = 'Claude hook reply-in-spanish'
