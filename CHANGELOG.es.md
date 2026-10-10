@@ -10,6 +10,11 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Añadido
 
+- `install.ps1` crea `~/.claude/settings.json` desde la plantilla cuando la
+  máquina no tiene uno, con la ruta real del home, así que los hooks corren en
+  una PC nueva sin editar nada. Si el archivo existe no se toca y el instalador
+  avisa de los hooks que faltan por registrar.
+- Estilo global de formato: los `.jsonc` se formatean sin coma final.
 - Hook global `claude/hooks/block-forbidden-commands.mjs`: bloquea el git de
   escritura, `prettier --write` con un glob y `robocopy /MIR` sin `/XJ`, y
   pregunta antes de un borrado recursivo fuera de un temporal. Lo enlaza

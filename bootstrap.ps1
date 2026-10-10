@@ -255,7 +255,7 @@ function Invoke-Step6Git {
 
 function Invoke-Step7Symlink {
 	Step 'Symlinks de configuracion (install.ps1)'
-	if ($DryRun) { Would 'ejecutar install.ps1 (enlaza perfiles, WT, VS Code, oh-my-posh, bash)'; return }
+	if ($DryRun) { Would 'ejecutar install.ps1 (enlaza perfiles, WT, VS Code, oh-my-posh, bash, Claude Code; crea su settings.json si falta)'; return }
 	& "$DotfilesRoot\install.ps1"
 }
 
@@ -273,7 +273,7 @@ function Invoke-Step8Manual {
 		'     git config --global user.signingkey <fingerprint>',
 		'     git config --global commit.gpgsign true',
 		'     git config --global gpg.program "C:\Program Files\GnuPG\bin\gpg.exe"',
-		'     Sube la clave publica a GitHub. Detalle en GIT-SIGNING.md.',
+		'     Sube la clave publica a GitHub. Detalle en docs/gpg-signing.es.md.',
 		'',
 		'4. Extensiones de VS Code:'
 	)

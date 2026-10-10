@@ -32,11 +32,14 @@ specific to a machine stays local (it is not versioned).
 
 1. Clone the repo and run the installer: it links the files above into `~/.claude/`.
     - Windows: `./install.ps1` (needs Developer Mode or admin for symlinks).
-2. Create `~/.claude/settings.json` from `settings.template.json`:
-    - Replace `REEMPLAZA_RUTA_HOME` with the real home (Windows `C:/Users/<user>`,
-      Linux `/home/<user>`). The hook paths are quoted, so a home with spaces works.
-    - Edit this file yourself: a linked hook does not run until it is registered
-      here, and auto mode does not let Claude change its own settings.
+2. `~/.claude/settings.json` comes from `settings.template.json`:
+    - On Windows `install.ps1` creates it if the machine does not have one, with
+      `REEMPLAZA_RUTA_HOME` replaced by the real home (`C:/Users/<user>`). The hook
+      paths are quoted, so a home with spaces works.
+    - If it already exists, the installer never touches it: it only warns about the
+      template hooks that are not registered yet. Copy their block yourself: a linked
+      hook does not run until it is registered here, and auto mode does not let Claude
+      change its own settings.
     - Optional (more reliable on Windows): also add **absolute** paths to your
       secrets, for example `Read(//d/Dev/security-keys/**)`, next to the generic `**/`
       patterns.

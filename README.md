@@ -47,7 +47,7 @@ without breaking anything (for example after a reboot).
 | 4 | Node (nvm-windows) + pnpm + Claude Code in `<disk>\Dev\npm-global` |
 | 5 | WSL Ubuntu (requires a reboot) |
 | 6 | git: name, noreply email and defaults |
-| 7 | Configuration symlinks (`install.ps1`) |
+| 7 | Configuration symlinks, and the Claude Code `settings.json` if the machine has none (`install.ps1`) |
 | 8 | Shows the manual steps that involve secrets (GPG/SSH) |
 
 It only installs the **environment**. Personal apps are left untouched (see `apps/`).
@@ -129,8 +129,11 @@ step, and both scripts are idempotent:
   which also runs `install.ps1`.
 
 What is not versioned does not travel: keys, the local Claude Code files
-(`settings.json`, `entorno.md`) and `POSH_NAME`. New VS Code extensions are
-installed with the command in the manual steps.
+(`settings.json`, `entorno.md`) and `POSH_NAME`. `install.ps1` creates that
+`settings.json` only when it is missing; if a pull brings a new hook, the
+installer warns that it is not registered yet and you copy its block from
+`claude/settings.template.json`. New VS Code extensions are installed with the
+command in the manual steps.
 
 ## Application snapshot
 

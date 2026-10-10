@@ -1,6 +1,7 @@
 # install.ps1
 # Instalador idempotente de dotfiles-windows.
-# Crea symlinks desde las ubicaciones estandar hacia los archivos del repo.
+# Crea symlinks desde las ubicaciones estandar hacia los archivos del repo, y el
+# settings.json de Claude Code desde su plantilla si la maquina aun no lo tiene.
 # Antes de cualquier sobreescritura hace backup con sufijo .pre-dotfiles.bak
 # (con fecha si ya existe uno, para no perder ninguna version).
 #
@@ -10,7 +11,7 @@
 #   - PowerShell 5.1 o superior.
 #
 # Uso:
-#   cd ~\dotfiles-windows
+#   cd ~\dotfiles
 #   .\install.ps1
 
 #Requires -Version 5.1
@@ -99,6 +100,44 @@ function Install-Symlink {
 	}
 }
 
+# Claude Code solo ejecuta un hook si esta registrado en ~/.claude/settings.json.
+# Ese archivo es local (lleva la ruta del usuario y lo que Claude Code escribe en
+# cada maquina), asi que no se enlaza: si no existe, se crea desde la plantilla
+# con el home de esta maquina; si existe, no se toca y solo se avisa de los hooks
+# de la plantilla que le faltan por registrar.
+function Install-ClaudeSetting {
+	param(
+		[string]$TemplatePath,
+		[string]$SettingsPath
+	)
+
+	Write-Host ""
+	Write-Host "[Claude settings.json]" -ForegroundColor Magenta
+	$template = [IO.File]::ReadAllText($TemplatePath, [Text.Encoding]::UTF8)
+
+	if (-not (Test-Path $SettingsPath)) {
+		$settingsDir = Split-Path $SettingsPath -Parent
+		if (-not (Test-Path $settingsDir)) { New-Item -ItemType Directory -Path $settingsDir -Force | Out-Null }
+		# JSON con barras normales: una barra invertida habria que escaparla.
+		$content = $template.Replace('REEMPLAZA_RUTA_HOME', ($env:USERPROFILE -replace '\\', '/'))
+		# UTF-8 sin BOM: Claude Code no lee el archivo si empieza por un BOM.
+		[IO.File]::WriteAllText($SettingsPath, $content, (New-Object Text.UTF8Encoding $false))
+		Write-Host "  Creado desde la plantilla: $SettingsPath" -ForegroundColor Green
+		return
+	}
+
+	$current = [IO.File]::ReadAllText($SettingsPath, [Text.Encoding]::UTF8)
+	$missing = @([regex]::Matches($template, 'hooks/([\w-]+\.mjs)') |
+			ForEach-Object { $_.Groups[1].Value } |
+			Where-Object { $current -notmatch [regex]::Escape($_) })
+	if ($missing.Count -eq 0) {
+		Write-Host "  Ya existe, con los hooks de la plantilla registrados - skip" -ForegroundColor Green
+		return
+	}
+	Write-Warning "  Ya existe y no se toca, pero le faltan hooks por registrar: $($missing -join ', ')"
+	Write-Warning "  Copia su bloque desde $TemplatePath (ver claude/README.es.md)."
+}
+
 Write-Host "=== Instalador dotfiles-windows ===" -ForegroundColor Magenta
 Write-Host "Root del repo: $DotfilesRoot" -ForegroundColor Gray
 
@@ -111,6 +150,9 @@ if (-not (Test-SymlinkCapability)) {
 foreach ($link in $Links) {
 	Install-Symlink -Source $link.Source -Target $link.Target -Label $link.Label
 }
+
+Install-ClaudeSetting -TemplatePath "$DotfilesRoot\claude\settings.template.json" `
+	-SettingsPath "$env:USERPROFILE\.claude\settings.json"
 
 Write-Host ""
 Write-Host "=== Instalacion completa ===" -ForegroundColor Magenta

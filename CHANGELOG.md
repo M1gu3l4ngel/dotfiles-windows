@@ -10,6 +10,11 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- `install.ps1` creates `~/.claude/settings.json` from the template when the
+  machine has none, with the real home path, so the hooks run on a new PC
+  without editing anything. If the file exists it is left alone and the
+  installer warns about the hooks that are not registered yet.
+- Global formatting style: `.jsonc` files are formatted without trailing commas.
 - Global hook `claude/hooks/block-forbidden-commands.mjs`: blocks write git,
   `prettier --write` with a glob and `robocopy /MIR` without `/XJ`, and asks
   before a recursive delete outside a temporary folder. Linked by `install.ps1`

@@ -31,12 +31,14 @@ máquina se queda local (no se versiona).
 
 1. Clonar el repo y correr el instalador: enlaza los archivos de arriba a `~/.claude/`.
     - Windows: `./install.ps1` (necesita Developer Mode o admin para symlinks).
-2. Crear `~/.claude/settings.json` a partir de `settings.template.json`:
-    - Reemplazar `REEMPLAZA_RUTA_HOME` por el home real (Windows `C:/Users/<user>`,
-      Linux `/home/<user>`). Las rutas de los hooks van entre comillas, así que un home
-      con espacios funciona.
-    - Edita este archivo tú: un hook enlazado no se ejecuta hasta registrarlo aquí, y el
-      modo automático no deja que Claude cambie su propia configuración.
+2. `~/.claude/settings.json` sale de `settings.template.json`:
+    - En Windows lo crea `install.ps1` si la máquina no tiene uno, con
+      `REEMPLAZA_RUTA_HOME` cambiado por el home real (`C:/Users/<user>`). Las rutas de
+      los hooks van entre comillas, así que un home con espacios funciona.
+    - Si ya existe, el instalador nunca lo toca: solo avisa de los hooks de la plantilla
+      que faltan por registrar. Copia su bloque tú: un hook enlazado no se ejecuta hasta
+      registrarlo aquí, y el modo automático no deja que Claude cambie su propia
+      configuración.
     - Opcional (más fiable en Windows): añadir también rutas **absolutas** de tus secretos,
       p. ej. `Read(//d/Dev/security-keys/**)`, junto a los patrones `**/` genéricos.
 3. Crear tu `~/.claude/entorno.md` local con el detalle de esa máquina (no se versiona).

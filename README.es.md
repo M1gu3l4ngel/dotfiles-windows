@@ -47,7 +47,7 @@ sin romper nada (por ejemplo tras un reinicio).
 | 4 | Node (nvm-windows) + pnpm + Claude Code en `<disk>\Dev\npm-global` |
 | 5 | WSL Ubuntu (requiere reinicio) |
 | 6 | git: nombre, email noreply y defaults |
-| 7 | Symlinks de configuración (`install.ps1`) |
+| 7 | Symlinks de configuración, y el `settings.json` de Claude Code si la máquina no tiene uno (`install.ps1`) |
 | 8 | Muestra los pasos manuales que implican secretos (GPG/SSH) |
 
 Solo instala el **entorno**. Las apps personales no se tocan (ver `apps/`).
@@ -128,8 +128,11 @@ paso más, y los dos scripts son idempotentes:
   `.\bootstrap.ps1`, que también corre `install.ps1`.
 
 Lo que no se versiona no viaja: las claves, los archivos locales de Claude Code
-(`settings.json`, `entorno.md`) y `POSH_NAME`. Las extensiones nuevas de VS Code
-se instalan con el comando de los pasos manuales.
+(`settings.json`, `entorno.md`) y `POSH_NAME`. `install.ps1` crea ese
+`settings.json` solo cuando falta; si un pull trae un hook nuevo, el instalador
+avisa de que aún no está registrado y copias su bloque desde
+`claude/settings.template.json`. Las extensiones nuevas de VS Code se instalan
+con el comando de los pasos manuales.
 
 ## Snapshot de aplicaciones
 
