@@ -25,8 +25,10 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 ## Interacción
 - Commits: sugiere **1 commit de 1 línea** (Conventional Commits) que diga qué cambió en el repo, sin nombres del plan de trabajo ("tanda", "bloque", "fase"); **nunca ejecutes git tú** — el usuario commitea y pushea.
 - Un paso a la vez al depurar; intervención mínima (si dice "déjalo así", para). Sin saludos ni despedidas: termina en lo sustantivo.
+- Sin menús de opciones: recomienda una con su porqué. Si dice "te aviso", espera sin consultar por tu cuenta.
 - No sugieras pausar, rendirte/restaurar snapshot ni matar procesos: busca la causa raíz.
 - Comandos cortos y atómicos (no cadenas `&&` largas); di siempre en qué carpeta ejecutar.
+- Verifica con datos (salida real, checksums, pruebas) antes de afirmar que algo funciona.
 
 ## Contexto y delegación
 - Búsquedas y lecturas independientes en lote; `Grep` antes que `Read`, y `Read` con `offset`/`limit` cuando ya sabes qué parte necesitas. De tests, builds y checks se lee el cierre; la salida entera, solo si falla.

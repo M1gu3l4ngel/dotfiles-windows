@@ -36,6 +36,7 @@ function redirectTargets(command) {
 	for (const match of unquoted(command).matchAll(/(\d|&)?>>?/g)) {
 		// El destino se lee del original: en la version tapada su texto entre comillas no existe.
 		const rest = command.slice(match.index + match[0].length);
+		// Sin `(` ni `)`: en `$(cmd 2>/dev/null)` el `)` cierra la sustitucion, no es del nombre.
 		const target = rest.match(/^\s*(&\d|"[^"]*"|'[^']*'|[^\s;|&<>()]+)?/)?.[1] ?? "";
 		if (target.startsWith("&")) continue;
 		targets.push(target.replaceAll(/^["']|["']$/g, ""));
