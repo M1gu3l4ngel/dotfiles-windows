@@ -29,11 +29,14 @@ máquina se queda local (no se versiona).
 
 ## Montar en una máquina nueva (Windows o Linux)
 
-1. Clonar el repo y correr el instalador: enlaza los 3 archivos de arriba a `~/.claude/`.
+1. Clonar el repo y correr el instalador: enlaza los archivos de arriba a `~/.claude/`.
     - Windows: `./install.ps1` (necesita Developer Mode o admin para symlinks).
 2. Crear `~/.claude/settings.json` a partir de `settings.template.json`:
     - Reemplazar `REEMPLAZA_RUTA_HOME` por el home real (Windows `C:/Users/<user>`,
-      Linux `/home/<user>`).
+      Linux `/home/<user>`). Las rutas de los hooks van entre comillas, así que un home
+      con espacios funciona.
+    - Edita este archivo tú: un hook enlazado no se ejecuta hasta registrarlo aquí, y el
+      modo automático no deja que Claude cambie su propia configuración.
     - Opcional (más fiable en Windows): añadir también rutas **absolutas** de tus secretos,
       p. ej. `Read(//d/Dev/security-keys/**)`, junto a los patrones `**/` genéricos.
 3. Crear tu `~/.claude/entorno.md` local con el detalle de esa máquina (no se versiona).

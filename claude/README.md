@@ -30,11 +30,13 @@ specific to a machine stays local (it is not versioned).
 
 ## Setting up a new machine (Windows or Linux)
 
-1. Clone the repo and run the installer: it links the 3 files above into `~/.claude/`.
+1. Clone the repo and run the installer: it links the files above into `~/.claude/`.
     - Windows: `./install.ps1` (needs Developer Mode or admin for symlinks).
 2. Create `~/.claude/settings.json` from `settings.template.json`:
     - Replace `REEMPLAZA_RUTA_HOME` with the real home (Windows `C:/Users/<user>`,
-      Linux `/home/<user>`).
+      Linux `/home/<user>`). The hook paths are quoted, so a home with spaces works.
+    - Edit this file yourself: a linked hook does not run until it is registered
+      here, and auto mode does not let Claude change its own settings.
     - Optional (more reliable on Windows): also add **absolute** paths to your
       secrets, for example `Read(//d/Dev/security-keys/**)`, next to the generic `**/`
       patterns.
