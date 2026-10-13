@@ -221,13 +221,16 @@ function Invoke-Step4Node($drive) {
 		Warn 'Cierra y reabre PowerShell y vuelve a correr bootstrap.ps1 para completar Node.'
 		return
 	}
-	if ($DryRun) { Would "nvm install $NodeMajor; npm prefix/cache -> $drive; npm i -g pnpm y claude-code"; return }
+	if ($DryRun) { Would "nvm install $NodeMajor; npm prefix/cache -> $drive; npm i -g @pnpm/exe y claude-code"; return }
 	nvm install $NodeMajor | Out-Null
 	nvm use $NodeMajor | Out-Null
 	Update-SessionPath
 	npm config set prefix "$drive\Dev\npm-global" | Out-Null
 	npm config set cache  "$drive\Dev\Caches\npm" | Out-Null
-	if (-not (Get-Command pnpm -ErrorAction SilentlyContinue)) { npm install -g pnpm | Out-Null }
+	# @pnpm/exe y no pnpm: es el mismo programa empaquetado como ejecutable propio,
+	# que no depende de la version de Node activa. Los dos chocan si se instalan a la
+	# vez, asi que se actualiza siempre con este mismo nombre.
+	if (-not (Get-Command pnpm -ErrorAction SilentlyContinue)) { npm install -g '@pnpm/exe' | Out-Null }
 	if (-not (Get-Command claude -ErrorAction SilentlyContinue)) { npm install -g '@anthropic-ai/claude-code' | Out-Null }
 	Update-SessionPath
 	if (Get-Command pnpm -ErrorAction SilentlyContinue) { pnpm config set store-dir "$drive\.pnpm-store" | Out-Null }

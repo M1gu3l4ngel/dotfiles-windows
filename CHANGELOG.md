@@ -64,6 +64,8 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `bootstrap.ps1` installs pnpm as `@pnpm/exe` (its own executable, independent
+  of the active Node version) instead of the `pnpm` package.
 - PowerShell profile ~48% faster: Terminal-Icons is loaded lazily (OnIdle).
 - Prompt (oh-my-posh): uniform dark text, consistent across VS Code, Windows
   Terminal and Parrot.
