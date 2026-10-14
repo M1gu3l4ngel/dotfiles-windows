@@ -64,6 +64,10 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `reply-in-spanish.mjs` judges the end of the turn instead of the whole turn (a
+  turn that switched to English halfway still passed), also runs after each tool
+  to warn Claude as soon as it switches, and reads only the tail of the
+  transcript. `install.ps1` reports missing hooks per event.
 - `bootstrap.ps1` installs pnpm as `@pnpm/exe` (its own executable, independent
   of the active Node version) instead of the `pnpm` package.
 - PowerShell profile ~48% faster: Terminal-Icons is loaded lazily (OnIdle).
@@ -72,7 +76,7 @@ Notable changes to the project. The format follows
 - Prompt theme synced with dotfiles-parrot: the tab title uses `POSH_NAME` like
   the prompt and shows `~` in the home folder instead of its name (screenshots no
   longer show the real username), and the git changes
-  icon is the `` escape instead of a literal glyph. The README explains
+  icon is written as a Unicode escape instead of a literal glyph. The README explains
   how to change the name for a single terminal (`$env:POSH_NAME`), as in Parrot.
 - `.ps1` scripts in pure ASCII (no BOM) for PowerShell 5.1 compatibility.
 - `install.ps1`: dated backup if one already exists, symlink capability check

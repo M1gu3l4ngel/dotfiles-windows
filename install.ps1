@@ -105,6 +105,20 @@ function Install-Symlink {
 # cada maquina), asi que no se enlaza: si no existe, se crea desde la plantilla
 # con el home de esta maquina; si existe, no se toca y solo se avisa de los hooks
 # de la plantilla que le faltan por registrar.
+# Los hooks registrados en un settings.json, como "Evento: archivo.mjs".
+function Get-HookRegistration {
+	param([string]$Json)
+	$settings = $Json | ConvertFrom-Json
+	if (-not $settings.hooks) { return @() }
+	foreach ($hookEvent in $settings.hooks.PSObject.Properties) {
+		foreach ($group in @($hookEvent.Value)) {
+			foreach ($hook in @($group.hooks)) {
+				if ($hook.command -match 'hooks/([\w-]+\.mjs)') { "$($hookEvent.Name): $($Matches[1])" }
+			}
+		}
+	}
+}
+
 function Install-ClaudeSetting {
 	param(
 		[string]$TemplatePath,
@@ -126,10 +140,10 @@ function Install-ClaudeSetting {
 		return
 	}
 
-	$current = [IO.File]::ReadAllText($SettingsPath, [Text.Encoding]::UTF8)
-	$missing = @([regex]::Matches($template, 'hooks/([\w-]+\.mjs)') |
-			ForEach-Object { $_.Groups[1].Value } |
-			Where-Object { $current -notmatch [regex]::Escape($_) })
+	# Se compara por evento y archivo ("Stop: x.mjs"), no solo por archivo: un hook ya
+	# registrado en un evento puede faltar en otro que la plantilla anadio despues.
+	$current = Get-HookRegistration ([IO.File]::ReadAllText($SettingsPath, [Text.Encoding]::UTF8))
+	$missing = @(Get-HookRegistration $template | Where-Object { $current -notcontains $_ })
 	if ($missing.Count -eq 0) {
 		Write-Host "  Ya existe, con los hooks de la plantilla registrados - skip" -ForegroundColor Green
 		return

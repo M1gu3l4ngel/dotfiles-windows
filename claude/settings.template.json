@@ -25,6 +25,14 @@
         ]
       }
     ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/hooks/reply-in-spanish.mjs\"", "timeout": 10 }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [

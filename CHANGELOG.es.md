@@ -65,6 +65,10 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `reply-in-spanish.mjs` juzga el final del turno en vez del turno entero (uno
+  que pasaba al inglés a mitad seguía pasando), corre también tras cada
+  herramienta para avisar a Claude en cuanto cambia, y lee solo la cola del
+  transcript. `install.ps1` avisa de los hooks que faltan por evento.
 - `bootstrap.ps1` instala pnpm como `@pnpm/exe` (ejecutable propio, que no
   depende de la versión de Node activa) en vez del paquete `pnpm`.
 - Perfil de PowerShell ~48% más rápido: Terminal-Icons se carga diferido (OnIdle).
@@ -73,7 +77,7 @@ Cambios relevantes del proyecto. El formato sigue
 - Tema del prompt sincronizado con dotfiles-parrot: el título de la pestaña usa
   `POSH_NAME` como el prompt y muestra `~` en la carpeta de inicio en vez de su
   nombre (las capturas ya no enseñan el usuario real) y el
-  icono de cambios de git es el escape `` en vez de un glifo literal. El
+  icono de cambios de git se escribe como escape Unicode en vez de un glifo literal. El
   README explica cómo cambiar el nombre en una sola terminal (`$env:POSH_NAME`),
   como en Parrot.
 - Scripts `.ps1` en ASCII puro (sin BOM) para compatibilidad con PowerShell 5.1.
