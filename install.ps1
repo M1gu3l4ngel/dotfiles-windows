@@ -100,25 +100,44 @@ function Install-Symlink {
 	}
 }
 
-# Claude Code solo ejecuta un hook si esta registrado en ~/.claude/settings.json.
-# Ese archivo es local (lleva la ruta del usuario y lo que Claude Code escribe en
-# cada maquina), asi que no se enlaza: si no existe, se crea desde la plantilla
-# con el home de esta maquina; si existe, no se toca y solo se avisa de los hooks
-# de la plantilla que le faltan por registrar.
-# Los hooks registrados en un settings.json, como "Evento: archivo.mjs".
-function Get-HookRegistration {
-	param([string]$Json)
-	$settings = $Json | ConvertFrom-Json
-	if (-not $settings.hooks) { return @() }
-	foreach ($hookEvent in $settings.hooks.PSObject.Properties) {
+# Anade a $Settings los hooks de $Template que no tiene registrados, comparando por
+# evento y archivo ("Stop: x.mjs"): un hook ya registrado en un evento puede faltar
+# en otro que la plantilla anadio despues. Va al grupo con el mismo matcher, o a uno
+# nuevo. Devuelve lo que anadio; el resto de $Settings no se toca.
+function Add-MissingHook {
+	param($Settings, $Template)
+	$added = @()
+	if (-not $Settings.hooks) { $Settings | Add-Member -NotePropertyName hooks -NotePropertyValue ([pscustomobject]@{}) }
+	foreach ($hookEvent in $Template.hooks.PSObject.Properties) {
+		$name = $hookEvent.Name
+		if (-not $Settings.hooks.$name) { $Settings.hooks | Add-Member -NotePropertyName $name -NotePropertyValue @() -Force }
 		foreach ($group in @($hookEvent.Value)) {
 			foreach ($hook in @($group.hooks)) {
-				if ($hook.command -match 'hooks/([\w-]+\.mjs)') { "$($hookEvent.Name): $($Matches[1])" }
+				if ($hook.command -notmatch 'hooks/([\w-]+\.mjs)') { continue }
+				$file = $Matches[1]
+				$registered = @($Settings.hooks.$name) | ForEach-Object { @($_.hooks) } |
+					Where-Object { $_.command -match [regex]::Escape($file) }
+				if ($registered) { continue }
+				$target = @($Settings.hooks.$name) | Where-Object { $_.matcher -eq $group.matcher } | Select-Object -First 1
+				if ($target) { $target.hooks = @($target.hooks) + $hook }
+				else {
+					$newGroup = [ordered]@{}
+					if ($null -ne $group.matcher) { $newGroup.matcher = $group.matcher }
+					$newGroup.hooks = @($hook)
+					$Settings.hooks.$name = @($Settings.hooks.$name) + [pscustomobject]$newGroup
+				}
+				$added += "${name}: $file"
 			}
 		}
 	}
+	$added
 }
 
+# Claude Code solo ejecuta un hook si esta registrado en ~/.claude/settings.json.
+# Ese archivo es local (lleva la ruta del usuario y lo que Claude Code escribe en
+# cada maquina), asi que no se enlaza: si no existe, se crea desde la plantilla
+# con el home de esta maquina; si existe, solo se le anaden los hooks de la
+# plantilla que le faltan, con backup antes, y lo demas queda como estaba.
 function Install-ClaudeSetting {
 	param(
 		[string]$TemplatePath,
@@ -127,29 +146,46 @@ function Install-ClaudeSetting {
 
 	Write-Host ""
 	Write-Host "[Claude settings.json]" -ForegroundColor Magenta
+	# JSON con barras normales: una barra invertida habria que escaparla.
 	$template = [IO.File]::ReadAllText($TemplatePath, [Text.Encoding]::UTF8)
+	$template = $template.Replace('REEMPLAZA_RUTA_HOME', ($env:USERPROFILE -replace '\\', '/'))
+	# UTF-8 sin BOM: Claude Code no lee el archivo si empieza por un BOM.
+	$utf8 = New-Object Text.UTF8Encoding $false
 
 	if (-not (Test-Path $SettingsPath)) {
 		$settingsDir = Split-Path $SettingsPath -Parent
 		if (-not (Test-Path $settingsDir)) { New-Item -ItemType Directory -Path $settingsDir -Force | Out-Null }
-		# JSON con barras normales: una barra invertida habria que escaparla.
-		$content = $template.Replace('REEMPLAZA_RUTA_HOME', ($env:USERPROFILE -replace '\\', '/'))
-		# UTF-8 sin BOM: Claude Code no lee el archivo si empieza por un BOM.
-		[IO.File]::WriteAllText($SettingsPath, $content, (New-Object Text.UTF8Encoding $false))
+		[IO.File]::WriteAllText($SettingsPath, $template, $utf8)
 		Write-Host "  Creado desde la plantilla: $SettingsPath" -ForegroundColor Green
 		return
 	}
 
-	# Se compara por evento y archivo ("Stop: x.mjs"), no solo por archivo: un hook ya
-	# registrado en un evento puede faltar en otro que la plantilla anadio despues.
-	$current = Get-HookRegistration ([IO.File]::ReadAllText($SettingsPath, [Text.Encoding]::UTF8))
-	$missing = @(Get-HookRegistration $template | Where-Object { $current -notcontains $_ })
-	if ($missing.Count -eq 0) {
+	$settings = [IO.File]::ReadAllText($SettingsPath, [Text.Encoding]::UTF8) | ConvertFrom-Json
+	$added = @(Add-MissingHook -Settings $settings -Template ($template | ConvertFrom-Json))
+	if ($added.Count -eq 0) {
 		Write-Host "  Ya existe, con los hooks de la plantilla registrados - skip" -ForegroundColor Green
 		return
 	}
-	Write-Warning "  Ya existe y no se toca, pero le faltan hooks por registrar: $($missing -join ', ')"
-	Write-Warning "  Copia su bloque desde $TemplatePath (ver claude/README.es.md)."
+	$backup = "$SettingsPath$BackupSuffix." + (Get-Date -Format 'yyyyMMddHHmmss')
+	Copy-Item -LiteralPath $SettingsPath -Destination $backup
+	[IO.File]::WriteAllText($SettingsPath, ($settings | ConvertTo-Json -Depth 32), $utf8)
+	Write-Host "  Hooks registrados: $($added -join ', ')" -ForegroundColor Green
+	Write-Host "  Backup del anterior: $backup" -ForegroundColor Yellow
+}
+
+# Tras cada `git pull` del repo, git ejecuta githooks/post-merge, que vuelve a correr
+# este instalador: lo que traiga el pull (enlaces nuevos, hooks de Claude sin
+# registrar) queda aplicado sin hacer nada mas. La carpeta va versionada; git solo
+# necesita saber que la use.
+function Install-GitHook {
+	Write-Host ""
+	Write-Host "[git post-merge]" -ForegroundColor Magenta
+	if ((git -C $DotfilesRoot config --get core.hooksPath) -eq 'githooks') {
+		Write-Host "  Ya activo - skip" -ForegroundColor Green
+		return
+	}
+	git -C $DotfilesRoot config core.hooksPath githooks
+	Write-Host "  Activado: cada git pull vuelve a correr install.ps1" -ForegroundColor Green
 }
 
 Write-Host "=== Instalador dotfiles-windows ===" -ForegroundColor Magenta
@@ -167,6 +203,7 @@ foreach ($link in $Links) {
 
 Install-ClaudeSetting -TemplatePath "$DotfilesRoot\claude\settings.template.json" `
 	-SettingsPath "$env:USERPROFILE\.claude\settings.json"
+Install-GitHook
 
 Write-Host ""
 Write-Host "=== Instalacion completa ===" -ForegroundColor Magenta

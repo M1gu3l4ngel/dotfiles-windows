@@ -93,6 +93,7 @@ It does not uninstall apps or touch environment variables or WSL.
 | `install.ps1` | Configuration symlinks |
 | `uninstall.ps1` | Revert the symlinks and restore the backups (`-DryRun` to simulate) |
 | `lib/` | Shared code (the symlink mapping) |
+| `githooks/` | `post-merge`: re-runs `install.ps1` after each `git pull` |
 | `powershell/` | PowerShell profile (PS 7 and legacy, same file) |
 | `bash/` | Git Bash profile (same prompt as PowerShell) |
 | `oh-my-posh/` | Prompt theme (`capr4n`, shared with Parrot) |
@@ -121,19 +122,19 @@ git pull
 ```
 
 The configurations are symlinks into the repo, so what you pull applies right
-away (reopen the terminal or VS Code to see it). Only two cases need one more
-step, and both scripts are idempotent:
+away (reopen the terminal or VS Code to see it). After each pull git also runs
+`install.ps1` on its own (`githooks/post-merge`, which `install.ps1` turns on the
+first time), and that covers the rest:
 
-- The pull changed `lib/links.ps1` (there are new links): run `.\install.ps1`.
-- The pull changed `bootstrap.ps1` (there are new tools): run `.\bootstrap.ps1`,
-  which also runs `install.ps1`.
+- New links (`lib/links.ps1`) are created.
+- New Claude Code hooks are registered in `~/.claude/settings.json`, with a
+  backup first and without touching anything else in the file.
+- If the pull changed `bootstrap.ps1` (there are new tools), run
+  `.\bootstrap.ps1` yourself: installing programs is not automatic.
 
-What is not versioned does not travel: keys, the local Claude Code files
-(`settings.json`, `entorno.md`) and `POSH_NAME`. `install.ps1` creates that
-`settings.json` only when it is missing; if a pull brings a new hook, the
-installer warns that it is not registered yet and you copy its block from
-`claude/settings.template.json`. New VS Code extensions are installed with the
-command in the manual steps.
+What is not versioned does not travel: keys, `~/.claude/entorno.md` and
+`POSH_NAME`. New VS Code extensions are installed with the command in the
+manual steps.
 
 ## Application snapshot
 

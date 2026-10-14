@@ -68,7 +68,11 @@ Cambios relevantes del proyecto. El formato sigue
 - `reply-in-spanish.mjs` juzga el final del turno en vez del turno entero (uno
   que pasaba al inglés a mitad seguía pasando), corre también tras cada
   herramienta para avisar a Claude en cuanto cambia, y lee solo la cola del
-  transcript. `install.ps1` avisa de los hooks que faltan por evento.
+  transcript.
+- `install.ps1` registra en un `~/.claude/settings.json` existente los hooks de
+  la plantilla que le faltan (por evento, con backup antes), y activa
+  `githooks/post-merge`, que lo vuelve a correr tras cada `git pull`: un enlace o
+  un hook nuevo llega a las otras PCs solo con el pull.
 - `bootstrap.ps1` instala pnpm como `@pnpm/exe` (ejecutable propio, que no
   depende de la versión de Node activa) en vez del paquete `pnpm`.
 - Perfil de PowerShell ~48% más rápido: Terminal-Icons se carga diferido (OnIdle).

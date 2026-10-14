@@ -35,10 +35,11 @@ máquina se queda local (no se versiona).
     - En Windows lo crea `install.ps1` si la máquina no tiene uno, con
       `REEMPLAZA_RUTA_HOME` cambiado por el home real (`C:/Users/<user>`). Las rutas de
       los hooks van entre comillas, así que un home con espacios funciona.
-    - Si ya existe, el instalador nunca lo toca: solo avisa de los hooks de la plantilla
-      que faltan por registrar. Copia su bloque tú: un hook enlazado no se ejecuta hasta
-      registrarlo aquí, y el modo automático no deja que Claude cambie su propia
-      configuración.
+    - Si ya existe, el instalador solo le añade los hooks de la plantilla que le faltan
+      (un hook enlazado no se ejecuta hasta registrarlo aquí), con un backup
+      `.pre-dotfiles.bak` con fecha antes; lo demás del archivo queda como estaba.
+      Vuelve a correr tras cada `git pull`, así que un hook nuevo llega a todas las
+      máquinas.
     - Opcional (más fiable en Windows): añadir también rutas **absolutas** de tus secretos,
       p. ej. `Read(//d/Dev/security-keys/**)`, junto a los patrones `**/` genéricos.
 3. Crear tu `~/.claude/entorno.md` local con el detalle de esa máquina (no se versiona).

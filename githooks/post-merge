@@ -1,0 +1,6 @@
+#!/bin/sh
+# githooks/post-merge: git lo ejecuta tras cada `git pull` que trae cambios (lo activa
+# install.ps1 con core.hooksPath). Vuelve a correr install.ps1 para aplicar lo que trajo
+# el pull: enlaces nuevos y hooks de Claude Code sin registrar. Es idempotente: lo que ya
+# esta hecho lo salta, asi que no cambia nada en un pull sin novedades.
+exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(git rev-parse --show-toplevel)/install.ps1"

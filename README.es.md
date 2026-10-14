@@ -92,6 +92,7 @@ No desinstala apps ni toca variables de entorno o WSL.
 | `install.ps1` | Symlinks de configuración |
 | `uninstall.ps1` | Revertir los symlinks y restaurar los backups (`-DryRun` para simular) |
 | `lib/` | Código compartido (el mapeo de symlinks) |
+| `githooks/` | `post-merge`: vuelve a correr `install.ps1` tras cada `git pull` |
 | `powershell/` | Perfil de PowerShell (PS 7 y legacy, mismo archivo) |
 | `bash/` | Perfil de Git Bash (mismo prompt que PowerShell) |
 | `oh-my-posh/` | Tema del prompt (`capr4n`, compartido con Parrot) |
@@ -120,19 +121,19 @@ git pull
 ```
 
 Las configuraciones son symlinks hacia el repo, así que lo que traes se aplica
-al momento (reabre la terminal o VS Code para verlo). Solo dos casos piden un
-paso más, y los dos scripts son idempotentes:
+al momento (reabre la terminal o VS Code para verlo). Tras cada pull, git
+ejecuta además `install.ps1` solo (`githooks/post-merge`, que `install.ps1`
+activa la primera vez), y eso cubre el resto:
 
-- El pull cambió `lib/links.ps1` (hay enlaces nuevos): ejecuta `.\install.ps1`.
-- El pull cambió `bootstrap.ps1` (hay herramientas nuevas): ejecuta
-  `.\bootstrap.ps1`, que también corre `install.ps1`.
+- Se crean los enlaces nuevos (`lib/links.ps1`).
+- Se registran en `~/.claude/settings.json` los hooks nuevos de Claude Code,
+  con un backup antes y sin tocar nada más del archivo.
+- Si el pull cambió `bootstrap.ps1` (hay herramientas nuevas), ejecuta tú
+  `.\bootstrap.ps1`: instalar programas no es automático.
 
-Lo que no se versiona no viaja: las claves, los archivos locales de Claude Code
-(`settings.json`, `entorno.md`) y `POSH_NAME`. `install.ps1` crea ese
-`settings.json` solo cuando falta; si un pull trae un hook nuevo, el instalador
-avisa de que aún no está registrado y copias su bloque desde
-`claude/settings.template.json`. Las extensiones nuevas de VS Code se instalan
-con el comando de los pasos manuales.
+Lo que no se versiona no viaja: las claves, `~/.claude/entorno.md` y
+`POSH_NAME`. Las extensiones nuevas de VS Code se instalan con el comando de los
+pasos manuales.
 
 ## Snapshot de aplicaciones
 

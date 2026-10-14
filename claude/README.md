@@ -36,10 +36,10 @@ specific to a machine stays local (it is not versioned).
     - On Windows `install.ps1` creates it if the machine does not have one, with
       `REEMPLAZA_RUTA_HOME` replaced by the real home (`C:/Users/<user>`). The hook
       paths are quoted, so a home with spaces works.
-    - If it already exists, the installer never touches it: it only warns about the
-      template hooks that are not registered yet. Copy their block yourself: a linked
-      hook does not run until it is registered here, and auto mode does not let Claude
-      change its own settings.
+    - If it already exists, the installer only adds the template hooks it is missing
+      (a linked hook does not run until it is registered here), with a dated
+      `.pre-dotfiles.bak` backup first; everything else in the file stays as it was.
+      It runs again after each `git pull`, so a new hook reaches every machine.
     - Optional (more reliable on Windows): also add **absolute** paths to your
       secrets, for example `Read(//d/Dev/security-keys/**)`, next to the generic `**/`
       patterns.
