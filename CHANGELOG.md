@@ -64,6 +64,8 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- Global `CLAUDE.md`: in a repo with `pnpm generate:panel`, the task panel is
+  kept from `docs/tasks.md` and regenerated, instead of using the template.
 - `reply-in-spanish.mjs` judges the end of the turn instead of the whole turn (a
   turn that switched to English halfway still passed), also runs after each tool
   to warn Claude as soon as it switches, and reads only the tail of the

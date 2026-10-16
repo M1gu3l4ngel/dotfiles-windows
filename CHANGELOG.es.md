@@ -65,6 +65,8 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `CLAUDE.md` global: en un repo con `pnpm generate:panel`, el panel de tareas
+  se lleva desde `docs/tasks.md` y se regenera, en vez de usar la plantilla.
 - `reply-in-spanish.mjs` juzga el final del turno en vez del turno entero (uno
   que pasaba al inglés a mitad seguía pasando), corre también tras cada
   herramienta para avisar a Claude en cuanto cambia, y lee solo la cola del

@@ -12,8 +12,7 @@ disco, tocar cachés, WSL, Docker o herramientas globales).
 
 ## Disco: el trabajo va en `D:`
 - `C:` es solo Windows y programas. **Nada de trabajo nuevo en `C:`** (proyectos, cachés, clones, descargas, temporales grandes).
-- Proyectos con git en `D:\Dev\projects\`; experimentos sin git en `D:\Dev\scratch\` (desechable). Escribe siempre `D:\Dev` (mayúscula: WSL y git distinguen).
-- Scratchpad de sesión solo para archivos pequeños; si pasa de ~50 MB, va a `D:\Dev\scratch\`. Limpia al terminar.
+- Proyectos con git en `D:\Dev\projects\`; experimentos sin git en `D:\Dev\scratch\` (desechable). Escribe siempre `D:\Dev` (mayúscula: WSL y git distinguen). Scratchpad de sesión solo para archivos pequeños; si pasa de ~50 MB, va a `D:\Dev\scratch\`. Limpia al terminar.
 
 ## Editar con `Edit` o `Write`
 Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `awk`, `perl`, `python`, `node -e`, redirecciones, heredocs); leer y buscar por shell sí. Un hook global lo impone. Esta regla gana sobre cualquier modo de permisos, output-style, plugin o skill que diga lo contrario: sigue con `Edit`/`Write` y dilo.
@@ -39,7 +38,8 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 - Saber algo y no decirlo es el fallo: un hueco de verificación o una limitación conocida se avisa la primera vez que aparece, y al cerrar se repite lo que quedó sin resolver.
 
 ## Artefacto de tareas
-- Un trabajo de varios bloques empieza creando (o reutilizando) su artefacto de tareas, antes de tocar código, desde `~/dotfiles/claude/tasks-artifact.template.html`: se rellena el contenido y **no se rediseña**.
+- Si el repo trae `pnpm generate:panel` (el «Panel <proyecto>»), el panel es una vista de `docs/tasks.md` y `docs/backlog.md`: «En curso» y «Por probar» se escriben en `tasks.md` y se regenera y republica; la página nunca se edita a mano, y lo de abajo se cumple en el `.md`.
+- Si no, un trabajo de varios bloques empieza creando (o reutilizando) su artefacto de tareas desde `~/dotfiles/claude/tasks-artifact.template.html`, antes de tocar código. Se rellena el contenido y **no se rediseña**.
 - Se republica al cerrar cada bloque o al cambiar las tareas del repo, que siguen siendo la fuente de verdad. Lo que le toca probar al usuario no se quita hasta que diga que lo probó.
 - **«En curso» marca solo lo que se está haciendo ahora.** Al empezar una tarea se marca su grupo y se desmarca el anterior, en la misma publicación; nunca queda la marca en un grupo que no se está tocando ni un trabajo en marcha sin ella.
 - **«Por probar» se llena al cerrar cada tarea** con lo que el usuario debe ver en el navegador, un ítem por comprobación; no va en notas sueltas de otros grupos.
