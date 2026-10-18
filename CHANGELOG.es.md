@@ -67,6 +67,12 @@ Cambios relevantes del proyecto. El formato sigue
 
 - `CLAUDE.md` global: en un repo con `pnpm generate:panel`, el panel de tareas
   se lleva desde `docs/tasks.md` y se regenera, en vez de usar la plantilla.
+- `githooks/post-merge` corre `install.ps1` con `pwsh` si está instalado:
+  PowerShell 5.1 pide permisos de administrador para crear symlinks aunque esté
+  activo el modo de desarrollador, así que un enlace nuevo fallaba tras el pull.
+- Windows Terminal: copiar al seleccionar, ventana centrada al abrir y 100
+  columnas. Su `settings.json` queda fuera de Prettier, porque la propia
+  terminal lo reescribe entero al cambiar un ajuste.
 - `reply-in-spanish.mjs` juzga el final del turno en vez del turno entero (uno
   que pasaba al inglés a mitad seguía pasando), corre también tras cada
   herramienta para avisar a Claude en cuanto cambia, y lee solo la cola del

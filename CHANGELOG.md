@@ -66,6 +66,12 @@ Notable changes to the project. The format follows
 
 - Global `CLAUDE.md`: in a repo with `pnpm generate:panel`, the task panel is
   kept from `docs/tasks.md` and regenerated, instead of using the template.
+- `githooks/post-merge` runs `install.ps1` with `pwsh` when it is installed:
+  PowerShell 5.1 asks for administrator rights to create symlinks even with
+  Developer Mode on, so a new link failed after the pull.
+- Windows Terminal: copy on select, window centered on launch and 100 columns.
+  Its `settings.json` is excluded from Prettier, because the terminal itself
+  rewrites it in full when a setting changes.
 - `reply-in-spanish.mjs` judges the end of the turn instead of the whole turn (a
   turn that switched to English halfway still passed), also runs after each tool
   to warn Claude as soon as it switches, and reads only the tail of the

@@ -19,3 +19,6 @@ format/
 # Salida de `winget export` (curada a mano): conserva el formato de winget para
 # que regenerarlo no produzca diffs de formato.
 apps/winget-dev.json
+# Windows Terminal reescribe su settings.json entero (4 espacios) cada vez que se
+# cambia un ajuste desde su interfaz: reformatearlo daria un diff gigante en cada cambio.
+windows-terminal/settings.json
