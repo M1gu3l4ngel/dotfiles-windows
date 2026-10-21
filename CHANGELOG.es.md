@@ -74,6 +74,8 @@ Cambios relevantes del proyecto. El formato sigue
   devuelve al usuario la carpeta de VS Code para que su actualizador no falle
   con «acceso denegado». También fija el `cache-dir` de pnpm en el disco de
   trabajo (quedaba en `C:`).
+- `bootstrap.ps1` instala VS Code con «Abrir con Code» en el menú contextual y
+  en el PATH, que la instalación silenciosa de winget deja fuera.
 - `CLAUDE.md` global: en un repo con `pnpm generate:panel`, el panel de tareas
   se lleva desde `docs/tasks.md` y se regenera, en vez de usar la plantilla.
 - `githooks/post-merge` corre `install.ps1` con `pwsh` si está instalado:

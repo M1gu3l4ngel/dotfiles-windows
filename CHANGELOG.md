@@ -73,6 +73,8 @@ Notable changes to the project. The format follows
   VS Code folder back to the user so its updater does not fail with "access
   denied". It also sets the pnpm `cache-dir` on the work disk (it was left on
   `C:`).
+- `bootstrap.ps1` installs VS Code with the "Open with Code" context menu
+  entries and on the PATH, which the silent winget install leaves out.
 - Global `CLAUDE.md`: in a repo with `pnpm generate:panel`, the task panel is
   kept from `docs/tasks.md` and regenerated, instead of using the template.
 - `githooks/post-merge` runs `install.ps1` with `pwsh` when it is installed:

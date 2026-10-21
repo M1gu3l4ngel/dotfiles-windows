@@ -23,7 +23,7 @@
 	"editor.tabSize": 2,
 	"editor.insertSpaces": false,
 	"editor.tokenColorCustomizations": {
-		"comments": "#9a9c9a"
+		"comments": "#9a9c9a",
 		// "comments": "#097409",
 	},
 	"terminal.integrated.fontFamily": "CaskaydiaCove Nerd Font",
@@ -57,24 +57,24 @@
 		"cfml",
 		"HTML (EEx)",
 		"HTML (Eex)",
-		"plist"
+		"plist",
 	],
 	"terminal.integrated.profiles.windows": {
 		"PowerShell": {
 			"source": "PowerShell",
-			"icon": "terminal-powershell"
+			"icon": "terminal-powershell",
 		},
 		"Command Prompt": {
 			"path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"],
 			"args": [],
-			"icon": "terminal-cmd"
+			"icon": "terminal-cmd",
 		},
 		"Git Bash": {
-			"source": "Git Bash"
+			"source": "Git Bash",
 		},
 		"Windows PowerShell": {
-			"path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
-		}
+			"path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+		},
 	},
 	"importCost.debug": true,
 	"html.format.wrapLineLength": 130,
@@ -90,23 +90,23 @@
 	"mssql.connectionGroups": [
 		{
 			"name": "ROOT",
-			"id": "ROOT"
-		}
+			"id": "ROOT",
+		},
 	],
 	// Lo que Prettier no formatea, con su herramienta nativa. shfmt sin flags lee
 	// el .editorconfig del proyecto (sangría y switch_case_indent).
 	"[shellscript]": {
-		"editor.defaultFormatter": "mkhl.shfmt"
+		"editor.defaultFormatter": "mkhl.shfmt",
 	},
 	"[sql]": {
-		"editor.defaultFormatter": "mtxr.sqltools"
+		"editor.defaultFormatter": "mtxr.sqltools",
 	},
 	"sonarlint.connectedMode.connections.sonarcloud": [
 		{
-			"organizationKey": "m1gu3l4ngel",
+			"organizationKey": "m1gu3l4ng3l-org",
 			"connectionId": "m1gu3l4ngel",
-			"region": "EU"
-		}
+			"region": "EU",
+		},
 	],
 	"terminal.integrated.initialHint": false,
 	"aiCommit.language": "es",
@@ -120,7 +120,7 @@
 		"https://raw.githubusercontent.com/microsoft/vscode/": true,
 		"https://schemastore.azurewebsites.net/": true,
 		"https://ui.shadcn.com/schema.json": true,
-		"https://www.schemastore.org/": true
+		"https://www.schemastore.org/": true,
 	},
 	"mssql.connections": [],
 	"sqltools.results.limit": 100,
@@ -135,6 +135,6 @@
 	"editor.largeFileOptimizations": false,
 	"sonarlint.automaticAnalysis": true,
 	"[powershell]": {
-		"editor.defaultFormatter": "ms-vscode.powershell"
-	}
+		"editor.defaultFormatter": "ms-vscode.powershell",
+	},
 }

@@ -47,6 +47,12 @@ $WingetEssential = @(
 	'lsd-rs.lsd', 'Neovim.Neovim', 'mvdan.shfmt'
 )
 
+# Opciones del instalador que winget no activa en modo silencioso. Sin esto, VS Code
+# queda sin "Abrir con Code" en el menu contextual y fuera del PATH.
+$WingetOverride = @{
+	'Microsoft.VisualStudioCode' = '/VERYSILENT /NORESTART /MERGETASKS=!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath'
+}
+
 # --- Fuentes Nerd ---
 # Tabla central: anadir una fuente = anadir una linea. Se descargan del release
 # oficial en version fija y se VERIFICAN por SHA-256 antes de instalar.
@@ -97,7 +103,8 @@ function Install-WingetId($id) {
 	if ($LASTEXITCODE -eq 0) { Ok "$id"; return }
 	if ($DryRun) { Would "winget install $id"; return }
 	Info "instalando $id ..."
-	winget install --id $id -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity 2>&1 | Out-Null
+	$extra = if ($WingetOverride.ContainsKey($id)) { '--override', $WingetOverride[$id] } else { @() }
+	winget install --id $id -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity @extra 2>&1 | Out-Null
 	if ($LASTEXITCODE -eq 0) { Ok "$id instalado" } else { Warn "winget devolvio $LASTEXITCODE para $id - revisar a mano" }
 }
 
