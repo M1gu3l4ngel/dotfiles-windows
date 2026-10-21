@@ -41,9 +41,9 @@ sin romper nada (por ejemplo tras un reinicio).
 
 | Paso | Qué instala o configura |
 |---|---|
-| 1 | Set esencial de winget: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, WSL y CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt) |
-| 2 | CaskaydiaCove Nerd Font (descarga verificada por SHA-256) |
-| 3 | Variables de entorno hacia `D:` (o `C:` si no hay `D:`) |
+| 1 | Variables de entorno hacia `D:` (o `C:` si no hay `D:`), `PNPM_HOME` incluido; van primero para que Rust se instale ahí |
+| 2 | Set esencial de winget: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, WSL y CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt) |
+| 3 | CaskaydiaCove Nerd Font (descarga verificada por SHA-256) |
 | 4 | Node (nvm-windows) + pnpm + Claude Code en `<disk>\Dev\npm-global` |
 | 5 | WSL Ubuntu (requiere reinicio) |
 | 6 | git: nombre, email noreply y defaults |

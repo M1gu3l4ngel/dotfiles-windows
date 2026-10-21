@@ -195,6 +195,24 @@
                 "hidden": false,
                 "name": "Ubuntu-20.04",
                 "source": "Microsoft.WSL"
+            },
+            {
+                "guid": "{49376484-7f46-5514-9561-0c222d4871ea}",
+                "hidden": false,
+                "name": "Ubuntu-20.04",
+                "source": "Microsoft.WSL"
+            },
+            {
+                "guid": "{d5082cf6-e219-5177-8161-754e7501a3b4}",
+                "hidden": false,
+                "name": "Developer Command Prompt for VS 18",
+                "source": "Windows.Terminal.VisualStudio"
+            },
+            {
+                "guid": "{ca801642-5c67-58e5-98cd-788906ff66f3}",
+                "hidden": false,
+                "name": "Developer PowerShell for VS 18",
+                "source": "Windows.Terminal.VisualStudio"
             }
         ]
     },

@@ -65,6 +65,15 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `bootstrap.ps1` fija las variables de entorno antes de instalar con winget
+  (rustup acababa en el perfil de `C:`), añade `PNPM_HOME` y los `bin` de Cargo
+  y pnpm al PATH, e instala el proveedor NuGet sin preguntar antes de
+  `Terminal-Icons`.
+- `bootstrap.ps1` exige `Terminal-Icons` 0.11.0 o posterior (nombres de Nerd
+  Fonts v3; las anteriores muestran iconos vacíos) y, si corre elevado, le
+  devuelve al usuario la carpeta de VS Code para que su actualizador no falle
+  con «acceso denegado». También fija el `cache-dir` de pnpm en el disco de
+  trabajo (quedaba en `C:`).
 - `CLAUDE.md` global: en un repo con `pnpm generate:panel`, el panel de tareas
   se lleva desde `docs/tasks.md` y se regenera, en vez de usar la plantilla.
 - `githooks/post-merge` corre `install.ps1` con `pwsh` si está instalado:

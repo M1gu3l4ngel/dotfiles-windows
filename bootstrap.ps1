@@ -169,17 +169,32 @@ function Invoke-Step0Check {
 	if ($DryRun) { Warn 'MODO DRY-RUN: no se cambiara nada, solo se reporta.' }
 }
 
-function Invoke-Step1Winget {
+function Invoke-Step2Winget {
 	Step 'Set esencial (winget)'
 	foreach ($id in $WingetEssential) { Install-WingetId $id }
-	# Modulo de PowerShell para iconos en ls/dir (lo usa el perfil).
-	if (Get-Module -ListAvailable Terminal-Icons) { Ok 'Terminal-Icons ya instalado' }
+	# VS Code se instala por usuario; desde una terminal elevada sus archivos quedan a nombre
+	# de Administradores y su actualizador falla con "acceso denegado". Se le devuelven al usuario.
+	# Va con dominio\usuario: si el equipo se llama igual que el usuario, el nombre solo es el equipo.
+	$vscode = "$env:LOCALAPPDATA\Programs\Microsoft VS Code"
+	if ((Test-Admin) -and -not $DryRun -and (Test-Path $vscode)) {
+		icacls $vscode /setowner "$env:USERDOMAIN\$env:USERNAME" /T /C /Q | Out-Null
+		Ok 'VS Code devuelto al usuario'
+	}
+	# Modulo de PowerShell para iconos en ls/dir (lo usa el perfil). Desde la 0.11.0 usa los
+	# nombres de Nerd Fonts v3; con una anterior salen iconos vacios.
+	$ti = Get-Module -ListAvailable Terminal-Icons | Sort-Object Version -Descending | Select-Object -First 1
+	if ($ti -and $ti.Version -ge [version]'0.11.0') { Ok "Terminal-Icons $($ti.Version) ya instalado" }
 	elseif ($DryRun) { Would 'Install-Module Terminal-Icons' }
-	else { Install-Module -Name Terminal-Icons -Scope CurrentUser -Force; Ok 'Terminal-Icons instalado' }
+	else {
+		# En un Windows recien instalado falta el proveedor NuGet y Install-Module se para a preguntar.
+		Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser -Force | Out-Null
+		Install-Module -Name Terminal-Icons -MinimumVersion 0.11.0 -Scope CurrentUser -Force
+		Ok 'Terminal-Icons instalado'
+	}
 	Update-SessionPath
 }
 
-function Invoke-Step2Font {
+function Invoke-Step3Font {
 	Step "Fuentes Nerd $NerdFontsVersion"
 	$fontsDir = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
 	$marker = Join-Path $fontsDir '.nerdfonts.version'
@@ -196,21 +211,26 @@ function Invoke-Step2Font {
 	Ok "Fuentes Nerd $NerdFontsVersion listas"
 }
 
-function Invoke-Step3Env($drive) {
+# Va antes de winget: rustup se instala donde digan CARGO_HOME y RUSTUP_HOME en ese
+# momento, y sin ellas acaba en el perfil de C:.
+function Invoke-Step1Env($drive) {
 	Step "Variables de entorno -> $drive"
 	Set-UserEnv 'CARGO_HOME'          "$drive\Dev\Caches\cargo"
 	Set-UserEnv 'RUSTUP_HOME'         "$drive\Dev\Caches\rustup"
 	Set-UserEnv 'NUGET_PACKAGES'      "$drive\Dev\Caches\nuget"
 	Set-UserEnv 'PUPPETEER_CACHE_DIR' "$drive\Dev\Caches\puppeteer"
+	Set-UserEnv 'PNPM_HOME'           "$drive\Dev\pnpm"
 	if (-not $DryRun) {
 		$dirs = @(
 			"$drive\Dev\Caches\cargo", "$drive\Dev\Caches\rustup", "$drive\Dev\Caches\nuget",
-			"$drive\Dev\Caches\puppeteer", "$drive\Dev\Caches\npm",
+			"$drive\Dev\Caches\puppeteer", "$drive\Dev\Caches\npm", "$drive\Dev\pnpm",
 			"$drive\Dev\npm-global", "$drive\Dev\projects", "$drive\Dev\scratch"
 		)
 		foreach ($d in $dirs) { New-Item -ItemType Directory -Force -Path $d | Out-Null }
 	}
 	Add-UserPath "$drive\Dev\npm-global"
+	Add-UserPath "$drive\Dev\Caches\cargo\bin"
+	Add-UserPath "$drive\Dev\pnpm\bin"
 }
 
 function Invoke-Step4Node($drive) {
@@ -233,7 +253,10 @@ function Invoke-Step4Node($drive) {
 	if (-not (Get-Command pnpm -ErrorAction SilentlyContinue)) { npm install -g '@pnpm/exe' | Out-Null }
 	if (-not (Get-Command claude -ErrorAction SilentlyContinue)) { npm install -g '@anthropic-ai/claude-code' | Out-Null }
 	Update-SessionPath
-	if (Get-Command pnpm -ErrorAction SilentlyContinue) { pnpm config set store-dir "$drive\.pnpm-store" | Out-Null }
+	if (Get-Command pnpm -ErrorAction SilentlyContinue) {
+		pnpm config set store-dir "$drive\.pnpm-store" | Out-Null
+		pnpm config set cache-dir "$drive\Dev\Caches\pnpm-cache" | Out-Null
+	}
 	Ok "Node $(node --version 2>$null), pnpm $(pnpm --version 2>$null), Claude Code listo"
 }
 
@@ -292,9 +315,9 @@ Write-Host "Repo: $DotfilesRoot" -ForegroundColor Gray
 $drive = Get-WorkDrive
 
 Invoke-Step0Check
-Invoke-Step1Winget
-Invoke-Step2Font
-Invoke-Step3Env  $drive
+Invoke-Step1Env  $drive
+Invoke-Step2Winget
+Invoke-Step3Font
 Invoke-Step4Node $drive
 Invoke-Step5Wsl
 Invoke-Step6Git
