@@ -34,14 +34,14 @@ $DotfilesRoot = $PSScriptRoot
 # =====================================================================
 
 # --- Toolchain ---
-$NodeMajor = '22'
+$NodeMajor = '24'
 
 # --- Set esencial de winget ---
 # Solo el entorno: shell, terminal, editor, prompt, firma, toolchain y CLI tools
 # (estas para andar sincronizado con Parrot). NADA de apps personales.
 $WingetEssential = @(
 	'Git.Git', 'Microsoft.PowerShell', 'Microsoft.WindowsTerminal', 'Microsoft.VisualStudioCode',
-	'JanDeDobbeleer.OhMyPosh', 'GnuPG.Gpg4win', 'Rustlang.Rustup', 'Python.Python.3.13',
+	'JanDeDobbeleer.OhMyPosh', 'GnuPG.Gpg4win', 'Rustlang.Rustup', 'Python.Python.3.14',
 	'Docker.DockerDesktop', 'CoreyButler.NVMforWindows',
 	'junegunn.fzf', 'BurntSushi.ripgrep.MSVC', 'sharkdp.bat', 'sharkdp.fd', 'jqlang.jq',
 	'lsd-rs.lsd', 'Neovim.Neovim', 'mvdan.shfmt'

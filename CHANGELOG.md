@@ -75,6 +75,8 @@ Notable changes to the project. The format follows
   `C:`).
 - `bootstrap.ps1` installs VS Code with the "Open with Code" context menu
   entries and on the PATH, which the silent winget install leaves out.
+- `bootstrap.ps1` installs Python 3.14 instead of 3.13 and Node 24 (the
+  current LTS) instead of 22.
 - Global `CLAUDE.md`: in a repo with `pnpm generate:panel`, the task panel is
   kept from `docs/tasks.md` and regenerated, instead of using the template.
 - `githooks/post-merge` runs `install.ps1` with `pwsh` when it is installed:
