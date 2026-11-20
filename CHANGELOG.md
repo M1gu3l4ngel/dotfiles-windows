@@ -10,6 +10,8 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- `apps/winget-dev.json`: Pandoc and MiKTeX (documents to PDF); Python moves to
+  3.14 and SQL Server Management Studio is removed, no longer installed.
 - `install.ps1` creates `~/.claude/settings.json` from the template when the
   machine has none, with the real home path, so the hooks run on a new PC
   without editing anything. If the file exists it is left alone and the

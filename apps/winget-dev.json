@@ -35,6 +35,9 @@
           "PackageIdentifier": "JanDeDobbeleer.OhMyPosh"
         },
         {
+          "PackageIdentifier": "JohnMacFarlane.Pandoc"
+        },
+        {
           "PackageIdentifier": "lsd-rs.lsd"
         },
         {
@@ -42,9 +45,6 @@
         },
         {
           "PackageIdentifier": "Microsoft.PowerToys"
-        },
-        {
-          "PackageIdentifier": "Microsoft.SQLServerManagementStudio"
         },
         {
           "PackageIdentifier": "Microsoft.VisualStudio.BuildTools"
@@ -59,6 +59,9 @@
           "PackageIdentifier": "Microsoft.WSL"
         },
         {
+          "PackageIdentifier": "MiKTeX.MiKTeX"
+        },
+        {
           "PackageIdentifier": "Oracle.MySQL"
         },
         {
@@ -71,7 +74,7 @@
           "PackageIdentifier": "Python.Launcher"
         },
         {
-          "PackageIdentifier": "Python.Python.3.13"
+          "PackageIdentifier": "Python.Python.3.14"
         },
         {
           "PackageIdentifier": "Rustlang.Rustup"
