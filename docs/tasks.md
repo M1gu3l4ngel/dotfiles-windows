@@ -31,20 +31,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] [Esta PC] Buscar abre los bloques con resultados y resalta el texto
 - [ ] [Esta PC] Al abrir una sesión nueva en este repo, Claude dice si el panel está al día
 
-# Fase 2 — Panel de tareas
-
-## Panel de este repo publicado
-
-**Plataforma:** Repositorio.
-
-**Prioridad:** Mejora.
-
-**Requiere:** nada.
-
-**Estado:** en curso.
-
-- [ ] Generar el panel y publicarlo en el enlace del artefacto provisional, que así se conserva
-
 # Fase 3 — Carpetas numeradas
 
 ## Un área por carpeta, un commit por área
@@ -53,7 +39,9 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 **Prioridad:** Mejora.
 
-**Requiere:** «Panel de este repo publicado».
+**Requiere:** nada.
+
+**Estado:** en curso.
 
 Cada movimiento lleva su README en pareja, actualiza `lib/links.ps1`,
 `.prettierignore`, `tools/check.ps1` y la documentación, y se verifica con
