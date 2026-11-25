@@ -13,6 +13,10 @@
   (`filter-repo`, `rebase`, `reset`): se avisa y se entrega el comando.
 - Si la firma falla (clave GPG caducada en el agente), se para y se pide al
   usuario que la desbloquee. Nunca `--no-gpg-sign`.
+- **Etiquetas de versión**: al cerrar un release (CHANGELOG con fecha y su
+  commit), Claude crea la etiqueta firmada, `git tag -s v1.2.3 -m v1.2.3`, y
+  la sube como cualquier push. Borrar o mover una etiqueta (`-d`, `-f`) nunca:
+  otros ya pudieron descargar esa versión; si está mal, se publica otra.
 
 ## Formato
 

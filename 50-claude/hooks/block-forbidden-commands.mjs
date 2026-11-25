@@ -17,9 +17,10 @@
 // Portable Windows/Linux. Solo la ruta de este archivo en settings.json cambia por maquina.
 
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 /**
  * @typedef {object} CommandRule
@@ -98,7 +99,13 @@ const GIT_WRITE =
 // Las formas de solo lectura de esos subcomandos: listar tags y ver el stash no cambian nada. Se
 // quitan del comando y se vuelve a buscar escritura en lo que queda: `git tag -l; git reset` bloquea.
 const GIT_READ_ONLY =
-	/\bgit\s+(?:-[cC]\s+\S+\s+)*(?:tag(?:\s+(?:-l|--list|-n\d*|--contains|--points-at|--sort=\S+|--format=\S+)\b[^;&|]*)?\s*(?:$|[;&|])|stash\s+(?:list|show)\b)/g;
+	/\bgit\s+(?:-[cC]\s+\S+\s+)*(?:tag(?:\s+(?:-l|--list|-v|--verify|-n\d*|--contains|--points-at|--sort=\S+|--format=\S+)\b[^;&|]*)?\s*(?:$|[;&|])|stash\s+(?:list|show)\b)/g;
+
+// La etiqueta firmada de una version cierra un release, como el commit firmado un cambio: la crea
+// Claude, y se quita del comando como la lectura. Borrarla, moverla o crearla sin firma, no.
+const GIT_TAG = String.raw`\bgit\s+(?:-[cC]\s+\S+\s+)*tag\b`;
+const GIT_TAG_FORBIDDEN = new RegExp(String.raw`${GIT_TAG}[^;&|]*\s(?:-d|--delete|-f|--force|--no-sign)\b`);
+const GIT_SIGNED_TAG = new RegExp(String.raw`${GIT_TAG}(?=[^;&|]*\s(?:-s|--sign)\b)[^;&|]*`, "g");
 
 /** @type {readonly CommandRule[]} */
 const RULES = [
@@ -130,8 +137,16 @@ const RULES = [
 		reason: "push: solo si el usuario eligio «Commit y push»; cada push gasta minutos de Actions.",
 	},
 	{
+		pattern: GIT_TAG_FORBIDDEN,
+		decision: "deny",
+		reason:
+			"borrar o mover una etiqueta reescribe una version ya publicada (si esta mal, se publica otra), " +
+			"y sin firma no se crea: `git tag -s <version> -m <version>`.",
+	},
+	{
 		pattern: GIT_WRITE,
-		applies: (command) => GIT_WRITE.test(unquoted(command).replaceAll(GIT_READ_ONLY, " ")),
+		applies: (command) =>
+			GIT_WRITE.test(unquoted(command).replaceAll(GIT_READ_ONLY, " ").replaceAll(GIT_SIGNED_TAG, " ")),
 		decision: "deny",
 		reason:
 			"git de escritura: lo que reescribe historia o arbol lo hace el usuario " +
@@ -180,29 +195,25 @@ function findRule(command, cwd) {
 	return RULES.find((rule) => rule.pattern.test(masked) && (rule.applies?.(command, cwd) ?? true));
 }
 
-let input = "";
-for await (const chunk of process.stdin) input += chunk;
+export { findRule };
 
-let command = "";
-let cwd = process.cwd();
-try {
-	const parsed = JSON.parse(input);
-	command = String(parsed.tool_input?.command ?? "");
-	if (typeof parsed.cwd === "string") cwd = parsed.cwd;
-} catch {
-	process.exit(0);
+/** Lee la llamada de Claude Code por stdin y, si una regla casa, contesta su decisión. */
+async function runHook() {
+	let input = "";
+	for await (const chunk of process.stdin) input += chunk;
+	let parsed;
+	try {
+		parsed = JSON.parse(input);
+	} catch {
+		return;
+	}
+	const cwd = typeof parsed.cwd === "string" ? parsed.cwd : process.cwd();
+	const rule = findRule(String(parsed.tool_input?.command ?? ""), cwd);
+	if (!rule) return;
+	const reason = `~/.claude/hooks/block-forbidden-commands.mjs: ${rule.reason}`;
+	const output = { hookEventName: "PreToolUse", permissionDecision: rule.decision, permissionDecisionReason: reason };
+	process.stdout.write(JSON.stringify({ hookSpecificOutput: output }));
 }
 
-const rule = findRule(command, cwd);
-if (rule) {
-	process.stdout.write(
-		JSON.stringify({
-			hookSpecificOutput: {
-				hookEventName: "PreToolUse",
-				permissionDecision: rule.decision,
-				permissionDecisionReason: `~/.claude/hooks/block-forbidden-commands.mjs: ${rule.reason}`,
-			},
-		}),
-	);
-}
-process.exit(0);
+// Solo lee stdin como hook, no al importarlo los tests; ruta real porque `~/.claude/hooks` enlaza aquí.
+if (process.argv[1] && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))) await runHook();

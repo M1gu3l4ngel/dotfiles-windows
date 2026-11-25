@@ -167,6 +167,12 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
 		Fail 'Panel de tareas: tests fallidos'
 		$panelTests | Select-String 'not ok' | ForEach-Object { Write-Host "       $_" }
 	}
+	$hookTests = node --test --test-reporter=tap (Join-Path $repo '50-claude\hooks\block-forbidden-commands.test.mjs') 2>&1
+	if ($LASTEXITCODE -eq 0) { Pass "Hook de comandos: $((($hookTests | Select-String '^# pass ') -replace '^# pass ', '')) tests" }
+	else {
+		Fail 'Hook de comandos: tests fallidos'
+		$hookTests | Select-String 'not ok' | ForEach-Object { Write-Host "       $_" }
+	}
 	$panelCheck = node (Join-Path $repo '50-claude\panel\check.mjs') $repo 2>&1
 	if ($LASTEXITCODE -eq 0) { Pass "Panel de tareas: $($panelCheck -join ' ')" }
 	else {
