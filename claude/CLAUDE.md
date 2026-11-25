@@ -2,13 +2,13 @@
 
 Capa global: **solo comportamiento universal**. Lo de cada proyecto vive en su repo.
 El detalle de la máquina (discos, cachés, variables, rustup, robocopy, qué no tocar) está en
-`~/.claude/entorno.md`: **léelo antes de operar fuera de un repo** (mover/borrar/instalar en
-disco, tocar cachés, WSL, Docker o herramientas globales).
+`~/.claude/entorno.md`: **léelo antes de operar fuera de un repo** (mover/borrar/instalar en disco, tocar cachés, WSL, Docker o herramientas globales).
 
-## Documentación en repos públicos: bilingüe
+## Documentación: bilingüe en todos los repos
 - Todo documento (README, CONTRIBUTING, CHANGELOG, `docs/`, README de carpetas) va en pareja: `X.md` en inglés (el nombre que reconoce GitHub) y `X.es.md` en español, en la misma carpeta, nombres de archivo en inglés y selector `English | Español` en la línea 1 de ambos. Cada idioma enlaza a su idioma.
 - Misma estructura (secciones, tablas, listas, enlaces); se traduce el texto, incluido el `alt`. Bloques de código idénticos byte a byte (placeholders en inglés neutro). Un cambio va a los dos en el mismo commit, y el check del repo (CI) lo verifica: pareja, selector, estructura, código, enlaces y anclas.
-- Solo en español: comentarios de código, commits, `CLAUDE.md` y reglas del agente. Repos privados: todo en español, sin versión en inglés.
+- Vale también en los repos privados: todo lo nuevo nace en pareja, pensando en publicarlo algún día y en el público de los dos idiomas. Lo ya escrito solo en español se pasa a pareja en su propio bloque de tareas.
+- Solo en español: comentarios de código, commits, `CLAUDE.md` y reglas del agente.
 
 ## Disco: el trabajo va en `D:`
 - `C:` es solo Windows y programas. **Nada de trabajo nuevo en `C:`** (proyectos, cachés, clones, descargas, temporales grandes).
@@ -22,7 +22,7 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 - Sin `.git` → copia y verifica recuento + bytes antes de borrar. `Remove-Item -Force` no usa papelera y atraviesa junctions (ver `entorno.md`).
 
 ## Interacción
-- Commits: sugiere **1 commit de 1 línea** (Conventional Commits) que diga qué cambió en el repo, sin nombres del plan de trabajo ("tanda", "bloque", "fase"); **nunca ejecutes git tú** — el usuario commitea y pushea.
+- Commits: Conventional Commits con título `type(scope): resumen` de hasta 72 caracteres, línea en blanco y un cuerpo con un guion por cambio concreto (sin cuerpo solo si el título lo dice todo). Dicen qué cambió en el repo, sin nombres del plan de trabajo ("tanda", "bloque", "fase") ni trailers de atribución. Al cerrar cada cambio verificado se hace el commit sin preguntar: `git add` de sus archivos por ruta (nunca `-A` ni `.`) y `git commit` firmado (nunca `--no-gpg-sign`), y el cierre dice el hash. **Push nunca, salvo que el usuario lo pida**: cada push gasta minutos de Actions. Nunca a `main`, nunca `--force`, nunca mezclar un PR. Si la firma falla (clave GPG caducada en el agente), se para y se le pide que la desbloquee.
 - Un paso a la vez al depurar; intervención mínima (si dice "déjalo así", para). Sin saludos ni despedidas: termina en lo sustantivo.
 - Sin menús de opciones: recomienda una con su porqué. Si dice "te aviso", espera sin consultar por tu cuenta.
 - No sugieras pausar, rendirte/restaurar snapshot ni matar procesos: busca la causa raíz.
