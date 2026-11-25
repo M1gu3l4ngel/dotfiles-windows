@@ -72,6 +72,10 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `50-claude/`: the global Claude Code layer moves from `claude/` into a numbered
+  folder, with `entorno.template.md` (the sections of the local
+  `~/.claude/entorno.md`) and a row in the README. `.prettierignore` no longer
+  claims the layer is identical to Parrot's.
 - `40-format/`: the global Prettier and EditorConfig style moves from `format/`
   into a numbered folder with its README; the files do not change.
 - `30-vscode/`: the VS Code settings, key bindings and extension list move from

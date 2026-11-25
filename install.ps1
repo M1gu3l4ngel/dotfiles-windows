@@ -228,7 +228,7 @@ Write-Host "=== Instalador dotfiles-windows ===" -ForegroundColor Magenta
 Write-Host "Root del repo: $DotfilesRoot" -ForegroundColor Gray
 
 $settingsPath = "$env:USERPROFILE\.claude\settings.json"
-$templatePath = "$DotfilesRoot\claude\settings.template.json"
+$templatePath = "$DotfilesRoot\50-claude\settings.template.json"
 if ($Check) {
 	Write-Host 'Modo -Check: solo se informa, no se cambia nada.' -ForegroundColor Yellow
 	if (Test-Installation -SettingsPath $settingsPath -TemplatePath $templatePath) { exit 0 }

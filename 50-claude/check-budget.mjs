@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // check-budget.mjs — guarda de presupuesto de la capa global de Claude Code.
 // Evita que CLAUDE.md (y los archivos de la capa) crezcan sin control.
-// Portable Windows/Linux: mismo runtime que el hook. Correr: `node claude/check-budget.mjs`
+// Portable Windows/Linux: mismo runtime que el hook. Correr: `node 50-claude/check-budget.mjs`
 // Sale 0 si todo cumple, 1 si algo excede (apto para git pre-commit).
 
 import { readFileSync } from 'node:fs';

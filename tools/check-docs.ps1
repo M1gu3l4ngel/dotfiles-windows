@@ -32,7 +32,7 @@ $ErrorActionPreference = 'Stop'
 # Las listas del panel de tareas tambien: son el trabajo del agente, y el panel lee
 # sus titulos en espanol.
 $excludedPrefixes = @('.claude/')
-$excludedFiles = @('CLAUDE.md', 'claude/CLAUDE.md', 'docs/tasks.md', 'docs/backlog.md')
+$excludedFiles = @('CLAUDE.md', '50-claude/CLAUDE.md', '50-claude/entorno.template.md', 'docs/tasks.md', 'docs/backlog.md')
 
 $esSuffix = '.es.md'
 # Los .ps1 del repo son ASCII puro (PowerShell 5.1): la enie se construye.

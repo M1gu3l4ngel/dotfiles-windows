@@ -9,11 +9,15 @@
 *.md
 
 # ----- COMPARTIDOS CON DOTFILES-PARROT -----
-# Identicos byte a byte en los dos repos (la capa de Claude Code entera, el
-# tema del prompt y el estilo global): reformatearlos aqui los separaria.
-claude/
+# Copias de los de Parrot (el tema del prompt y el estilo global):
+# reformatearlos aqui los separaria.
 10-shell/oh-my-posh/capr4n.omp.json
 40-format/
+
+# ----- CAPA DE CLAUDE CODE -----
+# Este repo es su fuente (Parrot la tomara de aqui). Sus archivos mezclan
+# estilos; unificarlos es un cambio propio, no algo que haga el formateo al guardar.
+50-claude/
 
 # ----- GENERADOS -----
 # Salida de `winget export` (curada a mano): conserva el formato de winget para

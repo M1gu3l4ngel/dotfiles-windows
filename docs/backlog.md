@@ -7,7 +7,7 @@ Lo diferido que no bloquea nada. Cada bloque lleva su porqué y dónde se toca.
 **Plataforma:** Claude Code.
 
 Ese repo genera su panel con `pnpm generate:panel` y una copia de la página. Dos
-versiones que se desalinean: la global (`claude/panel/`) es la fuente. Se queda
+versiones que se desalinean: la global (`50-claude/panel/`) es la fuente. Se queda
 solo su vista Estilo, como extensión, porque se genera del código de su app.
 
 - [ ] Usar `~/.claude/panel/` para la vista Tareas y conservar Estilo como extensión
@@ -35,7 +35,7 @@ Ubuntu 26.04 trae el `.bashrc` de serie: nadie le configura el prompt
 
 **Plataforma:** Claude Code.
 
-`claude/panel/check.mjs` valida el formato sin generar nada; en el CI de cada repo
+`50-claude/panel/check.mjs` valida el formato sin generar nada; en el CI de cada repo
 con panel evitaría tareas mal escritas.
 
 - [ ] Documentar cómo llamarlo desde el CI de un repo que use el panel
@@ -57,7 +57,7 @@ Se quitó la regla `ask` de Edit sobre todo el perfil porque pedía aprobación 
 cada edición, incluso en modo automático. Faltan reglas `ask` estrechas para lo
 que sí importa en `C:`.
 
-- [ ] Reglas `ask` concretas en `~/.claude/settings.json` y, si valen en cualquier PC, en `claude/settings.template.json`
+- [ ] Reglas `ask` concretas en `~/.claude/settings.json` y, si valen en cualquier PC, en `50-claude/settings.template.json`
 
 ### Plugins LSP en la plantilla
 
@@ -66,7 +66,7 @@ que sí importa en `C:`.
 Los plugins de TypeScript y Rust necesitan sus binarios; sin ellos fallan al
 arrancar.
 
-- [ ] `enabledPlugins` en `claude/settings.template.json` y sus binarios en `bootstrap.ps1`
+- [ ] `enabledPlugins` en `50-claude/settings.template.json` y sus binarios en `bootstrap.ps1`
 
 ### Nombre de un repo en el historial
 

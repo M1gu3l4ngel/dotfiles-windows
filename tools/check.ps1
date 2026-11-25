@@ -10,8 +10,8 @@
   4. Higiene del repo publico: sin rutas C:\Users\<usuario> ni datos de empresa
   5. Finales de linea LF (sin CRLF)
   6. Documentacion bilingue sincronizada (tools/check-docs.ps1)
-  7. Presupuesto de lineas de la capa de Claude Code (claude/check-budget.mjs)
-  8. Tests del panel de tareas (claude/panel) y formato de las tareas del repo
+  7. Presupuesto de lineas de la capa de Claude Code (50-claude/check-budget.mjs)
+  8. Tests del panel de tareas (50-claude/panel) y formato de las tareas del repo
   9. Secretos con gitleaks (si esta instalado)
 
   Sale con codigo distinto de 0 si alguna comprobacion falla.
@@ -56,7 +56,7 @@ if (Get-Module -ListAvailable PSScriptAnalyzer) {
 else { Skip 'PSScriptAnalyzer no instalado (Install-Module PSScriptAnalyzer -Scope CurrentUser)' }
 
 # ----- 3. JSON VALIDO (solo JSON puro; los de VS Code son JSONC con comentarios) -----
-$jsonPure = @('apps\winget-dev.json', '10-shell\oh-my-posh\capr4n.omp.json', 'claude\hooks.local.example.json', 'claude\settings.template.json', '.claude\panel.json')
+$jsonPure = @('apps\winget-dev.json', '10-shell\oh-my-posh\capr4n.omp.json', '50-claude\hooks.local.example.json', '50-claude\settings.template.json', '.claude\panel.json')
 $jsonOk = $true
 foreach ($rel in $jsonPure) {
 	$p = Join-Path $repo $rel
@@ -132,14 +132,14 @@ else {
 # ----- 7. PRESUPUESTO DE LA CAPA DE CLAUDE CODE -----
 # CLAUDE.md se carga en cada sesion: crecer sin tope cuesta contexto en todas.
 if (Get-Command node -ErrorAction SilentlyContinue) {
-	$budgetOut = node (Join-Path $repo 'claude\check-budget.mjs') 2>&1
+	$budgetOut = node (Join-Path $repo '50-claude\check-budget.mjs') 2>&1
 	if ($LASTEXITCODE -eq 0) { Pass 'Presupuesto de la capa de Claude Code' }
 	else {
 		Fail 'Presupuesto de la capa de Claude Code excedido:'
 		$budgetOut | Where-Object { $_ -match 'XX' } | ForEach-Object { Write-Host "       $_" }
 	}
 }
-else { Skip 'node no instalado: sin comprobar el presupuesto de claude/' }
+else { Skip 'node no instalado: sin comprobar el presupuesto de 50-claude/' }
 
 # ----- 8. PANEL DE TAREAS -----
 # El parser del panel global y, si este repo usa el panel (.claude/panel.json), que
@@ -147,13 +147,13 @@ else { Skip 'node no instalado: sin comprobar el presupuesto de claude/' }
 # dejaria de decir lo mismo que el repo.
 if (Get-Command node -ErrorAction SilentlyContinue) {
 	# Salida TAP: solo ASCII y con 'not ok' en cada fallo, facil de filtrar aqui.
-	$panelTests = node --test --test-reporter=tap (Join-Path $repo 'claude\panel\board.test.mjs') 2>&1
+	$panelTests = node --test --test-reporter=tap (Join-Path $repo '50-claude\panel\board.test.mjs') 2>&1
 	if ($LASTEXITCODE -eq 0) { Pass "Panel de tareas: $((($panelTests | Select-String '^# pass ') -replace '^# pass ', '')) tests" }
 	else {
 		Fail 'Panel de tareas: tests fallidos'
 		$panelTests | Select-String 'not ok' | ForEach-Object { Write-Host "       $_" }
 	}
-	$panelCheck = node (Join-Path $repo 'claude\panel\check.mjs') $repo 2>&1
+	$panelCheck = node (Join-Path $repo '50-claude\panel\check.mjs') $repo 2>&1
 	if ($LASTEXITCODE -eq 0) { Pass "Panel de tareas: $($panelCheck -join ' ')" }
 	else {
 		Fail 'Panel de tareas: formato de docs/tasks.md o docs/backlog.md'

@@ -17,8 +17,9 @@ máquina se queda local (no se versiona).
 | `hooks.local.example.json` | — (ejemplo) | Forma de `~/.claude/hooks.local.json`: los repos cuya única rama es `main` (`owner/repo`), en los que el hook deja subir a `main`. Sin ese archivo ningún repo tiene la excepción |
 | `hooks/reply-in-spanish.mjs` | `~/.claude/hooks/reply-in-spanish.mjs` | Hook `PostToolUse` y `Stop` que mantiene las respuestas en español: tras cada herramienta avisa a Claude si lo último que escribió está en inglés, y bloquea un turno que termina en inglés. Juzga el final del turno e ignora código, rutas e identificadores. Portable Windows/Linux |
 | `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos, registro de los hooks y de la barra de estado, `skillOverrides` y las preferencias que valen en cualquier PC (`theme`, `tui`, `autoUpdatesChannel`) |
-| `check-budget.mjs` | — (script) | Guarda de presupuesto: cuenta líneas de `CLAUDE.md`/`statusline`/`hook` y falla si exceden. Lo corren `tools/check.ps1` y el CI; suelto: `node claude/check-budget.mjs`. Portable |
+| `check-budget.mjs` | — (script) | Guarda de presupuesto: cuenta líneas de `CLAUDE.md`/`statusline`/`hook` y falla si exceden. Lo corren `tools/check.ps1` y el CI; suelto: `node 50-claude/check-budget.mjs`. Portable |
 | `panel/` | `~/.claude/panel` | Panel de tareas: un artefacto generado desde `docs/tasks.md` y `docs/backlog.md` de un repo, con sus hooks. Cada repo lo activa con `.claude/panel.json`. Ver [panel/README.es.md](panel/README.es.md) |
+| `entorno.template.md` | — (plantilla) | Secciones del `~/.claude/entorno.md` local (en español, como `CLAUDE.md`), sin datos de ninguna máquina |
 
 ## Qué NO se versiona (queda local, por máquina)
 
@@ -45,7 +46,8 @@ máquina se queda local (no se versiona).
       máquinas.
     - Opcional (más fiable en Windows): añadir también rutas **absolutas** de tus secretos,
       p. ej. `Read(//d/Dev/security-keys/**)`, junto a los patrones `**/` genéricos.
-3. Crear tu `~/.claude/entorno.md` local con el detalle de esa máquina (no se versiona).
+3. Crear tu `~/.claude/entorno.md` local con el detalle de esa máquina (no se
+   versiona), copiando las secciones de `entorno.template.md`.
 
 Los patrones de secretos usan `**/` (portables Windows/Linux) y no contienen ningún dato
 personal. El `deny` bloquea en seco claves/credenciales; `.env*` queda en `ask` (pregunta

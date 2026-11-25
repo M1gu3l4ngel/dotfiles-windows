@@ -12,7 +12,7 @@ sustituye por un resumen de lo hecho. Lo hecho vive en git, con su diff al lado.
 
 ## Formato
 
-Lo describe `claude/panel/README.es.md` (fases, bloques, `**Plataforma:**`,
+Lo describe `50-claude/panel/README.es.md` (fases, bloques, `**Plataforma:**`,
 `**Prioridad:**`, `**Requiere:**`, `**Estado:** en curso` y `# Por probar`). Las
 plataformas y los dispositivos válidos son los de `.claude/panel.json`.
 `.\tools\check.ps1` falla si el formato no se cumple.

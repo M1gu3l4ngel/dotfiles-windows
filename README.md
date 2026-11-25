@@ -101,6 +101,7 @@ It does not uninstall apps or touch environment variables or WSL.
 | `20-terminal/` | Windows Terminal settings ([20-terminal/README.md](20-terminal/README.md)) |
 | `30-vscode/` | VS Code settings, keybindings and extension list ([30-vscode/README.md](30-vscode/README.md)) |
 | `40-format/` | Global Prettier and EditorConfig style for projects without their own ([docs/formatting.md](docs/formatting.md)) |
+| `50-claude/` | Global Claude Code layer: `CLAUDE.md`, hooks, status line, task panel and settings template ([50-claude/README.md](50-claude/README.md)) |
 | `apps/` | Reference snapshot of applications |
 | `docs/` | Detailed guides |
 | `.claude/rules/` | Project conventions (loaded by Claude Code) |

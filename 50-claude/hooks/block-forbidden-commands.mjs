@@ -33,7 +33,7 @@ import path from "node:path";
 // Repos cuya unica rama es main (sin staging ni CI que gaste minutos): subir a main es su flujo
 // normal. Son de cada usuario, asi que la lista vive fuera del repo publico, en
 // ~/.claude/hooks.local.json (`{ "mainOnlyRepos": ["owner/repo"] }`, ver
-// claude/hooks.local.example.json). Se reconocen por la URL del remoto, no por la carpeta, que
+// 50-claude/hooks.local.example.json). Se reconocen por la URL del remoto, no por la carpeta, que
 // cambia de una maquina a otra. Sin el archivo, ningun repo tiene la excepcion.
 const LOCAL_CONFIG = path.join(os.homedir(), ".claude", "hooks.local.json");
 

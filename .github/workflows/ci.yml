@@ -1,7 +1,7 @@
 # .github/workflows/ci.yml
 # CI del repo: en cada push a main y en cada pull request corre tools/check.ps1
 # (sintaxis, PSScriptAnalyzer, JSON, higiene del repo publico, LF, documentacion
-# bilingue, presupuesto de claude/ y gitleaks). node ya viene en windows-latest.
+# bilingue, presupuesto de 50-claude/ y gitleaks). node ya viene en windows-latest.
 # El resultado aparece como check junto a cada commit. En local: .\tools\check.ps1
 name: CI
 
