@@ -10,6 +10,9 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Añadido
 
+- `tools/check.ps1` falla ante un comentario de código en español (`tools/check-comments.mjs`,
+  con tests) e imprime lo que exime: Markdown, literales de texto y términos citados entre «» o
+  comillas invertidas.
 - `block-forbidden-commands.mjs` deja a Claude crear la etiqueta firmada de una versión
   (`git tag -s`) y sigue bloqueando borrar, mover o crear sin firma una etiqueta. Sus reglas
   tienen tests, que corre `tools/check.ps1`.

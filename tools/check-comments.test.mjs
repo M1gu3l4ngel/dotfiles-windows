@@ -1,0 +1,88 @@
+// @ts-check
+// Tests for the comment language check: it flags Spanish comments in each comment syntax and
+// leaves alone what stays Spanish on purpose (string literals, quoted panel terms). A check that
+// stops matching gives no warning: Spanish comments would simply come back.
+
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+import { extractComments, isSpanish } from "./check-comments.mjs";
+
+/**
+ * @param {string} file
+ * @param {string} text
+ */
+const flagged = (file, text) => extractComments(file, text).filter((c) => isSpanish(c.text)).map((c) => c.line);
+
+describe("isSpanish", () => {
+	it("flags a sentence with accents or Spanish function words", () => {
+		assert.equal(isSpanish("Configuración del perfil"), true);
+		assert.equal(isSpanish("Se ejecuta al iniciar cada sesion de PowerShell"), true);
+		assert.equal(isSpanish("Binarios: git nunca debe tocar sus bytes ni normalizarlos."), true);
+	});
+
+	it("flags a short label with a single Spanish function word", () => {
+		assert.equal(isSpanish("Bloques de tareas."), true);
+		assert.equal(isSpanish("Barra superior y contenido."), true);
+	});
+
+	it("does not flag an English comment that shares a word with Spanish", () => {
+		assert.equal(isSpanish("Swaps the x and y coordinates."), false);
+	});
+
+	it("passes English, also with a few Spanish words", () => {
+		assert.equal(isSpanish("Runs at the start of every session; reload it with . $PROFILE"), false);
+		assert.equal(isSpanish("Within a phase, blocks go from P0 to Mejora."), false);
+	});
+
+	it("ignores terms quoted between «» or backticks", () => {
+		assert.equal(isSpanish("In «Por probar», one card per platform."), false);
+		assert.equal(isSpanish("`[Esta PC] El prompt…` → its devices and the text."), false);
+		assert.equal(isSpanish("«Pendientes» leaves out «Por probar»: that work is done."), false);
+	});
+});
+
+describe("extractComments", () => {
+	it("reads # comments in PowerShell, including comment-based help, and skips directives", () => {
+		const ps = [
+			"#Requires -Version 5.1",
+			"<#",
+			".SYNOPSIS",
+			"  Instala los enlaces de la configuracion del repo.",
+			"#>",
+			"$x = 1 # valor por defecto para la prueba de la carpeta",
+			"# Runs before the links, so nothing is moved aside.",
+		].join("\n");
+		assert.deepEqual(flagged("install.ps1", ps), [2, 6]);
+	});
+
+	it("reads // and /* */ comments in JavaScript and leaves string literals alone", () => {
+		const js = [
+			"// Lee las tareas de los .md y las convierte en datos",
+			'const label = "lo que se hace ahora, con su porqué";',
+			"/**",
+			" * Une las líneas de un bloque en párrafos.",
+			" */",
+			"const url = 'https://example.com'; // the public page",
+		].join("\n");
+		assert.deepEqual(flagged("board.mjs", js), [1, 3]);
+	});
+
+	it("reads HTML and CSS comments inside a page", () => {
+		const html = ["<!--", "  Página del panel: las tareas del repo.", "-->", "<style>", "/* Barra superior y el contenido de la página. */", "</style>"].join("\n");
+		assert.deepEqual(flagged("board.html", html), [1, 5]);
+	});
+
+	it("reads trailing comments in YAML but not a # inside a value of .gitignore", () => {
+		assert.deepEqual(flagged("ci.yml", "fetch-depth: 0 # historial completo: revisa todos los commits"), [1]);
+		assert.deepEqual(flagged(".gitignore", "*.log"), []);
+	});
+
+	it("joins consecutive comment lines, so a sentence split over lines is judged whole", () => {
+		const sh = ["# Prefiere pwsh porque PowerShell 5.1", "# pide admin para los enlaces.", "exec pwsh"].join("\n");
+		assert.deepEqual(flagged("post-merge", sh), [1]);
+	});
+
+	it("skips files it does not know, such as Markdown", () => {
+		assert.deepEqual(extractComments("README.md", "# Configuración del repo"), []);
+	});
+});

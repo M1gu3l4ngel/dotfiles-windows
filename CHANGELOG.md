@@ -10,6 +10,8 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- `tools/check.ps1` fails on a Spanish code comment (`tools/check-comments.mjs`, with tests) and
+  prints what it exempts: Markdown, string literals and terms quoted with «» or backticks.
 - `block-forbidden-commands.mjs` lets Claude create a signed release tag (`git tag -s`) and still
   blocks deleting, moving or creating an unsigned tag. Its rules have tests, run by
   `tools/check.ps1`.
