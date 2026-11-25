@@ -95,6 +95,11 @@ const GIT_PUSH = String.raw`\bgit(?:\s+-[cC]\s+\S+)*\s+push\b`;
 const GIT_WRITE =
 	/\bgit\s+(?:-[cC]\s+\S+\s+)*(pull|reset|rebase|merge|checkout|switch|restore|clean|stash|cherry-pick|revert|tag|mv|rm|apply|am)\b/;
 
+// Las formas de solo lectura de esos subcomandos: listar tags y ver el stash no cambian nada. Se
+// quitan del comando y se vuelve a buscar escritura en lo que queda: `git tag -l; git reset` bloquea.
+const GIT_READ_ONLY =
+	/\bgit\s+(?:-[cC]\s+\S+\s+)*(?:tag(?:\s+(?:-l|--list|-n\d*|--contains|--points-at|--sort=\S+|--format=\S+)\b[^;&|]*)?\s*(?:$|[;&|])|stash\s+(?:list|show)\b)/g;
+
 /** @type {readonly CommandRule[]} */
 const RULES = [
 	{
@@ -126,6 +131,7 @@ const RULES = [
 	},
 	{
 		pattern: GIT_WRITE,
+		applies: (command) => GIT_WRITE.test(unquoted(command).replaceAll(GIT_READ_ONLY, " ")),
 		decision: "deny",
 		reason:
 			"git de escritura: lo que reescribe historia o arbol lo hace el usuario " +

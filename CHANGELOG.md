@@ -66,6 +66,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `block-forbidden-commands.mjs` lets the read-only forms through (`git tag`,
+  `git tag -l`, `git stash list`, `git stash show`); a write chained after them
+  is still blocked.
 - `bootstrap.ps1` sets the environment variables before installing with winget
   (rustup ended up in the `C:` profile), adds `PNPM_HOME` and the Cargo and pnpm
   `bin` folders to the PATH, and installs the NuGet provider without prompting
