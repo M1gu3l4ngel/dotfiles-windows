@@ -51,7 +51,7 @@ sin romper nada (por ejemplo tras un reinicio).
 | 8 | Extensiones de VS Code de `30-vscode/vscode/extensions.txt` (solo las que faltan) |
 | 9 | Muestra los pasos manuales que implican secretos (GPG/SSH) |
 
-Solo instala el **entorno**. Las apps personales no se tocan (ver `apps/`).
+Solo instala el **entorno**. Las apps personales no se tocan (ver `60-apps/`).
 
 ## Instalar solo las configuraciones
 
@@ -101,7 +101,7 @@ No desinstala apps ni toca variables de entorno o WSL.
 | `30-vscode/` | Settings, keybindings y lista de extensiones de VS Code ([30-vscode/README.es.md](30-vscode/README.es.md)) |
 | `40-format/` | Estilo global de Prettier y EditorConfig para proyectos sin el suyo ([docs/formatting.es.md](docs/formatting.es.md)) |
 | `50-claude/` | Capa global de Claude Code: `CLAUDE.md`, hooks, línea de estado, panel de tareas y plantilla de settings ([50-claude/README.es.md](50-claude/README.es.md)) |
-| `apps/` | Snapshot de referencia de aplicaciones |
+| `60-apps/` | Apps del entorno: las esenciales, que instala `bootstrap.ps1`, y las opcionales ([60-apps/README.es.md](60-apps/README.es.md)) |
 | `docs/` | Guías detalladas |
 | `.claude/rules/` | Convenciones del proyecto (las carga Claude Code) |
 
@@ -130,7 +130,8 @@ activa la primera vez), y eso cubre el resto:
 - Se crean los enlaces nuevos (`lib/links.ps1`).
 - Se registran en `~/.claude/settings.json` los hooks nuevos de Claude Code,
   con un backup antes y sin tocar nada más del archivo.
-- Si el pull cambió `bootstrap.ps1` (hay herramientas nuevas), ejecuta tú
+- Si el pull cambió `bootstrap.ps1` o `60-apps/essential.json` (hay
+  herramientas nuevas), ejecuta tú
   `.\bootstrap.ps1`: instalar programas no es automático.
 
 Lo que no se versiona no viaja: las claves, `~/.claude/entorno.md` y
@@ -138,9 +139,10 @@ Lo que no se versiona no viaja: las claves, `~/.claude/entorno.md` y
 
 ## Snapshot de aplicaciones
 
-`apps/winget-dev.json` lista las apps de entorno/desarrollo, reinstalables con
+`60-apps/essential.json` es el entorno, que instala `bootstrap.ps1`, y
+`60-apps/optional.json` las demás herramientas de desarrollo, reinstalables con
 `winget import`. Las apps personales no se versionan: se restauran con la imagen
-del sistema. Detalle en [apps/README.es.md](apps/README.es.md).
+del sistema. Detalle en [60-apps/README.es.md](60-apps/README.es.md).
 
 ## Nombre visual del prompt (opcional)
 

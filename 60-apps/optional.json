@@ -11,46 +11,19 @@
           "PackageIdentifier": "chrisant996.Clink"
         },
         {
-          "PackageIdentifier": "CoreyButler.NVMforWindows"
-        },
-        {
           "PackageIdentifier": "DBBrowserForSQLite.DBBrowserForSQLite"
-        },
-        {
-          "PackageIdentifier": "Docker.DockerDesktop"
-        },
-        {
-          "PackageIdentifier": "Git.Git"
         },
         {
           "PackageIdentifier": "GitHub.cli"
         },
         {
-          "PackageIdentifier": "GnuPG.Gpg4win"
-        },
-        {
-          "PackageIdentifier": "JanDeDobbeleer.OhMyPosh"
-        },
-        {
           "PackageIdentifier": "JohnMacFarlane.Pandoc"
-        },
-        {
-          "PackageIdentifier": "lsd-rs.lsd"
-        },
-        {
-          "PackageIdentifier": "Microsoft.PowerShell"
         },
         {
           "PackageIdentifier": "Microsoft.PowerToys"
         },
         {
           "PackageIdentifier": "Microsoft.VisualStudio.BuildTools"
-        },
-        {
-          "PackageIdentifier": "Microsoft.VisualStudioCode"
-        },
-        {
-          "PackageIdentifier": "Microsoft.WindowsTerminal"
         },
         {
           "PackageIdentifier": "Microsoft.WSL"
@@ -69,15 +42,6 @@
         },
         {
           "PackageIdentifier": "Python.Launcher"
-        },
-        {
-          "PackageIdentifier": "Python.Python.3.14"
-        },
-        {
-          "PackageIdentifier": "Rustlang.Rustup"
-        },
-        {
-          "PackageIdentifier": "sharkdp.bat"
         },
         {
           "PackageIdentifier": "Stripe.StripeCli"

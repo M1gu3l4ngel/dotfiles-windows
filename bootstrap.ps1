@@ -43,13 +43,9 @@ $WslDistro = 'Ubuntu-26.04'
 # --- Set esencial de winget ---
 # Solo el entorno: shell, terminal, editor, prompt, firma, toolchain y CLI tools
 # (estas para andar sincronizado con Parrot). NADA de apps personales.
-$WingetEssential = @(
-	'Git.Git', 'Microsoft.PowerShell', 'Microsoft.WindowsTerminal', 'Microsoft.VisualStudioCode',
-	'JanDeDobbeleer.OhMyPosh', 'GnuPG.Gpg4win', 'Rustlang.Rustup', 'Python.Python.3.14',
-	'Docker.DockerDesktop', 'CoreyButler.NVMforWindows',
-	'junegunn.fzf', 'BurntSushi.ripgrep.MSVC', 'sharkdp.bat', 'sharkdp.fd', 'jqlang.jq',
-	'lsd-rs.lsd', 'Neovim.Neovim', 'mvdan.shfmt'
-)
+# Vive en 60-apps/essential.json, en el formato de `winget import`, en el orden en
+# que se instala; tools/check.ps1 vigila que no se solape con optional.json.
+$WingetEssential = @((Get-Content -Raw -LiteralPath "$DotfilesRoot\60-apps\essential.json" | ConvertFrom-Json).Sources.Packages.PackageIdentifier)
 
 # Opciones del instalador que winget no activa en modo silencioso. Sin esto, VS Code
 # queda sin "Abrir con Code" en el menu contextual y fuera del PATH.

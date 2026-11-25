@@ -27,6 +27,7 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 - [ ] [Esta PC] Tras un `git pull` en otra PC, el `post-merge` rehace los enlaces y el prompt sigue igual
 - [ ] [Esta PC] Windows Terminal abre con PowerShell 7, Monokai Soda y la fuente de siempre
+- [ ] [PC nueva] `bootstrap.ps1` instala las 18 apps de `60-apps/essential.json`
 
 ## Panel de tareas
 
@@ -38,24 +39,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] [Esta PC] Buscar abre los bloques con resultados y resalta el texto
 - [ ] [Esta PC] Al abrir una sesión nueva en este repo, Claude dice si el panel está al día
 
-# Fase 3 — Carpetas numeradas
-
-## Un área por carpeta, un commit por área
-
-**Plataforma:** Repositorio, Instalación.
-
-**Prioridad:** Mejora.
-
-**Requiere:** nada.
-
-**Estado:** en curso.
-
-Cada movimiento lleva su README en pareja, actualiza `lib/links.ps1`,
-`.prettierignore`, `tools/check.ps1` y la documentación, y se verifica con
-`.\install.ps1 -Check`.
-
-- [ ] `60-apps`: `essential.json`, que lee `bootstrap.ps1` en lugar de `$WingetEssential`, y `optional.json`, sin solaparse (lo comprueba `tools/check.ps1`)
-
 # Fase 4 — Documentación y 1.0.0
 
 ## Documentación de proyecto abierto
@@ -64,7 +47,9 @@ Cada movimiento lleva su README en pareja, actualiza `lib/links.ps1`,
 
 **Prioridad:** Mejora.
 
-**Requiere:** «Un área por carpeta, un commit por área».
+**Requiere:** nada.
+
+**Estado:** en curso.
 
 - [ ] README como índice de las carpetas numeradas
 - [ ] Guía `docs/getting-started` en pareja: una PC nueva desde cero

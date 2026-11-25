@@ -73,6 +73,10 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `60-apps/`: `apps/winget-dev.json` se parte en `essential.json`, que
+  `bootstrap.ps1` lee ahora en lugar de su propia lista, y `optional.json`, los
+  dos en el formato de `winget export`. `tools/check.ps1` falla si una app está
+  en los dos.
 - `50-claude/`: la capa global de Claude Code pasa de `claude/` a una carpeta
   numerada, con `entorno.template.md` (las secciones del `~/.claude/entorno.md`
   local) y una fila en el README. `.prettierignore` ya no afirma que la capa es

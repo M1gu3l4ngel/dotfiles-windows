@@ -6,7 +6,7 @@
 .DESCRIPTION
   1. Sintaxis de todos los .ps1
   2. PSScriptAnalyzer (con PSScriptAnalyzerSettings.psd1)
-  3. JSON valido (archivos de JSON puro)
+  3. JSON valido (archivos de JSON puro) y listas de apps sin solaparse
   4. Higiene del repo publico: sin rutas C:\Users\<usuario> ni datos de empresa
   5. Finales de linea LF (sin CRLF)
   6. Documentacion bilingue sincronizada (tools/check-docs.ps1)
@@ -56,7 +56,7 @@ if (Get-Module -ListAvailable PSScriptAnalyzer) {
 else { Skip 'PSScriptAnalyzer no instalado (Install-Module PSScriptAnalyzer -Scope CurrentUser)' }
 
 # ----- 3. JSON VALIDO (solo JSON puro; los de VS Code son JSONC con comentarios) -----
-$jsonPure = @('apps\winget-dev.json', '10-shell\oh-my-posh\capr4n.omp.json', '50-claude\hooks.local.example.json', '50-claude\settings.template.json', '.claude\panel.json')
+$jsonPure = @('60-apps\essential.json', '60-apps\optional.json', '10-shell\oh-my-posh\capr4n.omp.json', '50-claude\hooks.local.example.json', '50-claude\settings.template.json', '.claude\panel.json')
 $jsonOk = $true
 foreach ($rel in $jsonPure) {
 	$p = Join-Path $repo $rel
@@ -66,6 +66,20 @@ foreach ($rel in $jsonPure) {
 	}
 }
 if ($jsonOk) { Pass 'JSON valido (JSON puro)' }
+
+# Las dos listas de apps se reparten el trabajo: bootstrap.ps1 instala essential.json y
+# optional.json es lo que se elige a mano. Una app en las dos se instalaria dos veces o
+# quedaria en el sitio equivocado.
+$appIds = @{}
+foreach ($name in 'essential', 'optional') {
+	$p = Join-Path $repo "60-apps\$name.json"
+	try { $appIds[$name] = @((Get-Content $p -Raw | ConvertFrom-Json).Sources.Packages.PackageIdentifier) }
+	catch { $appIds[$name] = @() }
+}
+$appOverlap = @($appIds['essential'] | Where-Object { $appIds['optional'] -contains $_ })
+if ($appIds['essential'].Count -eq 0) { Fail 'Apps: 60-apps/essential.json sin paquetes' }
+elseif ($appOverlap.Count -eq 0) { Pass "Apps: $($appIds['essential'].Count) esenciales y $($appIds['optional'].Count) opcionales, sin solaparse" }
+else { Fail "Apps en essential.json y optional.json a la vez: $($appOverlap -join ', ')" }
 
 # ----- 4. HIGIENE DEL REPO PUBLICO -----
 # Rutas con un usuario concreto y datos de empresa no deben estar versionados.

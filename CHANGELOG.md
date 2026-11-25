@@ -72,6 +72,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `60-apps/`: `apps/winget-dev.json` splits into `essential.json`, which
+  `bootstrap.ps1` now reads instead of its own list, and `optional.json`, both in
+  the `winget export` format. `tools/check.ps1` fails if an app is in both.
 - `50-claude/`: the global Claude Code layer moves from `claude/` into a numbered
   folder, with `entorno.template.md` (the sections of the local
   `~/.claude/entorno.md`) and a row in the README. `.prettierignore` no longer
