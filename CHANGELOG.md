@@ -66,6 +66,8 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- The PowerShell profile finds the prompt theme through its own link, like
+  `.bashrc`, instead of assuming the repo lives in `~\dotfiles`.
 - `claude/settings.template.json` registers the status line (on a new PC
   `statusline.mjs` was linked but off) and brings `theme`, `tui` and
   `autoUpdatesChannel`.

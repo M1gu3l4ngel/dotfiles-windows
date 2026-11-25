@@ -3,9 +3,13 @@
 # Se ejecuta al iniciar cada sesion de PowerShell. Recargar: . $PROFILE
 
 # Prompt oh-my-posh (git, exit code, tiempo...). Se necesita de inmediato, no se
-# puede diferir. Ruta absoluta al tema en el repo, para no depender de
-# $env:POSH_THEMES_PATH (que se borra al reinstalar oh-my-posh).
-oh-my-posh init pwsh --config "$env:USERPROFILE\dotfiles\oh-my-posh\capr4n.omp.json" | Invoke-Expression
+# puede diferir. El tema se lee del repo, no de $env:POSH_THEMES_PATH (que se borra
+# al reinstalar oh-my-posh). La carpeta del repo sale del enlace de este perfil
+# (Documentos -> repo), como en .bashrc: asi funciona clonado en cualquier ruta.
+$profileFile = Get-Item -LiteralPath $PSCommandPath -Force
+$profileDir = if ($profileFile.LinkType -eq 'SymbolicLink') { Split-Path @($profileFile.Target)[0] -Parent } else { $PSScriptRoot }
+oh-my-posh init pwsh --config (Join-Path $profileDir '..\oh-my-posh\capr4n.omp.json') | Invoke-Expression
+Remove-Variable profileFile, profileDir
 
 # Terminal-Icons (iconos por tipo de archivo en ls/dir) cuesta ~0.5 s al importar.
 # Se difiere al primer idle -justo despues de que aparece el prompt- para que la
