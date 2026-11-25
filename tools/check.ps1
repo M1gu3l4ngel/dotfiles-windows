@@ -7,9 +7,9 @@
   Checks the syntax of every .ps1 and runs PSScriptAnalyzer, validates the pure JSON files and
   that the two app lists do not overlap, scans tracked files for user paths and company data,
   requires LF line endings, compares the bilingual docs (tools/check-docs.ps1), enforces the
-  Claude Code layer's line budget, runs the panel and hook tests and the task format check, fails
-  on a Spanish code comment (tools/check-comments.mjs, which prints its exemptions), and scans the
-  history with gitleaks when it is installed.
+  Claude Code layer's line budget, runs the panel, hook and shared tool tests and the task format
+  check, fails on a Spanish code comment (50-claude/tools/check-comments.mjs, which prints its
+  exemptions), and scans the history with gitleaks when it is installed.
 
   Exits with a non-zero code if any check fails.
 
@@ -51,7 +51,7 @@ if (Get-Module -ListAvailable PSScriptAnalyzer) {
 else { Skip 'PSScriptAnalyzer not installed (Install-Module PSScriptAnalyzer -Scope CurrentUser)' }
 
 # Pure JSON only: the VS Code files are JSONC, with comments.
-$jsonPure = @('60-apps\essential.json', '60-apps\optional.json', '10-shell\oh-my-posh\capr4n.omp.json', '50-claude\hooks.local.example.json', '50-claude\settings.template.json', '50-claude\links.json', '.claude\panel.json')
+$jsonPure = @('60-apps\essential.json', '60-apps\optional.json', '10-shell\oh-my-posh\capr4n.omp.json', '50-claude\hooks.local.example.json', '50-claude\settings.template.json', '50-claude\links.json', '.claude\panel.json', '.claude\comments.json')
 $jsonOk = $true
 foreach ($rel in $jsonPure) {
 	$p = Join-Path $repo $rel
@@ -170,15 +170,10 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
 		Fail 'Shared tools: failed tests'
 		$toolOut | Select-String 'not ok' | ForEach-Object { Write-Host "       $_" }
 	}
-	# Comments are English here (docs/contributing/comments.md); a session that loads a Spanish-only
-	# rule would write them in Spanish again. The exemptions print on every run.
-	$commentTests = node --test --test-reporter=tap (Join-Path $PSScriptRoot 'check-comments.test.mjs') 2>&1
-	if ($LASTEXITCODE -eq 0) { Pass "Comment language check: $((($commentTests | Select-String '^# pass ') -replace '^# pass ', '')) tests" }
-	else {
-		Fail 'Comment language check: failed tests'
-		$commentTests | Select-String 'not ok' | ForEach-Object { Write-Host "       $_" }
-	}
-	$commentOut = @(node (Join-Path $PSScriptRoot 'check-comments.mjs') $repo 2>&1)
+	# Comments are English (docs/contributing/comments.md); a session that loads an older
+	# Spanish-only rule would write them in Spanish again. The exemptions print on every run, the
+	# shared ones and this repo's (.claude/comments.json).
+	$commentOut = @(node (Join-Path $repo '50-claude\tools\check-comments.mjs') $repo 2>&1)
 	if ($LASTEXITCODE -eq 0) {
 		Pass $commentOut[0]
 		$commentOut | Select-Object -Skip 1 | ForEach-Object { Write-Host "       $_" -ForegroundColor Gray }

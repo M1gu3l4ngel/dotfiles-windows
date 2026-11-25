@@ -1,0 +1,6 @@
+{
+  "exemptions": [
+    "The task panel's visible text and the docs/tasks.md templates 50-claude/panel/init.mjs writes are Spanish string literals, and the panel test fixtures mimic docs/tasks.md.",
+    "Panel terms read from docs/tasks.md (Por probar, en curso...) appear quoted inside comments."
+  ]
+}

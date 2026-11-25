@@ -169,7 +169,29 @@ with one commit per folder, as the pilot for other repos.
   that repo's rules: dotfiles-parrot's commits are signed by its owner.
 - English did not grow the files: the hooks under the line budget
   (`50-claude/check-budget.mjs`) changed by at most one line.
-- `tools/check-comments.mjs` keeps the result. On the code before the migration
-  it flags 249 comments and none on the code after it. It misses one- or
-  two-word labels with no function words and no accents, such as
+- `50-claude/tools/check-comments.mjs` keeps the result. On the code before the
+  migration it flags 249 comments and none on the code after it. It misses one-
+  or two-word labels with no function words and no accents, such as
   `Selector segmentado (tema)`, so those still need a look in review.
+
+## The check in any repo
+
+The check is shared through `~/.claude/tools`, so any repo runs it from its own
+folder:
+
+```bash
+node ~/.claude/tools/check-comments.mjs .
+```
+
+It knows the comments of shell, PowerShell, YAML, TOML, JavaScript, CSS, HTML,
+Lua, `.ini`, `.conf`, `.rasi`, `sxhkdrc` and scripts with a shebang. A repo adds
+its own file types, paths to skip and exemptions in `.claude/comments.json`; the
+exemptions print on every run:
+
+```json
+{
+  "styles": { "slash": ["(^|/)xkb/symbols/"] },
+  "skip": ["^vendor/"],
+  "exemptions": ["What this repo keeps in Spanish on purpose, and why."]
+}
+```

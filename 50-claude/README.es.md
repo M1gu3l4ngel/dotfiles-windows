@@ -24,6 +24,7 @@ máquina se queda local (no se versiona).
 | `panel/` | `~/.claude/panel` | Panel de tareas: un artefacto generado desde `docs/tasks.md` y `docs/backlog.md` de un repo, con sus hooks. Cada repo lo activa con `.claude/panel.json`. Ver [panel/README.es.md](panel/README.es.md) |
 | `links.json` | — (datos) | Los enlaces de la capa: `source` relativo a `50-claude/`, `target` relativo a `~/.claude/` y una `label`. Lo leen `lib/links.ps1` aquí y `lib/links.sh` en dotfiles-parrot, así que una pieza nueva llega a los dos sistemas con una sola entrada |
 | `tools/` | `~/.claude/tools` | Scripts compartidos que cualquier repo o instalador corre con `node`, cada uno con sus tests |
+| `tools/check-comments.mjs` | (dentro de `tools/`) | Falla ante un comentario de código en español e imprime sus exenciones; un repo lo configura con `.claude/comments.json`. Ver [docs/contributing/comments.es.md](../docs/contributing/comments.es.md#el-check-en-cualquier-repo). Portable |
 | `tools/install-settings.mjs` | (dentro de `tools/`) | Crea `~/.claude/settings.json` desde la plantilla, o le añade los hooks y las reglas `deny`/`ask` que le faltan, con un backup fechado; `--check` solo informa. Lo llama el instalador de cada sistema (`install.ps1` aquí, `install.sh` en dotfiles-parrot). Portable |
 | `entorno.template.md` | — (plantilla) | Secciones del `~/.claude/entorno.md` local (en español, como `CLAUDE.md`), válidas en Windows y en Linux, sin datos de ninguna máquina |
 

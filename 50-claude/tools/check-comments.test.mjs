@@ -1,7 +1,7 @@
 // @ts-check
 // Tests for the comment language check: it flags Spanish comments in each comment syntax and
-// leaves alone what stays Spanish on purpose (string literals, quoted panel terms). A check that
-// stops matching gives no warning: Spanish comments would simply come back.
+// leaves alone what stays Spanish on purpose (string literals, quoted terms). A check that stops
+// matching gives no warning: Spanish comments would simply come back.
 
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
@@ -10,8 +10,12 @@ import { extractComments, isSpanish } from "./check-comments.mjs";
 /**
  * @param {string} file
  * @param {string} text
+ * @param {import("./check-comments.mjs").CommentConfig} [config]
  */
-const flagged = (file, text) => extractComments(file, text).filter((c) => isSpanish(c.text)).map((c) => c.line);
+const flagged = (file, text, config) =>
+	extractComments(file, text, config)
+		.filter((c) => isSpanish(c.text))
+		.map((c) => c.line);
 
 describe("isSpanish", () => {
 	it("flags a sentence with accents or Spanish function words", () => {
@@ -68,7 +72,14 @@ describe("extractComments", () => {
 	});
 
 	it("reads HTML and CSS comments inside a page", () => {
-		const html = ["<!--", "  Página del panel: las tareas del repo.", "-->", "<style>", "/* Barra superior y el contenido de la página. */", "</style>"].join("\n");
+		const html = [
+			"<!--",
+			"  Página del panel: las tareas del repo.",
+			"-->",
+			"<style>",
+			"/* Barra superior y el contenido de la página. */",
+			"</style>",
+		].join("\n");
 		assert.deepEqual(flagged("board.html", html), [1, 5]);
 	});
 
@@ -84,5 +95,41 @@ describe("extractComments", () => {
 
 	it("skips files it does not know, such as Markdown", () => {
 		assert.deepEqual(extractComments("README.md", "# Configuración del repo"), []);
+	});
+});
+
+describe("Linux desktop files", () => {
+	it("reads -- and --[[ ]] comments in Lua", () => {
+		const lua = [
+			"--[[ Atajos de la ventana",
+			"  para el gestor. ]]",
+			'local x = "-- no es comentario"',
+			"local y = 1 -- valor de la prueba",
+			"-- Sets the default gap.",
+		].join("\n");
+		assert.deepEqual(flagged("nvim/init.lua", lua), [1, 4]);
+	});
+
+	it("reads ; and # comments in .ini, as polybar uses them", () => {
+		const ini = ["; Barra de la parte de arriba", "[bar/top]", "# Colores del tema", "width = 100%"].join("\n");
+		assert.deepEqual(flagged("polybar/config.ini", ini), [1, 3]);
+	});
+
+	it("reads # in sxhkdrc and .conf, and // in .rasi", () => {
+		assert.deepEqual(flagged("sxhkd/sxhkdrc", "# Abre la terminal con super"), [1]);
+		assert.deepEqual(flagged("picom/picom.conf", "# Sombras de las ventanas"), [1]);
+		assert.deepEqual(flagged("rofi/theme.rasi", "/* Colores del menú */\n// Fuente de la barra"), [1, 2]);
+	});
+
+	it("tells a script without extension by its shebang", () => {
+		assert.deepEqual(flagged("bin/backup", "#!/usr/bin/env bash\n# Copia la carpeta de trabajo"), [2]);
+		assert.deepEqual(flagged("bin/tool", "#!/usr/bin/env node\n// Lee la lista de tareas"), [2]);
+		assert.deepEqual(flagged("bin/notes", "Lista de la compra"), []);
+	});
+
+	it("takes extra file types from the repo config", () => {
+		const config = { styles: { slash: ["(^|/)xkb/symbols/"] } };
+		assert.deepEqual(flagged("xkb/symbols/custom", "// Teclas de la distribución", config), [1]);
+		assert.deepEqual(flagged("xkb/symbols/custom", "// Teclas de la distribución"), []);
 	});
 });

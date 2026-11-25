@@ -172,8 +172,30 @@ con un commit por carpeta, como piloto para los demás repos.
   dueño.
 - El inglés no hizo crecer los archivos: los hooks con tope de líneas
   (`50-claude/check-budget.mjs`) cambiaron como mucho una línea.
-- `tools/check-comments.mjs` conserva el resultado. Sobre el código de antes de
-  la migración marca 249 comentarios, y ninguno sobre el de después. Se le
-  escapan las etiquetas de una o dos palabras sin palabras funcionales ni
+- `50-claude/tools/check-comments.mjs` conserva el resultado. Sobre el código de
+  antes de la migración marca 249 comentarios, y ninguno sobre el de después. Se
+  le escapan las etiquetas de una o dos palabras sin palabras funcionales ni
   tildes, como `Selector segmentado (tema)`, así que esas hay que mirarlas en la
   revisión.
+
+## El check en cualquier repo
+
+El check se comparte por `~/.claude/tools`, así que cualquier repo lo corre desde
+su carpeta:
+
+```bash
+node ~/.claude/tools/check-comments.mjs .
+```
+
+Conoce los comentarios de shell, PowerShell, YAML, TOML, JavaScript, CSS, HTML,
+Lua, `.ini`, `.conf`, `.rasi`, `sxhkdrc` y los scripts con shebang. Un repo añade
+sus tipos de archivo, las rutas que salta y sus exenciones en
+`.claude/comments.json`; las exenciones se imprimen en cada ejecución:
+
+```json
+{
+  "styles": { "slash": ["(^|/)xkb/symbols/"] },
+  "skip": ["^vendor/"],
+  "exemptions": ["What this repo keeps in Spanish on purpose, and why."]
+}
+```
