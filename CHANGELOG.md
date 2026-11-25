@@ -16,7 +16,8 @@ Notable changes to the project. The format follows
   blocks deleting, moving or creating an unsigned tag. Its rules have tests, run by
   `tools/check.ps1`.
 - `install.ps1` also adds the template's missing `deny`/`ask` rules to an existing
-  `~/.claude/settings.json`, and `-Check` reports them; the template denies reading `.gnupg`.
+  `~/.claude/settings.json`, and `-Check` reports them; the template denies reading `.gnupg`
+  and the Linux secret stores (`.password-store`, `.local/share/keyrings`).
 - `50-claude/hooks/command-rules.mjs`: single source of the universal command rules, linked
   into `~/.claude/hooks/`. Projects keep an identical copy, checked against this one.
 - `new-repo` creates the `Protect main` ruleset (no deletion, no force push) with the repo,

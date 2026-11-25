@@ -51,6 +51,13 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] En un repo de una organización con cerebro, lo registra en su catálogo
 - [ ] En un repo existente al que le falta algo, Claude lo avisa como hallazgo
 
+## Secretos de Linux en la plantilla de settings
+
+**Plataforma:** Claude Code.
+
+- [ ] [Esta PC] `.\install.ps1 -Check` dice `ok template deny/ask rules`
+- [ ] En Parrot, tras enlazar la capa, Claude no puede leer `~/.password-store` ni `~/.local/share/keyrings`
+
 ## Código en inglés
 
 **Plataforma:** Repositorio.
@@ -72,10 +79,84 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 ---
 
+# Fase 6 — Capa de Claude universal (Windows y Linux)
+
+## CLAUDE.md global válido en Windows y Linux
+
+**Plataforma:** Claude Code.
+
+**Prioridad:** P1.
+
+**Requiere:** nada.
+
+**Estado:** en curso.
+
+- [ ] La línea de idioma de `50-claude/CLAUDE.md` dice comentarios, salidas, `reason` y tests en inglés según la guía
+- [ ] La regla de disco habla de «la carpeta de trabajo» y lo de cada sistema (`D:\Dev`, `Remove-Item`, robocopy, junctions) pasa a `entorno.md`
+- [ ] «Di en qué carpeta ejecutar» dice también con qué privilegios (administrador o sudo)
+- [ ] `50-claude/entorno.template.md` con secciones que valen en Windows y en Linux, sin datos de una máquina
+- [ ] El presupuesto de 60 líneas sigue en verde
+
+## Hook de comandos: pull con fast-forward pregunta
+
+**Plataforma:** Claude Code.
+
+**Prioridad:** P2.
+
+**Requiere:** nada.
+
+- [ ] `git pull --ff-only` pasa de `deny` a `ask` en `command-rules.mjs`
+- [ ] Tests con rutas de Linux: `git tag -l` pasa, `git push` pregunta, `rm -rf ~/Dev/projects/x` pregunta, `rm -rf /tmp/x` pasa, `git add -A` se deniega
+
+## Tabla de Troubleshooting del README
+
+**Plataforma:** Repositorio.
+
+**Prioridad:** P2.
+
+**Requiere:** nada.
+
+- [ ] La fila de fnm en `README.md` y `README.es.md` termina en `||` y se come la de «Unverified»: separarlas
+
+## Textos neutros en el código compartido
+
+**Plataforma:** Claude Code.
+
+**Prioridad:** Mejora.
+
+**Requiere:** nada.
+
+- [ ] El `reason` de `block-shell-edits.mjs` no nombra `D:\Dev\scratch`
+- [ ] El skill `new-repo` da la carpeta de proyectos y el check de docs sin rutas de Windows
+
+## Herramientas compartidas en 50-claude/tools
+
+**Plataforma:** Claude Code.
+
+**Prioridad:** Mejora.
+
+**Requiere:** «CLAUDE.md global válido en Windows y Linux».
+
+- [ ] Diseño aprobado: rutas, argumentos y formato de `links.json`
+- [ ] `install-settings.mjs` (con `--check`) fusiona `~/.claude/settings.json` y `install.ps1` lo llama
+- [ ] `links.json` con el mapa de enlaces de la capa, leído por `lib/links.ps1`
+- [ ] `check-comments.mjs` configurable por repo (tipos de comentario y exenciones), con sus tests
+- [ ] Check de docs bilingües en Node, con las exclusiones de cada repo como parámetro, y `tools/check-docs.ps1` lo usa
+
+## Contrato del instalador en el README de 50-claude
+
+**Plataforma:** Claude Code.
+
+**Prioridad:** Mejora.
+
+**Requiere:** «Herramientas compartidas en 50-claude/tools».
+
+- [ ] «Setting up a new machine» describe lo que hace cualquier instalador y dice «Linux: `./install.sh` de dotfiles-parrot», en los dos idiomas
+- [ ] Pasar al chat de Parrot los hashes y lo que cambió del contrato
+
 # Lo hace el dueño
 
-- [ ] Firmar en dotfiles-parrot el commit de `format/editorconfig` en inglés, ya editado en `~\dotfiles-parrot` e idéntico a `40-format/editorconfig`, y hacer push
-- [ ] Copiar `50-claude/hooks/command-rules.mjs` (commit `becc393`) al proyecto que guarda su copia idéntica, para que su check `hook-rules-copy` siga pasando
+- [ ] Copiar `50-claude/hooks/command-rules.mjs` al proyecto que guarda su copia idéntica cuando cierre el bloque «Hook de comandos: pull con fast-forward pregunta», para que su check `hook-rules-copy` vuelva a pasar
 
 # Aplazado — cada uno con el evento que lo dispara
 

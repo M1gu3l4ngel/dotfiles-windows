@@ -4,6 +4,8 @@
     "deny": [
       "Read(**/.ssh/**)",
       "Read(**/.gnupg/**)",
+      "Read(**/.password-store/**)",
+      "Read(**/.local/share/keyrings/**)",
       "Read(**/.credentials.json)",
       "Read(**/security-keys/**)",
       "Read(**/id_rsa)",
