@@ -1,23 +1,23 @@
 #!/usr/bin/env node
 // @ts-check
-// Hook global de Stop y PostToolUse: mantiene en espanol lo que Claude le escribe al usuario.
+// Global Stop and PostToolUse hook: keeps what Claude writes to the user in Spanish.
 //
-// `language: "Español"` en settings.json y la regla de CLAUDE.md son orientativos: en una tarea
-// larga, con muchas herramientas de por medio, Claude a veces pasa al ingles a mitad del turno y
-// sigue asi. Este hook mide el texto que ve el usuario y actua en dos momentos:
-// - PostToolUse: tras cada herramienta mira lo ultimo que escribio Claude y, si esta en ingles,
-//   le inyecta un aviso para que lo siguiente salga en espanol. No bloquea nada.
-// - Stop: si el final del turno esta en ingles, el turno no termina y pide reescribirlo.
+// `language: "Español"` in settings.json and the CLAUDE.md rule are only guidance: in a long task
+// with many tool calls, Claude sometimes switches to English mid-turn and stays there. This hook
+// measures the text the user sees and acts at two points:
+// - PostToolUse: after each tool it looks at what Claude wrote last and, if it is English, injects
+//   a reminder so that what follows is Spanish. It blocks nothing.
+// - Stop: if the end of the turn is English, the turn does not end and must be rewritten.
 //
-// Se juzga el FINAL del turno, no el turno entero: un turno que empezaba en espanol y pasaba al
-// ingles sumaba bastante espanol para pasar el umbral (base-template, 2026-10-14).
+// It judges the END of the turn, not the whole turn: a turn that started in Spanish and switched
+// to English used to add up enough Spanish to pass the threshold.
 //
-// Se mide sin bloques de codigo, codigo inline, rutas ni URLs: un reporte en espanol cita
-// comandos e identificadores en ingles y no debe contar en contra. La decision compara palabras
-// funcionales (articulos, preposiciones, pronombres) de cada idioma, que no aparecen en
-// identificadores. Del transcript se lee solo la cola: una sesion larga pasa de 400 MB.
+// It measures without code blocks, inline code, paths or URLs: a Spanish report quotes English
+// commands and identifiers, and they must not count against it. The decision compares each
+// language's function words (articles, prepositions, pronouns), which identifiers do not contain.
+// Only the tail of the transcript is read: a long session goes past 400 MB.
 //
-// `stop_hook_active` evita el bucle: si el turno ya viene de un bloqueo de este hook, pasa.
+// `stop_hook_active` prevents a loop: if the turn already comes from this hook's block, it passes.
 
 import { closeSync, fstatSync, openSync, readSync } from "node:fs";
 
@@ -38,13 +38,13 @@ const SPANISH = new Set(
 );
 
 const TAIL_BYTES = 1024 * 1024;
-// Palabras funcionales que se juzgan, contando desde el final del turno hacia atras: unas dos
-// frases. Una ventana mas ancha vuelve a sumar el espanol de antes del cambio de idioma.
+// Function words judged, counting back from the end of the turn: about two sentences. A wider
+// window adds back the Spanish from before the language switch.
 const WINDOW = 20;
 const MIN_ENGLISH = { Stop: 12, PostToolUse: 8 };
 
 /**
- * El texto que se lee como prosa: fuera bloques de codigo, codigo inline, URLs y rutas.
+ * The text that reads as prose: without code blocks, inline code, URLs and paths.
  *
  * @param {string} text
  */
@@ -57,7 +57,7 @@ function prose(text) {
 }
 
 /**
- * Cuantas palabras funcionales de cada idioma hay en el texto.
+ * How many function words of each language the text has.
  *
  * @param {string} text
  */
@@ -72,7 +72,7 @@ function count(text) {
 }
 
 /**
- * Si la entrada es un mensaje que escribio el usuario, no el resultado de una herramienta.
+ * Whether the entry is a message the user wrote, not a tool result.
  *
  * @param {any} entry
  */
@@ -84,7 +84,7 @@ function isUserPrompt(entry) {
 }
 
 /**
- * El final del transcript, sin la primera linea si quedo cortada por la mitad.
+ * The end of the transcript, without its first line if that line was cut in half.
  *
  * @param {string} path
  */
@@ -103,7 +103,7 @@ function readTail(path) {
 }
 
 /**
- * Los bloques de texto del asistente desde el ultimo mensaje del usuario, en orden.
+ * The assistant's text blocks since the user's last message, in order.
  *
  * @param {string} transcriptPath
  */
@@ -128,7 +128,7 @@ function turnBlocks(transcriptPath) {
 }
 
 /**
- * Cuenta desde el ultimo bloque hacia atras hasta reunir WINDOW palabras funcionales.
+ * Counts back from the last block until it has WINDOW function words.
  *
  * @param {string[]} blocks
  */
@@ -168,9 +168,9 @@ if (isEnglish && event === "PostToolUse") {
 			hookSpecificOutput: {
 				hookEventName: "PostToolUse",
 				additionalContext:
-					`~/.claude/hooks/reply-in-spanish.mjs: lo ultimo que escribiste esta en ingles (${en} ` +
-					`palabras funcionales en ingles frente a ${es} en espanol). Escribe en espanol, con ` +
-					"acentos, todo lo que digas al usuario desde aqui. Comandos, rutas e identificadores van tal cual.",
+					`~/.claude/hooks/reply-in-spanish.mjs: what you wrote last is in English (${en} ` +
+					`English function words against ${es} Spanish ones). From here on, write everything ` +
+					"you tell the user in Spanish, with accents. Commands, paths and identifiers stay as they are.",
 			},
 		}),
 	);
@@ -179,9 +179,9 @@ if (isEnglish && event === "PostToolUse") {
 		JSON.stringify({
 			decision: "block",
 			reason:
-				`Bloqueado por ~/.claude/hooks/reply-in-spanish.mjs: el final de tu respuesta esta en ingles ` +
-				`(${en} palabras funcionales en ingles frente a ${es} en espanol). Reescribe en espanol, con ` +
-				"acentos, lo que le reportas al usuario. Comandos, rutas e identificadores van tal cual.",
+				`Blocked by ~/.claude/hooks/reply-in-spanish.mjs: the end of your reply is in English ` +
+				`(${en} English function words against ${es} Spanish ones). Rewrite what you report to ` +
+				"the user in Spanish, with accents. Commands, paths and identifiers stay as they are.",
 		}),
 	);
 }

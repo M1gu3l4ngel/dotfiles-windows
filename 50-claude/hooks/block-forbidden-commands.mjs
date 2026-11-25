@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // @ts-check
-// Hook PreToolUse (global) de Bash y PowerShell: corta los comandos que ~/.claude/CLAUDE.md prohíbe.
+// Global PreToolUse hook for Bash and PowerShell: stops the commands ~/.claude/CLAUDE.md forbids.
 //
-// Lo que aquí se bloquea ya está escrito en CLAUDE.md, pero como instrucción es orientativa: una
-// sesión larga, un subagente o un modo automático la olvidan. Un hook corre siempre, también
-// dentro de un subagente. Las reglas viven en `command-rules.mjs`, la fuente única que copia cada
-// proyecto; aquí solo va lo propio del hook global: en qué repos se protege `main`.
+// CLAUDE.md already states these rules, but an instruction is only guidance: a long session, a
+// subagent or auto mode can forget it. A hook always runs, also inside a subagent. The rules live
+// in `command-rules.mjs`, the single source each project copies; this file only adds what is
+// specific to the global hook: in which repos `main` is protected.
 //
-// Portable Windows/Linux. Solo la ruta de este archivo en settings.json cambia por máquina.
+// Runs the same on Windows and Linux; only this file's path in settings.json changes per machine.
 
 import { execFileSync } from "node:child_process";
 import { readFileSync, realpathSync } from "node:fs";
@@ -16,11 +16,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildCommandRules, findCommandRule, runCommandHook } from "./command-rules.mjs";
 
-// Repos cuya única rama es main (sin staging ni CI que gaste minutos): subir a main es su flujo
-// normal. Son de cada usuario, así que la lista vive fuera del repo público, en
-// ~/.claude/hooks.local.json (`{ "mainOnlyRepos": ["owner/repo"] }`, ver
-// 50-claude/hooks.local.example.json). Se reconocen por la URL del remoto, no por la carpeta, que
-// cambia de una máquina a otra. Sin el archivo, ningún repo tiene la excepción.
+// Repos whose only branch is main (no staging, no CI spending minutes): pushing to main is their
+// normal flow. They are each user's own, so the list lives outside the public repo, in
+// ~/.claude/hooks.local.json (`{ "mainOnlyRepos": ["owner/repo"] }`, see
+// 50-claude/hooks.local.example.json). They are matched by remote URL, not by folder, which
+// changes from one machine to another. Without the file, no repo has the exception.
 const LOCAL_CONFIG = path.join(os.homedir(), ".claude", "hooks.local.json");
 
 /** @returns {string[]} */
@@ -67,7 +67,8 @@ export function findRule(command, cwd) {
 	return findCommandRule(RULES, command, cwd);
 }
 
-// Solo lee stdin como hook, no al importarlo los tests; ruta real porque `~/.claude/hooks` enlaza aquí.
+// Read stdin only when run as the hook, not when the tests import it. Compare real paths, because
+// `~/.claude/hooks` links here.
 const invokedPath = process.argv[1] ? realpathSync(process.argv[1]) : "";
 if (invokedPath === realpathSync(fileURLToPath(import.meta.url))) {
 	await runCommandHook(RULES, "~/.claude/hooks/block-forbidden-commands.mjs");

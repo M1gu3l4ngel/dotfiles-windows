@@ -1,17 +1,14 @@
 #!/usr/bin/env node
-// Hook PreToolUse (global) de Bash y PowerShell: bloquea las ediciones de archivos por shell.
+// Global PreToolUse hook for Bash and PowerShell: blocks file edits made through the shell.
 //
-// La regla "Editar con Edit o Write" vive en ~/.claude/CLAUDE.md. Como instruccion es
-// orientativa (un plugin o el modo automatico pueden proponer editar con sed a mitad de
-// sesion); aqui se vuelve determinista para los casos claros: editores in-place, redirecciones
-// a un archivo, heredocs hacia un interprete, cmdlets de escritura y codigo inline que escribe.
+// ~/.claude/CLAUDE.md asks for Edit or Write. As an instruction it can be overridden mid-session
+// (a plugin or auto mode may suggest sed), so this hook enforces the clear cases: in-place
+// editors, redirections to a file, heredocs into an interpreter, writing cmdlets and inline code
+// that writes.
 //
-// Lo que va a un directorio temporal (logs, scratchpad, D:\Dev\scratch, /tmp) o a /dev/null
-// pasa: la regla protege los archivos de trabajo, no la salida de un comando. Ejecutar un
-// script ya escrito con Write (`node scratchpad/barrido.mjs`) tambien pasa.
-//
-// Portable Windows/Linux: TEMP_TARGET cubre $TEMP/$TMP/$TMPDIR, /tmp, \temp\, scratchpad,
-// .../dev/scratch/ y /dev/null. Solo la ruta de este archivo en settings.json cambia por maquina.
+// Output sent to a temp folder (logs, scratchpad, D:\Dev\scratch, /tmp) or to /dev/null passes:
+// the rule protects working files, not a command's output. Running a script already written with
+// Write (`node scratchpad/sweep.mjs`) passes too. Runs the same on Windows and Linux.
 
 const TEMP_TARGET =
 	/^(\/dev\/null|\$null|nul)$|\$\{?(env:)?(TEMP|TMP|TMPDIR)\b|(^|[\\/])(tmp|temp)[\\/]|scratchpad|[\\/]dev[\\/]scratch[\\/]/i;
@@ -23,20 +20,20 @@ const INLINE_WRITE = /writeFile|appendFile|createWriteStream|WriteAllText|open\(
 const PS_WRITERS = /\b(Set-Content|Add-Content|Out-File|Clear-Content)\b|\[(System\.)?IO\.File\]::(Write|Append)/i;
 
 /**
- * Tapa el contenido de las comillas con `_`, conservando la longitud: un `>` o un `<<` dentro
- * de un string no es shell, y los indices siguen apuntando al mismo sitio del comando original.
+ * Masks quoted text with `_`, keeping the length: a `>` or a `<<` inside a string is not shell,
+ * and indexes still point to the same place in the original command.
  */
 function unquoted(command) {
 	return command.replaceAll(/'[^']*'|"(?:[^"\\]|\\.)*"/g, (m) => `${m[0]}${"_".repeat(m.length - 2)}${m.at(-1)}`);
 }
 
-/** Los destinos de cada `>` / `>>` fuera de comillas, sin contar `2>&1` ni `>&2`. */
+/** The target of each `>` / `>>` outside quotes, ignoring `2>&1` and `>&2`. */
 function redirectTargets(command) {
 	const targets = [];
 	for (const match of unquoted(command).matchAll(/(\d|&)?>>?/g)) {
-		// El destino se lee del original: en la version tapada su texto entre comillas no existe.
+		// The target is read from the original: in the masked copy, quoted text is gone.
 		const rest = command.slice(match.index + match[0].length);
-		// Sin `(` ni `)`: en `$(cmd 2>/dev/null)` el `)` cierra la sustitucion, no es del nombre.
+		// No `(` or `)`: in `$(cmd 2>/dev/null)` the `)` closes the substitution, not the name.
 		const target = rest.match(/^\s*(&\d|"[^"]*"|'[^']*'|[^\s;|&<>()]+)?/)?.[1] ?? "";
 		if (target.startsWith("&")) continue;
 		targets.push(target.replaceAll(/^["']|["']$/g, ""));
@@ -51,14 +48,14 @@ function psWriteTargetIsTemp(command) {
 
 function findViolation(command) {
 	const masked = unquoted(command);
-	if (IN_PLACE.test(masked)) return "edicion in-place (sed -i, perl -i, awk -i inplace)";
-	if (HEREDOC_INTERPRETER.test(masked)) return "heredoc hacia un interprete";
-	if (INLINE_CODE.test(masked) && INLINE_WRITE.test(command)) return "codigo inline que escribe archivos";
-	if (PS_WRITERS.test(masked) && !psWriteTargetIsTemp(command)) return "cmdlet que escribe un archivo";
+	if (IN_PLACE.test(masked)) return "in-place edit (sed -i, perl -i, awk -i inplace)";
+	if (HEREDOC_INTERPRETER.test(masked)) return "heredoc into an interpreter";
+	if (INLINE_CODE.test(masked) && INLINE_WRITE.test(command)) return "inline code that writes files";
+	if (PS_WRITERS.test(masked) && !psWriteTargetIsTemp(command)) return "cmdlet that writes a file";
 	const target = redirectTargets(command).find((t) => t && !TEMP_TARGET.test(t));
-	if (target) return `redireccion a ${target}`;
+	if (target) return `redirection to ${target}`;
 	const tee = masked.match(/\|\s*tee\s+(?:-a\s+)?([^\s;|&()]+)/);
-	if (tee && !TEMP_TARGET.test(tee[1])) return `tee hacia ${tee[1]}`;
+	if (tee && !TEMP_TARGET.test(tee[1])) return `tee into ${tee[1]}`;
 	return null;
 }
 
@@ -80,9 +77,9 @@ if (violation) {
 				hookEventName: "PreToolUse",
 				permissionDecision: "deny",
 				permissionDecisionReason:
-					`Bloqueado por ~/.claude/hooks/block-shell-edits.mjs (${violation}). Los archivos se ` +
-					"modifican con Edit o Write (ver ~/.claude/CLAUDE.md). Si la salida es un log, " +
-					"escribela en el scratchpad, en D:\\Dev\\scratch o en $TEMP.",
+					`Blocked by ~/.claude/hooks/block-shell-edits.mjs (${violation}). Files are ` +
+					"changed with Edit or Write (see ~/.claude/CLAUDE.md). If the output is a log, " +
+					"write it to the scratchpad, D:\\Dev\\scratch or $TEMP.",
 			},
 		}),
 	);

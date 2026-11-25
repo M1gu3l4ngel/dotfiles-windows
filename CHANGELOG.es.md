@@ -33,6 +33,9 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- Los comentarios del código, la salida de los scripts, los mensajes de los hooks
+  y los nombres de los tests se escriben en inglés, según la guía nueva
+  `docs/contributing/comments.md`.
 - Node sale de fnm en vez de nvm-windows: cada terminal cambia a la versión del
   repo al entrar en él, las versiones viven en `<disk>\Dev\fnm` y la de por
   defecto queda en el PATH para las apps que arrancan sin perfil de shell.

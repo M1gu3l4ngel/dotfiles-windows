@@ -33,6 +33,8 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- Code comments, script output, hook messages and test names are written in
+  English, following the new guide `docs/contributing/comments.md`.
 - Node comes from fnm instead of nvm-windows: each terminal switches to the
   repo's version on entering it, versions live in `<disk>\Dev\fnm`, and the
   default one stays on the PATH for apps that start without a shell profile.

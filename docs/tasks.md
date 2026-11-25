@@ -79,7 +79,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 encaja; JSDoc o ayuda basada en comentarios; dentro del cuerpo solo el porqué.
 Sin cambiar comportamiento, un commit por carpeta.
 
-- [ ] Migrar `50-claude/hooks` (avisar al dueño para copiar `command-rules.mjs` a Core)
 - [ ] Migrar `50-claude/panel` y el resto de `50-claude`
 - [ ] Migrar `install.ps1`, `uninstall.ps1`, `bootstrap.ps1` y `lib/`
 - [ ] Migrar `tools/` y `githooks/`

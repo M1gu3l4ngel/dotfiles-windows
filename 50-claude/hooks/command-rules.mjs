@@ -1,47 +1,47 @@
 // @ts-check
-// Reglas universales de comandos, compartidas por el hook global (dotfiles) y el de cada proyecto.
+// Universal command rules, shared by the global hook (dotfiles) and each project's hook.
 //
-// FUENTE ÚNICA: este archivo vive en `dotfiles/50-claude/hooks/` y cada proyecto lleva una copia
-// idéntica en `.claude/hooks/`, porque su hook viaja a proyectos extraídos donde los dotfiles no
-// existen. Se edita aquí y se copia tal cual; el check `hook-rules-copy` de cada proyecto falla si
-// las dos copias difieren. Lo propio de un proyecto (su gestor, sus puertos, su `main`) va en su
-// hook, nunca aquí.
+// Single source: this file lives in `dotfiles/50-claude/hooks/`, and each project keeps an
+// identical copy in `.claude/hooks/`, because its hook travels to extracted projects where the
+// dotfiles do not exist. Edit it here and copy it as is; each project's `hook-rules-copy` check
+// fails if the two copies differ. What belongs to one project (its package manager, its ports,
+// its `main`) goes in that project's hook, never here.
 //
-// Va en un hook y no en `permissions.deny` porque un patrón de permisos casa por prefijo: no ve un
-// `git commit` detrás de un `cd x &&`, ni dentro de PowerShell, ni un `/MIR` en mitad de un
-// `robocopy`. `ask` no bloquea: le pasa la decisión al usuario.
+// This is a hook and not `permissions.deny` because a permission pattern matches by prefix: it
+// misses a `git commit` after `cd x &&`, one inside PowerShell, or a `/MIR` in the middle of a
+// `robocopy`. `ask` does not block: it hands the decision to the user.
 
 import path from "node:path";
 
 /**
  * @typedef {object} CommandRule
- * @property {RegExp} pattern Se prueba contra el comando con el contenido de las comillas tapado.
- * @property {(command: string, cwd: string) => boolean} [applies] Condición extra, sobre el
- *   comando original y la carpeta de la sesión.
+ * @property {RegExp} pattern Tested against the command with its quoted text masked.
+ * @property {(command: string, cwd: string) => boolean} [applies] Extra condition, on the
+ *   original command and the session folder.
  * @property {"deny" | "ask"} decision
  * @property {string} reason
  */
 
-// Temporales y cachés regenerables: borrarlos no pide confirmación.
+// Temp folders and regenerable caches: deleting them needs no confirmation.
 const TEMP_TARGET =
 	/\$\{?(env:)?(TEMP|TMP|TMPDIR)\b|(^|[\s"'\\/])(tmp|temp)[\\/]|scratchpad|[\\/]dev[\\/]scratch[\\/]|node_modules|[\\/]\.next\b|[\\/]coverage\b/i;
 
-// Un `git push`, también con opciones globales delante (`git -C ../otro push`): sin ellas en el
-// patrón, ese comando se saltaba todas las reglas de subida.
+// A `git push`, also with global options before it (`git -C ../other push`): without them in the
+// pattern, that command skipped every push rule.
 const GIT_PUSH = String.raw`\bgit(?:\s+-[cC]\s+\S+)*\s+push\b`;
 
-// `add` y `commit` no están: los hace Claude al cerrar cada cambio verificado. Lo que reescribe
-// historia o árbol es del usuario.
+// `add` and `commit` are missing on purpose: Claude runs them to close each verified change.
+// Whatever rewrites history or the tree belongs to the user.
 const GIT_WRITE =
 	/\bgit\s+(?:-[cC]\s+\S+\s+)*(pull|reset|rebase|merge|checkout|switch|restore|clean|stash|cherry-pick|revert|tag|mv|rm|apply|am)\b/;
 
-// Las formas de solo lectura de esos subcomandos (listar y verificar etiquetas, ver el stash). Se
-// quitan del comando y se vuelve a buscar escritura en lo que queda: `git tag -l; git reset` bloquea.
+// The read-only forms of those subcommands (listing and verifying tags, viewing the stash). They
+// are removed from the command and the rest is searched again: `git tag -l; git reset` blocks.
 const GIT_READ_ONLY =
 	/\bgit\s+(?:-[cC]\s+\S+\s+)*(?:tag(?:\s+(?:-l|--list|-v|--verify|-n\d*|--contains|--points-at|--sort=\S+|--format=\S+)\b[^;&|]*)?\s*(?:$|[;&|])|stash\s+(?:list|show)\b)/g;
 
-// La etiqueta firmada de una versión cierra un release, como el commit firmado cierra un cambio:
-// la crea Claude, y se quita del comando como la lectura. Borrarla, moverla o crearla sin firma, no.
+// A release's signed tag closes it, the way a signed commit closes a change: Claude creates it,
+// so it is removed from the command like a read. Deleting, moving or creating it unsigned is not.
 const GIT_TAG = String.raw`\bgit\s+(?:-[cC]\s+\S+\s+)*tag\b`;
 const GIT_TAG_FORBIDDEN = new RegExp(
 	String.raw`${GIT_TAG}[^;&|]*\s(?:-d|--delete|-f|--force|--no-sign)\b`,
@@ -49,8 +49,8 @@ const GIT_TAG_FORBIDDEN = new RegExp(
 const GIT_SIGNED_TAG = new RegExp(String.raw`${GIT_TAG}(?=[^;&|]*\s(?:-s|--sign)\b)[^;&|]*`, "g");
 
 /**
- * Tapa el contenido de las comillas con `_`, conservando la longitud: un `git commit` dentro de
- * un patrón de búsqueda o de un mensaje no es un comando.
+ * Masks quoted text with `_`, keeping the length: a `git commit` inside a search pattern or a
+ * message is not a command.
  *
  * @param {string} command
  */
@@ -62,8 +62,8 @@ export function stripQuotedText(command) {
 }
 
 /**
- * La carpeta donde corre el git del comando: la de un `cd`, `Set-Location` o `git -C` delante,
- * o la de la sesión.
+ * The folder the command's git runs in: the one from a leading `cd`, `Set-Location` or
+ * `git -C`, or the session's.
  *
  * @param {string} command
  * @param {string} cwd
@@ -77,8 +77,8 @@ export function resolveCommandDir(command, cwd) {
 }
 
 /**
- * Las reglas universales. Quien las usa decide en qué repos se protege `main`, porque eso depende
- * de su flujo de ramas.
+ * The universal rules. The caller decides in which repos `main` is protected, because that
+ * depends on its branch flow.
  *
  * @param {{ isMainProtected: (dir: string) => boolean }} options
  * @returns {CommandRule[]}
@@ -89,35 +89,35 @@ export function buildCommandRules({ isMainProtected }) {
 			pattern: /\bgit\b[^;&|]*(--no-gpg-sign|commit\.gpgsign=false)/,
 			decision: "deny",
 			reason:
-				"commit sin firma: van siempre firmados; si la clave caducó, pide al usuario que la desbloquee.",
+				"unsigned commit: commits are always signed; if the key expired, ask the user to unlock it.",
 		},
 		{
 			pattern: /\bgit\s+add\b[^;&|]*\s(-A|--all|\.)(?=\s|$|[;&|])/,
 			decision: "deny",
-			reason: "git add -A o `.`: se añaden por ruta solo los archivos del cambio.",
+			reason: "git add -A or `.`: add only the change's files, by path.",
 		},
 		{
 			pattern: new RegExp(String.raw`${GIT_PUSH}[^;&|]*(\s-f\b|--force|\s\+)`),
 			decision: "deny",
-			reason: "push forzado: nunca, en ningún repo.",
+			reason: "forced push: never, in any repo.",
 		},
 		{
 			pattern: new RegExp(String.raw`${GIT_PUSH}[^;&|]*\b(main|master)\b`),
 			applies: (command, cwd) => isMainProtected(resolveCommandDir(command, cwd)),
 			decision: "deny",
-			reason: "push a main: nunca; main lo promueve el usuario.",
+			reason: "push to main: never; the user promotes main.",
 		},
 		{
 			pattern: new RegExp(GIT_PUSH),
 			decision: "ask",
-			reason: "push: solo si el usuario lo pidió; cada push gasta minutos de Actions.",
+			reason: "push: only if the user asked for it; each push spends Actions minutes.",
 		},
 		{
 			pattern: GIT_TAG_FORBIDDEN,
 			decision: "deny",
 			reason:
-				"borrar o mover una etiqueta reescribe una versión ya publicada (si está mal, se publica " +
-				"otra), y sin firma no se crea: `git tag -s <versión> -m <versión>`.",
+				"deleting or moving a tag rewrites a published release (if it is wrong, publish another), " +
+				"and tags are never unsigned: `git tag -s <version> -m <version>`.",
 		},
 		{
 			pattern: GIT_WRITE,
@@ -127,38 +127,38 @@ export function buildCommandRules({ isMainProtected }) {
 				),
 			decision: "deny",
 			reason:
-				"git de escritura: lo que reescribe historia o árbol lo hace el usuario. Sugiere el " +
-				"comando; de lectura valen status, log, diff y show.",
+				"git write: whatever rewrites history or the tree is the user's. Suggest the command; " +
+				"status, log, diff and show are fine.",
 		},
 		{
 			pattern: /\brobocopy\b/i,
 			applies: (command) => /\/MIR\b/i.test(command) && !/\/XJ\b/i.test(command),
 			decision: "deny",
 			reason:
-				"robocopy /MIR sin /XJ atraviesa las junctions y vacía la carpeta real del otro lado. " +
-				"Añade /XJ.",
+				"robocopy /MIR without /XJ follows junctions and empties the real folder behind them. " +
+				"Add /XJ.",
 		},
 		{
 			pattern: /\bprettier\b[^;&|]*--write\b/,
 			applies: (command) => /--write[^;&|]*(\*|\$\(|`)|xargs[^;&|]*prettier/.test(command),
 			decision: "deny",
 			reason:
-				"prettier --write con un glob o una lista calculada reformatea archivos ajenos al " +
-				"cambio. Escribe en el comando las rutas de los archivos editados.",
+				"prettier --write with a glob or a computed list reformats files outside the change. " +
+				"Write the paths of the edited files in the command.",
 		},
 		{
 			pattern: /\brm\s+-[a-zA-Z]*[rR]|\bRemove-Item\b[^;&|]*-Recurse|\brmdir\s+\/s\b|\brd\s+\/s\b/i,
 			applies: (command) => !TEMP_TARGET.test(command),
 			decision: "ask",
 			reason:
-				"borrado recursivo fuera de un temporal: el trabajo se confirma siempre antes de " +
-				"borrar, y `Remove-Item -Force` no usa papelera y atraviesa junctions.",
+				"recursive delete outside a temp folder: work is always confirmed before deleting, and " +
+				"`Remove-Item -Force` skips the recycle bin and follows junctions.",
 		},
 	];
 }
 
 /**
- * La primera regla que casa con el comando, o `undefined`.
+ * The first rule that matches the command, or `undefined`.
  *
  * @param {readonly CommandRule[]} rules
  * @param {string} command
@@ -170,10 +170,10 @@ export function findCommandRule(rules, command, cwd) {
 }
 
 /**
- * Lee la llamada de Claude Code por stdin y, si una regla casa, contesta su decisión.
+ * Reads Claude Code's call from stdin and, if a rule matches, answers with its decision.
  *
  * @param {readonly CommandRule[]} rules
- * @param {string} label Quién bloquea, para que el motivo diga qué hook editar.
+ * @param {string} label Who blocks, so the reason says which hook to edit.
  */
 export async function runCommandHook(rules, label) {
 	let input = "";
