@@ -99,7 +99,7 @@ No desinstala apps ni toca variables de entorno o WSL.
 | `10-shell/` | Perfiles de PowerShell y Git Bash y el tema del prompt (`capr4n`, compartido con Parrot) ([10-shell/README.es.md](10-shell/README.es.md)) |
 | `20-terminal/` | Settings de Windows Terminal ([20-terminal/README.es.md](20-terminal/README.es.md)) |
 | `30-vscode/` | Settings, keybindings y lista de extensiones de VS Code ([30-vscode/README.es.md](30-vscode/README.es.md)) |
-| `format/` | Estilo global de Prettier y EditorConfig para proyectos sin el suyo ([docs/formatting.es.md](docs/formatting.es.md)) |
+| `40-format/` | Estilo global de Prettier y EditorConfig para proyectos sin el suyo ([docs/formatting.es.md](docs/formatting.es.md)) |
 | `apps/` | Snapshot de referencia de aplicaciones |
 | `docs/` | Guías detalladas |
 | `.claude/rules/` | Convenciones del proyecto (las carga Claude Code) |

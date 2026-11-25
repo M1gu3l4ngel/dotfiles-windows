@@ -13,7 +13,7 @@
 # tema del prompt y el estilo global): reformatearlos aqui los separaria.
 claude/
 10-shell/oh-my-posh/capr4n.omp.json
-format/
+40-format/
 
 # ----- GENERADOS -----
 # Salida de `winget export` (curada a mano): conserva el formato de winget para

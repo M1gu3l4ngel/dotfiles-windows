@@ -72,6 +72,8 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `40-format/`: the global Prettier and EditorConfig style moves from `format/`
+  into a numbered folder with its README; the files do not change.
 - `30-vscode/`: the VS Code settings, key bindings and extension list move from
   `vscode/` into a numbered folder with its README; `bootstrap.ps1` reads the list
   from there.

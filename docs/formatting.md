@@ -9,8 +9,8 @@ machines format the same way.
 
 | File | Linked to | What it formats |
 |---|---|---|
-| `format/prettierrc.json` | `~\.prettierrc.json` and `<disk>\Dev\.prettierrc.json` | Prettier: JS, TS, JSON, CSS, HTML, Markdown and YAML |
-| `format/editorconfig` | `~\.editorconfig` and `<disk>\Dev\.editorconfig` | Indentation and line endings of everything else (shell, SQL, TOML, `.env`) |
+| `40-format/prettierrc.json` | `~\.prettierrc.json` and `<disk>\Dev\.prettierrc.json` | Prettier: JS, TS, JSON, CSS, HTML, Markdown and YAML |
+| `40-format/editorconfig` | `~\.editorconfig` and `<disk>\Dev\.editorconfig` | Indentation and line endings of everything else (shell, SQL, TOML, `.env`) |
 
 ## Why two locations
 

@@ -9,8 +9,8 @@ dos máquinas formatean igual.
 
 | Archivo | Enlazado en | Qué formatea |
 |---|---|---|
-| `format/prettierrc.json` | `~\.prettierrc.json` y `<disk>\Dev\.prettierrc.json` | Prettier: JS, TS, JSON, CSS, HTML, Markdown y YAML |
-| `format/editorconfig` | `~\.editorconfig` y `<disk>\Dev\.editorconfig` | Sangría y finales de línea de todo lo demás (shell, SQL, TOML, `.env`) |
+| `40-format/prettierrc.json` | `~\.prettierrc.json` y `<disk>\Dev\.prettierrc.json` | Prettier: JS, TS, JSON, CSS, HTML, Markdown y YAML |
+| `40-format/editorconfig` | `~\.editorconfig` y `<disk>\Dev\.editorconfig` | Sangría y finales de línea de todo lo demás (shell, SQL, TOML, `.env`) |
 
 ## Por qué dos ubicaciones
 

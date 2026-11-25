@@ -45,7 +45,7 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 - **«Por probar» se llena al cerrar cada tarea** con lo que el usuario debe comprobar, una casilla por comprobación y su dispositivo delante si no vale en todos.
 
 ## Formato
-- El estilo de un proyecto es su `.prettierrc` y su `.editorconfig`; los globales (dotfiles, `format/`, enlazados en `~` y en `D:\Dev`) solo cubren proyectos sin configuración propia. Al crear un proyecto compartido o con CI, dale la suya.
+- El estilo de un proyecto es su `.prettierrc` y su `.editorconfig`; los globales (dotfiles, `40-format/`, enlazados en `~` y en `D:\Dev`) solo cubren proyectos sin configuración propia. Al crear un proyecto compartido o con CI, dale la suya.
 - Formatea solo los archivos que editaste, con el Prettier del proyecto (`pnpm exec prettier --write <archivos>`), nunca con un glob ni una lista calculada (`$(…)`, `xargs`): reformatear archivos ajenos al cambio ensucia el diff y rompe los generados.
 
 ## Nombres

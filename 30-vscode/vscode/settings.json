@@ -81,7 +81,7 @@
 	"symbols.hidesExplorerArrows": false,
 	"editor.stickyScroll.enabled": false,
 	// El estilo no vive aquí sino en archivos que también lee el CLI de Prettier:
-	// el .prettierrc de cada proyecto o, si no tiene, el global (format/, enlazado
+	// el .prettierrc de cada proyecto o, si no tiene, el global (40-format/, enlazado
 	// en ~ y en <disco>\Dev). Así el editor, la terminal y el CI formatean igual.
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.formatOnPaste": true,

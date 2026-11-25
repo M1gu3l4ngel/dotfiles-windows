@@ -120,22 +120,22 @@ function Get-DotfilesLink {
 		# Estilo global (copia de dotfiles-parrot, no un enlace a el): solo cubre
 		# proyectos sin .prettierrc ni .editorconfig propios.
 		@{
-			Source = "$DotfilesRoot\format\prettierrc.json"
+			Source = "$DotfilesRoot\40-format\prettierrc.json"
 			Target = "$env:USERPROFILE\.prettierrc.json"
 			Label  = 'Prettier global (perfil)'
 		},
 		@{
-			Source = "$DotfilesRoot\format\prettierrc.json"
+			Source = "$DotfilesRoot\40-format\prettierrc.json"
 			Target = "$workDev\.prettierrc.json"
 			Label  = 'Prettier global (carpeta de trabajo)'
 		},
 		@{
-			Source = "$DotfilesRoot\format\editorconfig"
+			Source = "$DotfilesRoot\40-format\editorconfig"
 			Target = "$env:USERPROFILE\.editorconfig"
 			Label  = 'EditorConfig global (perfil)'
 		},
 		@{
-			Source = "$DotfilesRoot\format\editorconfig"
+			Source = "$DotfilesRoot\40-format\editorconfig"
 			Target = "$workDev\.editorconfig"
 			Label  = 'EditorConfig global (carpeta de trabajo)'
 		}

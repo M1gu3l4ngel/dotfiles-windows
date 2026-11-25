@@ -73,6 +73,8 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `40-format/`: el estilo global de Prettier y EditorConfig pasa de `format/` a
+  una carpeta numerada con su README; los archivos no cambian.
 - `30-vscode/`: los ajustes, atajos y la lista de extensiones de VS Code pasan
   de `vscode/` a una carpeta numerada con su README; `bootstrap.ps1` lee la
   lista desde allí.

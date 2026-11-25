@@ -54,7 +54,6 @@ Cada movimiento lleva su README en pareja, actualiza `lib/links.ps1`,
 `.prettierignore`, `tools/check.ps1` y la documentación, y se verifica con
 `.\install.ps1 -Check`.
 
-- [ ] `40-format`: `format/`
 - [ ] `50-claude`: `claude/`, con `entorno.template.md` y sin la afirmación de que es idéntico byte a byte al de Parrot
 - [ ] `60-apps`: `essential.json`, que lee `bootstrap.ps1` en lugar de `$WingetEssential`, y `optional.json`, sin solaparse (lo comprueba `tools/check.ps1`)
 
