@@ -1,0 +1,35 @@
+{
+  "$comment": "Links of the Claude Code layer. source is relative to 50-claude/, target to ~/.claude/; read by lib/links.ps1 here and lib/links.sh in dotfiles-parrot.",
+  "links": [
+    { "source": "CLAUDE.md", "target": "CLAUDE.md", "label": "Claude global CLAUDE.md" },
+    { "source": "statusline.mjs", "target": "statusline.mjs", "label": "Claude statusline" },
+    {
+      "source": "hooks/block-shell-edits.mjs",
+      "target": "hooks/block-shell-edits.mjs",
+      "label": "Claude hook block-shell-edits"
+    },
+    {
+      "source": "hooks/block-forbidden-commands.mjs",
+      "target": "hooks/block-forbidden-commands.mjs",
+      "label": "Claude hook block-forbidden-commands"
+    },
+    {
+      "source": "hooks/command-rules.mjs",
+      "target": "hooks/command-rules.mjs",
+      "label": "Claude command rules"
+    },
+    {
+      "source": "hooks/reply-in-spanish.mjs",
+      "target": "hooks/reply-in-spanish.mjs",
+      "label": "Claude hook reply-in-spanish"
+    },
+    {
+      "source": "rules/repo-conventions.md",
+      "target": "rules/repo-conventions.md",
+      "label": "Claude rule repo-conventions"
+    },
+    { "source": "skills/new-repo", "target": "skills/new-repo", "label": "Claude skill new-repo" },
+    { "source": "panel", "target": "panel", "label": "Claude task panel" },
+    { "source": "tools", "target": "tools", "label": "Claude shared tools" }
+  ]
+}

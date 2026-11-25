@@ -22,7 +22,9 @@ specific to a machine stays local (it is not versioned).
 | `settings.template.json` | — (template) | Portable base for `settings.json`: generic secret `deny`/`ask` rules, hook and status line registration, `skillOverrides` and the preferences that hold on any PC (`theme`, `tui`, `autoUpdatesChannel`) |
 | `check-budget.mjs` | — (script) | Budget guard: counts the lines of `CLAUDE.md`, the status line, the hooks, the rule and the skill, and fails if they exceed it. Run by `tools/check.ps1` and CI; on its own: `node 50-claude/check-budget.mjs`. Portable |
 | `panel/` | `~/.claude/panel` | Task panel: an artifact generated from a repo's `docs/tasks.md` and `docs/backlog.md`, with its hooks. Each repo turns it on with `.claude/panel.json`. See [panel/README.md](panel/README.md) |
-| `tools/install-settings.mjs` | — (script) | Creates `~/.claude/settings.json` from the template, or adds the hooks and `deny`/`ask` rules it lacks, with a dated backup; `--check` only reports. The installer of each system calls it (`install.ps1` here, `install.sh` in dotfiles-parrot). Portable |
+| `links.json` | — (data) | The layer's links: `source` relative to `50-claude/`, `target` relative to `~/.claude/`, and a `label`. `lib/links.ps1` here and `lib/links.sh` in dotfiles-parrot read it, so a new piece reaches both systems with one entry |
+| `tools/` | `~/.claude/tools` | Shared scripts any repo or installer runs with `node`, each with its tests |
+| `tools/install-settings.mjs` | (inside `tools/`) | Creates `~/.claude/settings.json` from the template, or adds the hooks and `deny`/`ask` rules it lacks, with a dated backup; `--check` only reports. The installer of each system calls it (`install.ps1` here, `install.sh` in dotfiles-parrot). Portable |
 | `entorno.template.md` | — (template) | Sections of the local `~/.claude/entorno.md` (Spanish, like `CLAUDE.md`), valid on Windows and Linux, with no data from any machine |
 
 ## What is NOT versioned (stays local, per machine)

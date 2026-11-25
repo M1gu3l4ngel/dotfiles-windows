@@ -51,7 +51,7 @@ if (Get-Module -ListAvailable PSScriptAnalyzer) {
 else { Skip 'PSScriptAnalyzer not installed (Install-Module PSScriptAnalyzer -Scope CurrentUser)' }
 
 # Pure JSON only: the VS Code files are JSONC, with comments.
-$jsonPure = @('60-apps\essential.json', '60-apps\optional.json', '10-shell\oh-my-posh\capr4n.omp.json', '50-claude\hooks.local.example.json', '50-claude\settings.template.json', '.claude\panel.json')
+$jsonPure = @('60-apps\essential.json', '60-apps\optional.json', '10-shell\oh-my-posh\capr4n.omp.json', '50-claude\hooks.local.example.json', '50-claude\settings.template.json', '50-claude\links.json', '.claude\panel.json')
 $jsonOk = $true
 foreach ($rel in $jsonPure) {
 	$p = Join-Path $repo $rel

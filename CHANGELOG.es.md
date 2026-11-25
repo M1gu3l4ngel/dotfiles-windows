@@ -37,6 +37,10 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- Los enlaces de la capa de Claude Code viven en `50-claude/links.json`, que leen
+  `lib/links.ps1` y el `lib/links.sh` de dotfiles-parrot. `50-claude/tools/` se enlaza como
+  `~/.claude/tools`, para que cualquier repo corra las herramientas compartidas.
+
 - La fusión de `~/.claude/settings.json` pasa de `install.ps1` a
   `50-claude/tools/install-settings.mjs` (con `--check` y tests), para que el `install.sh` de
   dotfiles-parrot aplique la plantilla igual. El resultado es el mismo que antes.

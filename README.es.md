@@ -53,6 +53,11 @@ flowchart LR
     B --> U["WSL Ubuntu"]
     B --> I["install.ps1<br/>lib/links.ps1"]
     I -- "symlinks" --> H["PowerShell · Git Bash · Terminal<br/>VS Code · ~/.claude"]
+    L["50-claude/links.json<br/>Claude layer links"] --> I
+    I -- "node" --> S["50-claude/tools/install-settings.mjs"]
+    S -- "template merge" --> J["~/.claude/settings.json"]
+    P["dotfiles-parrot<br/>install.sh"] -. "same map and merge" .-> L
+    P -.-> S
     G["git pull"] -- "githooks/post-merge" --> I
 ```
 

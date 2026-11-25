@@ -96,57 +96,6 @@ function Get-DotfilesLink {
 			Target = "$env:APPDATA\Code\User\keybindings.json"
 			Label  = 'VS Code keybindings'
 		},
-		@{
-			Source = "$DotfilesRoot\50-claude\CLAUDE.md"
-			Target = "$env:USERPROFILE\.claude\CLAUDE.md"
-			Label  = 'Claude global CLAUDE.md'
-		},
-		@{
-			Source = "$DotfilesRoot\50-claude\statusline.mjs"
-			Target = "$env:USERPROFILE\.claude\statusline.mjs"
-			Label  = 'Claude statusline'
-		},
-		@{
-			Source = "$DotfilesRoot\50-claude\hooks\block-shell-edits.mjs"
-			Target = "$env:USERPROFILE\.claude\hooks\block-shell-edits.mjs"
-			Label  = 'Claude hook block-shell-edits'
-		},
-		@{
-			Source = "$DotfilesRoot\50-claude\hooks\block-forbidden-commands.mjs"
-			Target = "$env:USERPROFILE\.claude\hooks\block-forbidden-commands.mjs"
-			Label  = 'Claude hook block-forbidden-commands'
-		},
-		@{
-			# The rules the previous hook imports. Linked so each project can compare its copy
-			# with this one, the single source (`hook-rules-copy`).
-			Source = "$DotfilesRoot\50-claude\hooks\command-rules.mjs"
-			Target = "$env:USERPROFILE\.claude\hooks\command-rules.mjs"
-			Label  = 'Claude command rules'
-		},
-		@{
-			Source = "$DotfilesRoot\50-claude\hooks\reply-in-spanish.mjs"
-			Target = "$env:USERPROFILE\.claude\hooks\reply-in-spanish.mjs"
-			Label  = 'Claude hook reply-in-spanish'
-		},
-		# Global rule: Claude Code loads ~/.claude/rules/*.md in every project.
-		@{
-			Source = "$DotfilesRoot\50-claude\rules\repo-conventions.md"
-			Target = "$env:USERPROFILE\.claude\rules\repo-conventions.md"
-			Label  = 'Claude rule repo-conventions'
-		},
-		# Global skill: the folder, as Claude Code expects (~/.claude/skills/<name>/SKILL.md).
-		@{
-			Source = "$DotfilesRoot\50-claude\skills\new-repo"
-			Target = "$env:USERPROFILE\.claude\skills\new-repo"
-			Label  = 'Claude skill new-repo'
-		},
-		# Task panel: the whole folder (page, theme, generator and its hooks), because the modules
-		# import each other by relative path.
-		@{
-			Source = "$DotfilesRoot\50-claude\panel"
-			Target = "$env:USERPROFILE\.claude\panel"
-			Label  = 'Claude task panel'
-		},
 		# Global style (a copy of dotfiles-parrot's, not a link to it): it only covers projects
 		# without their own .prettierrc or .editorconfig.
 		@{
@@ -170,4 +119,21 @@ function Get-DotfilesLink {
 			Label  = 'Global EditorConfig (work folder)'
 		}
 	)
+	Get-ClaudeLayerLink -DotfilesRoot $DotfilesRoot
+}
+
+# The Claude Code layer's links come from 50-claude/links.json, which dotfiles-parrot's
+# lib/links.sh reads too: a new piece of the layer reaches both systems with one entry. Folders
+# (the skill, the panel, the tools) are linked whole, because their modules import each other by
+# relative path.
+function Get-ClaudeLayerLink {
+	param([Parameter(Mandatory)][string]$DotfilesRoot)
+	$map = [IO.File]::ReadAllText("$DotfilesRoot\50-claude\links.json", [Text.Encoding]::UTF8) | ConvertFrom-Json
+	foreach ($link in $map.links) {
+		@{
+			Source = Join-Path "$DotfilesRoot\50-claude" ($link.source -replace '/', '\')
+			Target = Join-Path "$env:USERPROFILE\.claude" ($link.target -replace '/', '\')
+			Label  = $link.label
+		}
+	}
 }

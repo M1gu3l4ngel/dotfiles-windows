@@ -36,6 +36,10 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- The Claude Code layer's links live in `50-claude/links.json`, read by `lib/links.ps1` and by
+  dotfiles-parrot's `lib/links.sh`. `50-claude/tools/` is linked as `~/.claude/tools`, so any
+  repo can run the shared tools.
+
 - The `~/.claude/settings.json` merge moves from `install.ps1` to
   `50-claude/tools/install-settings.mjs` (with `--check` and tests), so dotfiles-parrot's
   `install.sh` applies the template the same way. The result is the same as before.
