@@ -17,6 +17,8 @@ Notable changes to the project. The format follows
   `~/.claude/settings.json`, and `-Check` reports them; the template denies reading `.gnupg`.
 - `50-claude/hooks/command-rules.mjs`: single source of the universal command rules, linked
   into `~/.claude/hooks/`. Projects keep an identical copy, checked against this one.
+- `new-repo` creates the `Protect main` ruleset (no deletion, no force push) with the repo,
+  from `skills/new-repo/rulesets/protect-main.json`, and `repo-conventions` asks for it.
 - `50-claude/skills/new-repo`: global skill that creates a well-built repo, or
   completes an existing one (GitHub description and topics, license, bilingual
   README with a diagram, CHANGELOG, `CLAUDE.md`, formatting, CI and the brain

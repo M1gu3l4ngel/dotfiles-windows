@@ -2,7 +2,8 @@
 
 Todo repo mío (personal, de una organización propia o de un empleador) tiene:
 
-- En GitHub: descripción en inglés de una frase, web si la hay y de 6 a 10 topics.
+- En GitHub: descripción en inglés de una frase, web si la hay, de 6 a 10 topics y
+  `main` protegido contra borrado y push forzado (ruleset).
 - Licencia elegida a propósito: MIT o Apache-2.0 si es público; ninguna, y
   privado, si el código es de un empleador o cliente.
 - README y CHANGELOG en pareja, CONTRIBUTING si es compartido, y diagrama Mermaid

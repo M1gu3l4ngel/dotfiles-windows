@@ -17,6 +17,8 @@ Cambios relevantes del proyecto. El formato sigue
   de la plantilla que le faltan, y `-Check` las avisa; la plantilla niega leer `.gnupg`.
 - `50-claude/hooks/command-rules.mjs`: fuente única de las reglas universales de comandos,
   enlazada en `~/.claude/hooks/`. Los proyectos llevan una copia idéntica que se compara con esta.
+- `new-repo` crea con el repo el ruleset `Protect main` (sin borrado ni push forzado), desde
+  `skills/new-repo/rulesets/protect-main.json`, y `repo-conventions` lo exige.
 - `50-claude/skills/new-repo`: skill global que crea un repo bien armado, o
   completa uno existente (descripción y topics en GitHub, licencia, README
   bilingüe con diagrama, CHANGELOG, `CLAUDE.md`, formato, CI y el catálogo del

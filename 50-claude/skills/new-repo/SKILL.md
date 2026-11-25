@@ -67,8 +67,7 @@ código: idéntico en las dos versiones, con etiquetas en inglés.
   el enlace `~/.claude/CLAUDE.md`) y córrelo con `pwsh` en el CI.
 - `.github/dependabot.yml` mensual para `github-actions`.
 - Ramas: `main` por defecto y el trabajo en la rama que diga el proyecto (su
-  cerebro o su `CLAUDE.md`). Push nunca a `main`. La protección de `main` se
-  propone; la activa el dueño.
+  cerebro o su `CLAUDE.md`). Push nunca a `main`, salvo en un repo de solo `main`.
 
 ## 5. GitHub
 
@@ -84,6 +83,16 @@ gh repo view <owner>/<repo> --json description,repositoryTopics,homepageUrl
 `--public` en lugar de `--private` según la tabla de licencia. El primer push lo
 hace el usuario o lo pide.
 
+Protección de `main`, en el mismo paso: nadie la borra ni la reescribe con un push
+forzado. Un repo de solo `main` lleva esta y nada más (pedir PR le cortaría su
+flujo); uno con rama de trabajo y CI usa además la de su proyecto, con PR y checks
+obligatorios (en Creaskar, `.github/rulesets/protect-main-staging.json`).
+
+```bash
+gh api -X POST repos/<owner>/<repo>/rulesets --input ~/.claude/skills/new-repo/rulesets/protect-main.json
+gh api repos/<owner>/<repo>/rulesets --jq '.[].name'
+```
+
 ## 6. Cerebro
 
 Si la organización tiene cerebro, registra el repo en su catálogo, en el archivo
@@ -93,8 +102,8 @@ y el formato que ya usa, con su propio commit en el cerebro.
 
 - Corre el check de docs y el formato antes del commit inicial.
 - Si viene trabajo de varios bloques: `node ~/.claude/panel/init.mjs`.
-- Informa de lo creado, de la salida de `gh repo view` y de lo que queda (push,
-  protección de `main`).
+- Informa de lo creado, de la salida de `gh repo view` y de los rulesets, y de lo
+  que queda (el push).
 
 ## Repo que ya existe
 
