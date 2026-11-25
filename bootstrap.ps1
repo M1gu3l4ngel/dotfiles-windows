@@ -65,8 +65,6 @@ $WingetOverride = @{
 $NerdFontsVersion = 'v3.5.1'
 $NerdFonts = @(
 	@{ Archive = 'CascadiaCode'; Sha256 = '1298bf92698afa06185cf1d05e6ae05f2d8a1e8c3cb45ddf4c3035168ab342a1'; Glob = 'CaskaydiaCove*.ttf'; Family = 'CaskaydiaCove Nerd Font' }
-	# Para sumar Hack (logo de Parrot), descubre su SHA y anade:
-	# @{ Archive = 'Hack'; Sha256 = '<sha256 de Hack.zip>'; Glob = 'HackNerdFont*.ttf'; Family = 'Hack Nerd Font' }
 )
 
 # =====================================================================
@@ -180,6 +178,28 @@ function Invoke-Step0Check {
 	if ($DryRun) { Warn 'MODO DRY-RUN: no se cambiara nada, solo se reporta.' }
 }
 
+# Va antes de winget: rustup se instala donde digan CARGO_HOME y RUSTUP_HOME en ese
+# momento, y sin ellas acaba en el perfil de C:.
+function Invoke-Step1Env($drive) {
+	Step "Variables de entorno -> $drive"
+	Set-UserEnv 'CARGO_HOME'          "$drive\Dev\Caches\cargo"
+	Set-UserEnv 'RUSTUP_HOME'         "$drive\Dev\Caches\rustup"
+	Set-UserEnv 'NUGET_PACKAGES'      "$drive\Dev\Caches\nuget"
+	Set-UserEnv 'PUPPETEER_CACHE_DIR' "$drive\Dev\Caches\puppeteer"
+	Set-UserEnv 'PNPM_HOME'           "$drive\Dev\pnpm"
+	if (-not $DryRun) {
+		$dirs = @(
+			"$drive\Dev\Caches\cargo", "$drive\Dev\Caches\rustup", "$drive\Dev\Caches\nuget",
+			"$drive\Dev\Caches\puppeteer", "$drive\Dev\Caches\npm", "$drive\Dev\pnpm",
+			"$drive\Dev\npm-global", "$drive\Dev\projects", "$drive\Dev\scratch"
+		)
+		foreach ($d in $dirs) { New-Item -ItemType Directory -Force -Path $d | Out-Null }
+	}
+	Add-UserPath "$drive\Dev\npm-global"
+	Add-UserPath "$drive\Dev\Caches\cargo\bin"
+	Add-UserPath "$drive\Dev\pnpm\bin"
+}
+
 function Invoke-Step2Winget {
 	Step 'Set esencial (winget)'
 	foreach ($id in $WingetEssential) { Install-WingetId $id }
@@ -220,28 +240,6 @@ function Invoke-Step3Font {
 	foreach ($font in $NerdFonts) { Install-NerdFont $font $fontsDir }
 	Set-Content -Path $marker -Value $NerdFontsVersion -Encoding ASCII
 	Ok "Fuentes Nerd $NerdFontsVersion listas"
-}
-
-# Va antes de winget: rustup se instala donde digan CARGO_HOME y RUSTUP_HOME en ese
-# momento, y sin ellas acaba en el perfil de C:.
-function Invoke-Step1Env($drive) {
-	Step "Variables de entorno -> $drive"
-	Set-UserEnv 'CARGO_HOME'          "$drive\Dev\Caches\cargo"
-	Set-UserEnv 'RUSTUP_HOME'         "$drive\Dev\Caches\rustup"
-	Set-UserEnv 'NUGET_PACKAGES'      "$drive\Dev\Caches\nuget"
-	Set-UserEnv 'PUPPETEER_CACHE_DIR' "$drive\Dev\Caches\puppeteer"
-	Set-UserEnv 'PNPM_HOME'           "$drive\Dev\pnpm"
-	if (-not $DryRun) {
-		$dirs = @(
-			"$drive\Dev\Caches\cargo", "$drive\Dev\Caches\rustup", "$drive\Dev\Caches\nuget",
-			"$drive\Dev\Caches\puppeteer", "$drive\Dev\Caches\npm", "$drive\Dev\pnpm",
-			"$drive\Dev\npm-global", "$drive\Dev\projects", "$drive\Dev\scratch"
-		)
-		foreach ($d in $dirs) { New-Item -ItemType Directory -Force -Path $d | Out-Null }
-	}
-	Add-UserPath "$drive\Dev\npm-global"
-	Add-UserPath "$drive\Dev\Caches\cargo\bin"
-	Add-UserPath "$drive\Dev\pnpm\bin"
 }
 
 function Invoke-Step4Node($drive) {
