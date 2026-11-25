@@ -19,9 +19,10 @@ commits y push, disco `D:` y formato (`~/.claude/CLAUDE.md`).
   dueño (personal, organización propia, empleador o cliente), visibilidad, qué
   es en una frase, stack y web.
 - **Cerebro**: si el repo es de una organización, busca su repo `brain` hermano
-  (`D:\Dev\projects\<organización>\brain`) y lee su README y su `CLAUDE.md`:
-  nombre de la organización en GitHub, convención de nombres, web, plantillas,
-  rama de trabajo y dónde está su catálogo de repos.
+  (`D:\Dev\projects\<organización>\brain`) y lee su README, su `CLAUDE.md` y lo
+  que su `AGENTS.md` señale para repos (en los cerebros de `brain-template`,
+  `40-engineering/`): nombre de la organización en GitHub, convención de nombres,
+  web, plantillas, rama de trabajo, receta del README y dónde está su catálogo.
 - **Carpeta**: `D:\Dev\projects\<organización o personal>\<repo>`.
 - **Publicar es confirmar**: crear el repo remoto lo publica. Confirma nombre,
   dueño y visibilidad antes de `gh repo create`.
@@ -30,7 +31,7 @@ commits y push, disco `D:` y formato (`~/.claude/CLAUDE.md`).
 
 | Caso | Licencia | Visibilidad |
 |---|---|---|
-| Personal u organización propia, público | MIT (lo simple) o Apache-2.0 (si importa la cláusula de patentes) | Público |
+| Personal u organización propia, público | MIT (lo simple) o Apache-2.0 (si importan las patentes o proteger el nombre y el logo; con `NOTICE` para el copyright) | Público |
 | De un empleador o cliente | Ninguna: el código es suyo | Privado |
 | Privado propio que podría publicarse | La que tendría al publicarse | Privado |
 
@@ -40,7 +41,7 @@ Si no está claro de quién es el código, se pregunta: no se adivina.
 
 | Archivo | Qué lleva |
 |---|---|
-| `README.md` + `README.es.md` | Selector en la línea 1; logo si hay marca (`alt` traducido); qué es y qué trae, con badges de CI y licencia; cómo empezar (requisitos y comandos copiables, probados); estructura (tabla de carpetas); diagrama si hay más de dos piezas que se relacionan; licencia |
+| `README.md` + `README.es.md` | Cabecera: selector en la línea 1; si hay marca, el logo en `<picture>` con su versión clara y oscura (una sola desaparece en uno de los temas), sin título `#` que repita el nombre debajo; descripción centrada en dos líneas; fila de enlaces a las secciones en su orden; badges de tecnologías y licencia, y de CI solo si es público. Después: cómo empezar (requisitos y comandos copiables, probados); estructura (tabla de carpetas); diagrama si hay más de dos piezas que se relacionan; licencia. Si la organización tiene receta propia, manda la suya, y la cabecera se compara con la de otro de sus repos antes de cerrar |
 | `CHANGELOG.md` + `.es.md` | Keep a Changelog con `## [Unreleased]` / `## [Sin publicar]` |
 | `CONTRIBUTING.md` + `.es.md` | Solo si es compartido (público o más de una persona): flujo, checks, commits |
 | `.editorconfig`, `.prettierrc.json`, `.prettierignore` | Propios del repo, aunque copien el estilo global: con CI no se depende de `~` |
