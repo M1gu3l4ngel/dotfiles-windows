@@ -5,7 +5,12 @@
 
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { extractComments, isSpanish } from "./check-comments.mjs";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { extractComments, extractTestNames, isSpanish } from "./check-comments.mjs";
 
 /**
  * @param {string} file
@@ -95,6 +100,49 @@ describe("extractComments", () => {
 
 	it("skips files it does not know, such as Markdown", () => {
 		assert.deepEqual(extractComments("README.md", "# Configuración del repo"), []);
+	});
+});
+
+describe("extractTestNames", () => {
+	it("reads node:test, Jest and Vitest names in any quote style, with their line", () => {
+		const js = [
+			'import { test } from "node:test";',
+			'test("crea el archivo", () => {});',
+			"  it.skip('reads x', () => {});",
+			"describe(`agrupa`, () => {});",
+			"const fixture = 'test(\"no es un test\")';",
+		].join("\n");
+		assert.deepEqual(extractTestNames("a.test.mjs", js), [
+			{ line: 2, text: "crea el archivo" },
+			{ line: 3, text: "reads x" },
+			{ line: 4, text: "agrupa" },
+		]);
+	});
+
+	it("reads Pester and bats names, and nothing outside test files", () => {
+		assert.deepEqual(extractTestNames("install.Tests.ps1", 'Describe "Instalador" {\n  It "crea el enlace" {}'), [
+			{ line: 1, text: "Instalador" },
+			{ line: 2, text: "crea el enlace" },
+		]);
+		assert.deepEqual(extractTestNames("tools/check.bats", '@test "falla sin enlace" {'), [{ line: 1, text: "falla sin enlace" }]);
+		assert.deepEqual(extractTestNames("board.mjs", 'test("crea el archivo")'), []);
+	});
+
+	it("flags a Spanish test name and prints the exemptions also when it fails", () => {
+		const repo = mkdtempSync(path.join(tmpdir(), "check-comments-"));
+		try {
+			execFileSync("git", ["init", "-q", repo]);
+			writeFileSync(path.join(repo, "a.test.mjs"), 'test("crea el archivo de la carpeta", () => {});\n');
+			execFileSync("git", ["-C", repo, "add", "a.test.mjs"]);
+			const script = fileURLToPath(new URL("./check-comments.mjs", import.meta.url));
+			assert.throws(
+				() => execFileSync(process.execPath, [script, repo], { encoding: "utf8" }),
+				(/** @type {any} */ error) =>
+					error.status === 1 && /a\.test\.mjs:1 test name: crea/.test(error.stdout) && /^exempt: /m.test(error.stdout),
+			);
+		} finally {
+			rmSync(repo, { recursive: true, force: true });
+		}
 	});
 });
 

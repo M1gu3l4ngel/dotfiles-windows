@@ -184,9 +184,10 @@ node ~/.claude/tools/check-comments.mjs .
 ```
 
 It knows the comments of shell, PowerShell, YAML, TOML, JavaScript, CSS, HTML,
-Lua, `.ini`, `.conf`, `.rasi`, `sxhkdrc` and scripts with a shebang. A repo adds
-its own file types, paths to skip and exemptions in `.claude/comments.json`; the
-exemptions print on every run:
+Lua, `.ini`, `.conf`, `.rasi`, `sxhkdrc` and scripts with a shebang, and the test
+names of node:test, Jest, Vitest, Pester and bats. A repo adds its own file types,
+paths to skip and exemptions in `.claude/comments.json`; the exemptions print on
+every run, passing or failing:
 
 ```json
 {

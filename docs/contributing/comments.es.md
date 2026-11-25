@@ -188,9 +188,10 @@ node ~/.claude/tools/check-comments.mjs .
 ```
 
 Conoce los comentarios de shell, PowerShell, YAML, TOML, JavaScript, CSS, HTML,
-Lua, `.ini`, `.conf`, `.rasi`, `sxhkdrc` y los scripts con shebang. Un repo añade
-sus tipos de archivo, las rutas que salta y sus exenciones en
-`.claude/comments.json`; las exenciones se imprimen en cada ejecución:
+Lua, `.ini`, `.conf`, `.rasi`, `sxhkdrc` y los scripts con shebang, y los nombres
+de los tests de node:test, Jest, Vitest, Pester y bats. Un repo añade sus tipos de
+archivo, las rutas que salta y sus exenciones en `.claude/comments.json`; las
+exenciones se imprimen en cada ejecución, pase o falle:
 
 ```json
 {

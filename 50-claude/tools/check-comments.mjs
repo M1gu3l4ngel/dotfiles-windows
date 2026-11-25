@@ -4,9 +4,10 @@
 // (the global CLAUDE.md and docs/contributing/comments.md in dotfiles-windows), and a session that
 // loads an older Spanish-only rule would write them in Spanish again without anything noticing.
 //
-// Shared by every repo through ~/.claude/tools. It reads only comments, never string literals, so
-// Spanish text kept on purpose in strings is out of reach by design. What it skips is printed with
-// every run, so the exemptions are visible, not buried here. A repo adds file types, skipped paths
+// Shared by every repo through ~/.claude/tools. It reads comments and test names (the global rule
+// wants both in English, and CI prints the names), never other string literals, so Spanish text
+// kept on purpose in strings is out of reach by design. What it skips is printed with every run,
+// passing or failing, so the exemptions are visible, not buried here. A repo adds file types, skipped paths
 // and its own exemptions in .claude/comments.json (or --config), with this shape:
 //   { "styles": { "hash": ["regex"], "slash": [], "dash": [], "ini": [] },
 //     "skip": ["regex"], "exemptions": ["text printed with every run"] }
@@ -26,7 +27,7 @@ import { parseArgs } from "node:util";
 /** Printed with every run, before the repo's own exemptions. */
 export const EXEMPTIONS = [
 	"Markdown files: docs are bilingual pairs, and CLAUDE.md, .claude/rules/, docs/tasks.md and docs/backlog.md are Spanish by rule.",
-	"String literals: text a program shows or writes is not a comment.",
+	"String literals other than test names: text a program shows or writes is not a comment.",
 	"Text between «» or backticks inside a comment: quoted terms and identifiers.",
 ];
 
@@ -186,6 +187,33 @@ export function extractComments(file, text, config = {}) {
 	return comments;
 }
 
+// Test names, by framework: node:test, Jest and Vitest in JS/TS test files, Pester in .Tests.ps1
+// and bats. The name is the first string argument, in any quote style. The call starts its line,
+// so a fixture string that contains `test("...")` is not taken for a test.
+const TEST_NAMES = [
+	{
+		file: /\.(test|spec)\.[cm]?[jt]sx?$/,
+		name: /^\s*(?:test|it|describe|suite)(?:\.\w+)?\(\s*(["'`])((?:\\.|(?!\1).)*)\1/gm,
+	},
+	{ file: /\.Tests\.ps1$/i, name: /^\s*(?:Describe|Context|It)\s+(["'])((?:(?!\1).)*)\1/gm },
+	{ file: /\.bats$/, name: /^\s*@test\s+(["'])((?:(?!\1).)*)\1/gm },
+];
+
+/**
+ * The test names of a test file, with their line.
+ * @param {string} file Repo-relative path, with `/`.
+ * @param {string} text
+ * @returns {{ line: number, text: string }[]}
+ */
+export function extractTestNames(file, text) {
+	const framework = TEST_NAMES.find((entry) => entry.file.test(file));
+	if (!framework) return [];
+	return [...text.matchAll(framework.name)].map((m) => ({
+		line: text.slice(0, m.index).split("\n").length,
+		text: m[2],
+	}));
+}
+
 /**
  * Whether a comment reads as Spanish, once its quoted terms are removed.
  * @param {string} text
@@ -207,7 +235,7 @@ export function isSpanish(text) {
 }
 
 /**
- * Spanish comments in the given files.
+ * Spanish comments and test names in the given files.
  * @param {string} root
  * @param {readonly string[]} files Repo-relative paths.
  * @param {CommentConfig} [config]
@@ -216,8 +244,12 @@ export function findSpanishComments(root, files, config = {}) {
 	const found = [];
 	for (const file of files) {
 		const text = readFileSync(path.join(root, file), "utf8");
-		for (const comment of extractComments(file, text, config)) {
-			if (isSpanish(comment.text)) found.push({ file, line: comment.line, text: comment.text.trim().slice(0, 80) });
+		const texts = [
+			...extractComments(file, text, config),
+			...extractTestNames(file, text).map((t) => ({ ...t, text: `test name: ${t.text}` })),
+		];
+		for (const entry of texts) {
+			if (isSpanish(entry.text)) found.push({ file, line: entry.line, text: entry.text.trim().slice(0, 80) });
 		}
 	}
 	return found;
@@ -251,10 +283,12 @@ if (invoked === realpathSync(fileURLToPath(import.meta.url))) {
 	const found = findSpanishComments(root, files, config);
 	if (found.length > 0) {
 		for (const hit of found) console.log(`${hit.file}:${hit.line} ${hit.text}`);
-		console.log(`${found.length} Spanish comment(s): write them in English (docs/contributing/comments.md in dotfiles-windows).`);
-		process.exit(1);
-	}
-	console.log(`Comment language: no Spanish comments in ${files.length} files`);
+		console.log(
+			`${found.length} Spanish comment(s) or test name(s): write them in English (docs/contributing/comments.md in dotfiles-windows).`,
+		);
+	} else console.log(`Comment language: no Spanish comments or test names in ${files.length} files`);
+	// Printed on both outcomes: a failure is when the reader most needs to know what is left out.
 	for (const exemption of [...EXEMPTIONS, ...(config.exemptions ?? [])]) console.log(`exempt: ${exemption}`);
 	for (const pattern of config.skip ?? []) console.log(`exempt: paths matching ${pattern}`);
+	process.exitCode = found.length > 0 ? 1 : 0;
 }

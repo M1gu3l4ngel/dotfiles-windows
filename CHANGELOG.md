@@ -37,6 +37,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `check-comments.mjs` also checks test names (node:test, Jest, Vitest, Pester, bats), and prints
+  its exemptions when it fails too.
+
 - `block-forbidden-commands.mjs` lets `git reset [HEAD] -- <paths>` unstage files and asks before
   a reset that moves HEAD or the index without touching the files (`--soft`, `--mixed`, no
   option); `--hard`, `--merge` and `--keep` stay denied.
