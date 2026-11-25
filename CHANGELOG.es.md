@@ -18,6 +18,8 @@ Cambios relevantes del proyecto. El formato sigue
 - `check-docs.mjs --community personal|shared|public` falla si a un repo le falta un archivo de
   los que lleva su tipo (NOTICE incluido con Apache-2.0), y deja fuera `.github/`, cuyas
   plantillas van solo en inglés. `tools/check.ps1` lo corre como repo público.
+- El README del panel muestra cómo comprobar el formato de las tareas en el CI de un repo: un
+  checkout de dotfiles-windows fijado a un commit y `panel/check.mjs`, listo para copiar.
 - `50-claude/skills/new-repo/docs-standard.md`: el estándar de documentación de todos los repos,
   con plantillas bilingües en `templates/` (README, CHANGELOG, CONTRIBUTING, SECURITY,
   CODE_OF_CONDUCT, NOTICE y las plantillas de GitHub). Fija qué archivos lleva un repo personal,

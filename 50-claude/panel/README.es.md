@@ -59,6 +59,28 @@ hooks en `~/.claude/settings.json`.
    y `panel-theme.css` al lado. A partir de ahí, los hooks le avisan cuando el panel
    queda desfasado.
 
+5. Comprueba el formato en el CI, para que una tarea mal escrita haga fallar el
+   push en vez de desaparecer del panel. El CI no tiene `~/.claude`: hace checkout
+   de dotfiles-windows fijado a un commit, como una acción, así que una versión
+   nueva del panel no cambia lo que pasa hasta que se mueve el SHA. En el job de
+   `.github/workflows/ci.yml`, tras el checkout del propio repo:
+
+    ```yaml
+          - name: Check out the Claude Code layer (dotfiles-windows)
+            uses: actions/checkout@<checkout-sha> # <version>
+            with:
+              repository: M1gu3l4ngel/dotfiles-windows
+              ref: <commit-sha>
+              path: .ci/dotfiles-windows
+              persist-credentials: false
+
+          - name: Check the task panel format
+            run: node .ci/dotfiles-windows/50-claude/panel/check.mjs .
+    ```
+
+    El check local del repo corre lo mismo con `node ~/.claude/panel/check.mjs .`.
+    El mismo checkout sirve para `tools/check-docs.mjs` y `tools/check-comments.mjs`.
+
 `.claude/artifacts/` se ignora a sí misma: lo generado y la URL publicada no se
 versionan.
 

@@ -3,20 +3,6 @@
 Solo lo que falta: lo hecho se borra. Formato y reglas en
 `.claude/rules/task-tracking.md`; el panel de tareas es una vista de este archivo.
 
-# Fase 8 — Panel en el CI de cada repo
-
-## Check del panel documentado para el CI
-
-**Plataforma:** Claude Code.
-
-**Prioridad:** P2.
-
-**Requiere:** nada.
-
-**Estado:** en curso.
-
-- [ ] `50-claude/panel/README` explica cómo correr `check.mjs` en el CI de un repo con panel, con el paso de GitHub Actions listo para copiar
-
 # Por probar
 
 ## Identidad de git fuera del repo

@@ -17,6 +17,8 @@ Notable changes to the project. The format follows
 - `check-docs.mjs --community personal|shared|public` fails when a repo lacks a file its kind
   carries (NOTICE included under Apache-2.0), and leaves out `.github/`, whose templates are
   English only. `tools/check.ps1` runs it as a public repo.
+- The panel README shows how to check the task format in a repo's CI: a checkout of
+  dotfiles-windows pinned to a commit and `panel/check.mjs`, ready to copy.
 - `50-claude/skills/new-repo/docs-standard.md`: the documentation standard for every repo, with
   bilingual templates in `templates/` (README, CHANGELOG, CONTRIBUTING, SECURITY,
   CODE_OF_CONDUCT, NOTICE and the GitHub templates). It sets which files a personal, shared or
