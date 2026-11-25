@@ -28,7 +28,7 @@ If the change is visible to the user, add it to the changelog
 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format: a
 title of 72 characters at most, a blank line and a body with one dash per
 concrete change (no body only when the title says it all). The text is written
-in Spanish:
+in English, in the imperative:
 
 ```
 type(scope): <summary>
@@ -59,8 +59,10 @@ or anchors.
 Where a flow reads better drawn, use a Mermaid diagram: it is a code block, so
 it is identical in both languages, with English labels.
 
-Code comments, commit messages, the rules in `.claude/rules/` and the task
-lists (`docs/tasks.md`, `docs/backlog.md`) are written in Spanish only.
+Code comments, script output, hook messages and test names are written in
+English, following [docs/contributing/comments.md](docs/contributing/comments.md).
+The rules in `.claude/rules/` and the task lists (`docs/tasks.md`,
+`docs/backlog.md`) are written in Spanish only.
 
 ## Conventions
 

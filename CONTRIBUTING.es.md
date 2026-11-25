@@ -28,7 +28,7 @@ Si el cambio es visible para el usuario, añádelo al changelog
 Formato [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/): un
 título de 72 caracteres como máximo, una línea en blanco y un cuerpo con un
 guion por cambio concreto (sin cuerpo solo si el título lo dice todo). El texto
-va en español:
+va en inglés, en imperativo:
 
 ```
 type(scope): <summary>
@@ -59,9 +59,11 @@ traducen) o si hay enlaces o anclas rotos.
 Donde un flujo se entiende mejor dibujado, va un diagrama Mermaid: es un bloque
 de código, así que es idéntico en los dos idiomas, con etiquetas en inglés.
 
-Los comentarios del código, los commits, las reglas de `.claude/rules/` y las
-listas de tareas (`docs/tasks.md`, `docs/backlog.md`) se escriben solo en
-español.
+Los comentarios del código, la salida de los scripts, los mensajes de los hooks
+y los nombres de los tests se escriben en inglés, según
+[docs/contributing/comments.es.md](docs/contributing/comments.es.md). Las reglas
+de `.claude/rules/` y las listas de tareas (`docs/tasks.md`, `docs/backlog.md`)
+se escriben solo en español.
 
 ## Convenciones
 

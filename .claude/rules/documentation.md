@@ -29,8 +29,9 @@ español).
   `tools/check.ps1` (`tools/check-docs.ps1`) falla si falta una pareja o un
   selector, si difieren títulos, filas de tabla, elementos de lista, enlaces
   o bloques de código, o si hay enlaces o anclas rotos.
-- Solo en español: comentarios de código y la salida de los scripts. Los
-  mensajes de commit van solo en inglés (`git.md`).
+- En inglés: comentarios de código, salida de los scripts, `reason` de los hooks
+  y nombres de los tests (`docs/contributing/comments.md`); los mensajes de
+  commit también (`git.md`).
 
 ## Estilo
 

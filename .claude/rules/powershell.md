@@ -21,7 +21,8 @@ paths:
 
 - **Indentación con tabs** (el editor del repo usa `insertSpaces: false`).
 - Funciones con nombre `Verbo-Sustantivo` (`Install-Symlink`, `Get-WorkDrive`).
-- Comentarios en español que explican el *porqué*, no el *qué*.
+- Comentarios en inglés que explican el *porqué*, no el *qué*; los scripts que se
+  ejecutan llevan ayuda basada en comentarios (`docs/contributing/comments.md`).
 - Mensajes de estado con `Write-Host`; los valores de retorno se devuelven con
   `return`, nunca mezclados con la salida de texto.
 

@@ -63,6 +63,32 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 ---
 
+# Fase 5 — Comentarios profesionales en inglés
+
+## Comentarios del código en inglés, según la guía
+
+**Plataforma:** Repositorio.
+
+**Prioridad:** Mejora.
+
+**Requiere:** nada.
+
+**Estado:** en curso.
+
+`docs/contributing/comments.md` fija la forma: cabecera de qué es, por qué y dónde
+encaja; JSDoc o ayuda basada en comentarios; dentro del cuerpo solo el porqué.
+Sin cambiar comportamiento, un commit por carpeta.
+
+- [ ] Migrar `50-claude/hooks` (avisar al dueño para copiar `command-rules.mjs` a Core)
+- [ ] Migrar `50-claude/panel` y el resto de `50-claude`
+- [ ] Migrar `install.ps1`, `uninstall.ps1`, `bootstrap.ps1` y `lib/`
+- [ ] Migrar `tools/` y `githooks/`
+- [ ] Migrar `10-shell` y `30-vscode`
+- [ ] Migrar `.github/` y los archivos de configuración de la raíz
+- [ ] Decidir con Parrot `40-format`, que es copia idéntica de la suya
+- [ ] Check en `tools/check.ps1` (y CI) que falle ante un comentario en español, con las exenciones en su salida
+- [ ] Nota de lo aprendido en `docs/contributing/comments.md`
+
 # Aplazado — cada uno con el evento que lo dispara
 
 - [ ] Leer el nombre y el correo de git de parámetros de `bootstrap.ps1` (`Invoke-Step6Git`), con los del dueño por defecto: hoy quien haga un fork firma con una identidad ajena si no lo cambia antes, y `docs/getting-started` solo lo avisa — antes de anunciar el repo o cuando alguien haga un fork
