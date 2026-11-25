@@ -18,6 +18,7 @@ Each numbered folder is one area of the environment, with its own README.
 | Folder | Contents |
 |---|---|
 | `10-shell/` | PowerShell and Git Bash profiles and the prompt theme (`capr4n`, shared with Parrot) ([10-shell/README.md](10-shell/README.md)) |
+| `15-git/` | Git identity, signing and the GitHub account each remote uses; private organizations stay in `~/.gitconfig.local` ([15-git/README.md](15-git/README.md)) |
 | `20-terminal/` | Windows Terminal settings ([20-terminal/README.md](20-terminal/README.md)) |
 | `30-vscode/` | VS Code settings, keybindings and extension list ([30-vscode/README.md](30-vscode/README.md)) |
 | `40-format/` | Global Prettier and EditorConfig style for projects without their own ([40-format/README.md](40-format/README.md)) |
@@ -92,9 +93,9 @@ without breaking anything (for example after a reboot).
 | Step | What it installs or configures |
 |---|---|
 | 1 | Environment variables pointing to `D:` (or `C:` if there is no `D:`), including `PNPM_HOME`; they go first so Rust installs there |
-| 2 | Essential apps from `60-apps/essential.json`: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, nvm-windows and CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt) |
+| 2 | Essential apps from `60-apps/essential.json`: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, fnm and CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt) |
 | 3 | CaskaydiaCove Nerd Font (download verified by SHA-256) |
-| 4 | Node (nvm-windows) + pnpm + Claude Code in `<disk>\Dev\npm-global` |
+| 4 | Node with fnm (versions in `<disk>\Dev\fnm`; each terminal switches to the repo's version on entering it) + pnpm + Claude Code in `<disk>\Dev\npm-global` |
 | 5 | WSL Ubuntu 26.04 (requires a reboot) |
 | 6 | git: name, noreply email and defaults |
 | 7 | Configuration symlinks, and the Claude Code `settings.json` if the machine has none (`install.ps1`) |
@@ -203,8 +204,7 @@ same terminal: `Remove-Item Env:POSH_NAME` (PowerShell) or `unset POSH_NAME`
 | `install.ps1` fails to create symlinks | Developer Mode off | Enable it, or run as administrator |
 | The prompt does not appear in a new terminal | The profile did not load | `. $PROFILE`, or reopen the terminal |
 | Icons show as squares | Missing CaskaydiaCove Nerd Font | Re-run `bootstrap.ps1` |
-| `nvm` not recognized after bootstrap | PATH not refreshed | Reopen PowerShell and run `bootstrap.ps1` again |
-| GitHub shows "Unverified" | The GPG key UID does not have the noreply email | [docs/gpg-signing.md](docs/gpg-signing.md) |
+| `fnm` not recognized after bootstrap | PATH not refreshed | Reopen PowerShell and run `bootstrap.ps1` again || GitHub shows "Unverified" | The GPG key UID does not have the noreply email | [docs/gpg-signing.md](docs/gpg-signing.md) |
 
 ## Documentation and contributing
 

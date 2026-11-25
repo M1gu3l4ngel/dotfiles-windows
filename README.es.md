@@ -18,6 +18,7 @@ Cada carpeta numerada es un área del entorno, con su propio README.
 | Carpeta | Contenido |
 |---|---|
 | `10-shell/` | Perfiles de PowerShell y Git Bash y el tema del prompt (`capr4n`, compartido con Parrot) ([10-shell/README.es.md](10-shell/README.es.md)) |
+| `15-git/` | Identidad de git, firma y la cuenta de GitHub que usa cada remoto; las organizaciones privadas se quedan en `~/.gitconfig.local` ([15-git/README.es.md](15-git/README.es.md)) |
 | `20-terminal/` | Settings de Windows Terminal ([20-terminal/README.es.md](20-terminal/README.es.md)) |
 | `30-vscode/` | Settings, keybindings y lista de extensiones de VS Code ([30-vscode/README.es.md](30-vscode/README.es.md)) |
 | `40-format/` | Estilo global de Prettier y EditorConfig para proyectos sin el suyo ([40-format/README.es.md](40-format/README.es.md)) |
@@ -94,9 +95,9 @@ sin romper nada (por ejemplo tras un reinicio).
 | Paso | Qué instala o configura |
 |---|---|
 | 1 | Variables de entorno hacia `D:` (o `C:` si no hay `D:`), `PNPM_HOME` incluido; van primero para que Rust se instale ahí |
-| 2 | Apps esenciales de `60-apps/essential.json`: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, nvm-windows y CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt) |
+| 2 | Apps esenciales de `60-apps/essential.json`: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, fnm y CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt) |
 | 3 | CaskaydiaCove Nerd Font (descarga verificada por SHA-256) |
-| 4 | Node (nvm-windows) + pnpm + Claude Code en `<disk>\Dev\npm-global` |
+| 4 | Node con fnm (versiones en `<disk>\Dev\fnm`; cada terminal cambia a la versión del repo al entrar en él) + pnpm + Claude Code en `<disk>\Dev\npm-global` |
 | 5 | WSL Ubuntu 26.04 (requiere reinicio) |
 | 6 | git: nombre, email noreply y defaults |
 | 7 | Symlinks de configuración, y el `settings.json` de Claude Code si la máquina no tiene uno (`install.ps1`) |
@@ -204,8 +205,7 @@ terminal: `Remove-Item Env:POSH_NAME` (PowerShell) o `unset POSH_NAME`
 | `install.ps1` falla al crear symlinks | Developer Mode apagado | Activarlo, o ejecutar como administrador |
 | El prompt no aparece en una terminal nueva | El perfil no se cargó | `. $PROFILE`, o reabrir la terminal |
 | Iconos como cuadrados | Falta CaskaydiaCove Nerd Font | Re-ejecutar `bootstrap.ps1` |
-| `nvm` no reconocido tras el bootstrap | PATH no refrescado | Reabrir PowerShell y volver a correr `bootstrap.ps1` |
-| GitHub muestra "Unverified" | El UID de la clave GPG no tiene el email noreply | [docs/gpg-signing.es.md](docs/gpg-signing.es.md) |
+| `fnm` no reconocido tras el bootstrap | PATH no refrescado | Reabrir PowerShell y volver a correr `bootstrap.ps1` || GitHub muestra "Unverified" | El UID de la clave GPG no tiene el email noreply | [docs/gpg-signing.es.md](docs/gpg-signing.es.md) |
 
 ## Documentación y contribución
 

@@ -15,6 +15,17 @@ Notable changes to the project. The format follows
   README with a diagram, CHANGELOG, `CLAUDE.md`, formatting, CI and the brain
   catalog), and `50-claude/rules/repo-conventions.md`, a short global rule that
   points to it and reports what a repo is missing. Linked by `install.ps1`.
+- `15-git/`: the git configuration, linked by `install.ps1`. Each remote picks
+  its GitHub account by owner; client and work organizations stay in the
+  machine's `~/.gitconfig.local`, never in this public repo.
+- `repo-conventions`: the Node version lives only in `engines.node`, exact when
+  deployed and a minimum when others install it.
+
+### Changed
+
+- Node comes from fnm instead of nvm-windows: each terminal switches to the
+  repo's version on entering it, versions live in `<disk>\Dev\fnm`, and the
+  default one stays on the PATH for apps that start without a shell profile.
 
 ## [1.0.0] - 2026-11-24
 

@@ -1,0 +1,4 @@
+# Repos de la cuenta personal de GitHub y de sus organizaciones: Git Credential Manager la usa
+# sin preguntar.
+[credential "https://github.com"]
+	username = M1gu3l4ngel

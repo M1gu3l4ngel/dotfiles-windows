@@ -11,6 +11,12 @@ $profileDir = if ($profileFile.LinkType -eq 'SymbolicLink') { Split-Path @($prof
 oh-my-posh init pwsh --config (Join-Path $profileDir '..\oh-my-posh\capr4n.omp.json') | Invoke-Expression
 Remove-Variable profileFile, profileDir
 
+# fnm: al entrar en un repo usa la version de Node que pide (.node-version, .nvmrc o
+# engines.node de package.json, buscando hacia arriba), solo en esta terminal.
+if (Get-Command fnm -ErrorAction SilentlyContinue) {
+	fnm env --use-on-cd --version-file-strategy recursive --shell powershell | Out-String | Invoke-Expression
+}
+
 # Terminal-Icons (iconos por tipo de archivo en ls/dir) cuesta ~0.5 s al importar.
 # Se difiere al primer idle -justo despues de que aparece el prompt- para que la
 # terminal abra al instante; los iconos quedan listos para el primer 'ls'.

@@ -16,7 +16,9 @@
 
 ## Toolchain y apps
 
-- Node vía **nvm-windows**; globales (`pnpm`, `claude`) en `<disco>\Dev\npm-global`.
+- Node vía **fnm** (versiones en `<disco>\Dev\fnm`, `FNM_DIR`): cada terminal cambia a la versión
+  del repo al entrar (perfiles de `10-shell/`), y `aliases\default` en el PATH cubre lo que
+  arranca sin perfil. Globales (`pnpm`, `claude`) en `<disco>\Dev\npm-global`.
 - Apps del entorno por **winget** (no choco, no scoop, no instaladores manuales).
 - Módulos de PowerShell: `Install-Module -Scope CurrentUser` (sin admin).
 - Fuente: **CaskaydiaCove Nerd Font** (tabla `$NerdFonts`, verificada por SHA-256).

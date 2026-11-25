@@ -68,6 +68,18 @@ function Get-DotfilesLink {
 			Target = "$env:USERPROFILE\.bash_profile"
 			Label  = 'Git Bash profile (carga .bashrc)'
 		},
+		# Git: la parte publica (este archivo va sin acentos: sin BOM, PowerShell 5.1 lo leeria mal). Lo privado (organizaciones de clientes y del trabajo) vive en
+		# ~/.gitconfig.local, que no se versiona y gitconfig incluye si existe.
+		@{
+			Source = "$DotfilesRoot\15-git\gitconfig"
+			Target = "$env:USERPROFILE\.gitconfig"
+			Label  = 'Git config'
+		},
+		@{
+			Source = "$DotfilesRoot\15-git\gitconfig-personal"
+			Target = "$env:USERPROFILE\.gitconfig-personal"
+			Label  = 'Git cuenta personal de GitHub'
+		},
 		# El tema de oh-my-posh no se enlaza: el perfil de PowerShell y .bashrc lo leen
 		# directamente del repo.
 		@{

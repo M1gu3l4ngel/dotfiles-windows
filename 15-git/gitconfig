@@ -1,0 +1,24 @@
+[user]
+	name = M1gu3l4ngel
+	email = 88590762+M1gu3l4ngel@users.noreply.github.com
+	signingkey = 62675F1433E06730
+[init]
+	defaultBranch = main
+[commit]
+	gpgsign = true
+[gpg]
+	program = C:\\Program Files\\GnuPG\\bin\\gpg.exe
+[tag]
+	gpgsign = true
+[http]
+	postBuffer = 524288000
+# La cuenta de GitHub sale del dueño del remoto, no de la carpeta: todos los repos viven en
+# D:/Dev/projects. Sin esto, Git Credential Manager pregunta en cada fetch cuál usar.
+[includeIf "hasconfig:remote.*.url:https://github.com/M1gu3l4ngel/**"]
+	path = ~/.gitconfig-personal
+[includeIf "hasconfig:remote.*.url:https://github.com/creaskar/**"]
+	path = ~/.gitconfig-personal
+# Lo que no va en un repo público (organizaciones de clientes o del trabajo y sus cuentas)
+# vive en este archivo de la máquina, fuera del repo. Si no existe, git lo ignora.
+[include]
+	path = ~/.gitconfig.local

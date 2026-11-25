@@ -183,14 +183,19 @@ function Invoke-Step1Env($drive) {
 	Set-UserEnv 'NUGET_PACKAGES'      "$drive\Dev\Caches\nuget"
 	Set-UserEnv 'PUPPETEER_CACHE_DIR' "$drive\Dev\Caches\puppeteer"
 	Set-UserEnv 'PNPM_HOME'           "$drive\Dev\pnpm"
+	# Las versiones de Node que instala fnm, fuera de C:.
+	Set-UserEnv 'FNM_DIR'             "$drive\Dev\fnm"
 	if (-not $DryRun) {
 		$dirs = @(
 			"$drive\Dev\Caches\cargo", "$drive\Dev\Caches\rustup", "$drive\Dev\Caches\nuget",
 			"$drive\Dev\Caches\puppeteer", "$drive\Dev\Caches\npm", "$drive\Dev\pnpm",
-			"$drive\Dev\npm-global", "$drive\Dev\projects", "$drive\Dev\scratch"
+			"$drive\Dev\npm-global", "$drive\Dev\fnm", "$drive\Dev\projects", "$drive\Dev\scratch"
 		)
 		foreach ($d in $dirs) { New-Item -ItemType Directory -Force -Path $d | Out-Null }
 	}
+	# El Node por defecto de fnm, para lo que arranca sin perfil de shell (VS Code al abrir,
+	# tareas programadas): sin esto no encuentran node. En una terminal manda el de cada repo.
+	Add-UserPath "$drive\Dev\fnm\aliases\default"
 	Add-UserPath "$drive\Dev\npm-global"
 	Add-UserPath "$drive\Dev\Caches\cargo\bin"
 	Add-UserPath "$drive\Dev\pnpm\bin"
@@ -241,14 +246,17 @@ function Invoke-Step3Font {
 function Invoke-Step4Node($drive) {
 	Step "Node $NodeMajor + pnpm + Claude Code (globales en $drive\Dev\npm-global)"
 	Update-SessionPath
-	if (-not (Get-Command nvm -ErrorAction SilentlyContinue)) {
-		Warn 'nvm aun no esta en el PATH de esta sesion (se instalo recien).'
+	if (-not (Get-Command fnm -ErrorAction SilentlyContinue)) {
+		Warn 'fnm aun no esta en el PATH de esta sesion (se instalo recien).'
 		Warn 'Cierra y reabre PowerShell y vuelve a correr bootstrap.ps1 para completar Node.'
 		return
 	}
-	if ($DryRun) { Would "nvm install $NodeMajor; npm prefix/cache -> $drive; npm i -g @pnpm/exe y claude-code"; return }
-	nvm install $NodeMajor | Out-Null
-	nvm use $NodeMajor | Out-Null
+	if ($DryRun) { Would "fnm install $NodeMajor y default; npm prefix/cache -> $drive; npm i -g @pnpm/exe y claude-code"; return }
+	# fnm usa FNM_DIR, que el paso 1 dejo en el registro; esta sesion aun no lo ve.
+	$env:FNM_DIR = "$drive\Dev\fnm"
+	fnm install $NodeMajor | Out-Null
+	fnm default $NodeMajor | Out-Null
+	fnm env --shell powershell | Out-String | Invoke-Expression
 	Update-SessionPath
 	npm config set prefix "$drive\Dev\npm-global" | Out-Null
 	npm config set cache  "$drive\Dev\Caches\npm" | Out-Null

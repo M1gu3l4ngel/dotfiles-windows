@@ -9,7 +9,7 @@ repo es para el entorno, no para las apps personales.
 
 | Archivo | Qué es | Quién lo instala |
 |---|---|---|
-| `essential.json` | El entorno: Git, PowerShell, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, nvm-windows y CLI tools | `bootstrap.ps1`, en ese orden |
+| `essential.json` | El entorno: Git, PowerShell, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, fnm y CLI tools | `bootstrap.ps1`, en ese orden |
 | `optional.json` | Otras herramientas de desarrollo, que se eligen en cada PC | Tú, cuando las quieras |
 
 `tools/check.ps1` falla si una app está en las dos listas.

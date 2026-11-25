@@ -11,6 +11,10 @@ Todo repo mío (personal, de una organización propia o de un empleador) tiene:
 - `CLAUDE.md` del repo: qué es, stack, comandos, convenciones y enlace a sus docs.
 - CI mínimo: lint, formato, tests y el check de docs bilingües.
 - Registro en el catálogo del cerebro, si su organización tiene uno.
+- La versión de Node (o del runtime) en un solo sitio, `engines.node` de `package.json`,
+  que leen el CI (`node-version-file: package.json`), el despliegue, pnpm y fnm. Exacta
+  en lo que se despliega; mínimo (`>=24`) en lo que instalan otros, con su CI probando
+  el mínimo y el LTS. Nunca escrita también en el YAML del CI ni en un segundo archivo.
 
 Al crear un repo, usa el skill `new-repo`, que tiene el detalle. En un repo que
 ya existe y al que le falta algo de esta lista, avísalo como hallazgo y ofrece

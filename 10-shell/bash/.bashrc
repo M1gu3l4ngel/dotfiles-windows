@@ -7,6 +7,12 @@ case $- in
     *) return ;;
 esac
 
+# fnm: al entrar en un repo usa la versión de Node que pide (.node-version, .nvmrc o
+# engines.node de package.json, buscando hacia arriba), solo en esta terminal.
+if command -v fnm >/dev/null 2>&1; then
+    eval "$(fnm env --use-on-cd --version-file-strategy recursive --shell bash)"
+fi
+
 # oh-my-posh — mismo tema que PowerShell y WSL. La carpeta del tema se deriva
 # del symlink de este archivo (~/.bashrc -> repo/10-shell/bash/.bashrc), así
 # funciona aunque el repo no esté clonado en ~/dotfiles.

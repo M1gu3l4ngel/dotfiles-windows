@@ -32,7 +32,7 @@
           "PackageIdentifier": "Docker.DockerDesktop"
         },
         {
-          "PackageIdentifier": "CoreyButler.NVMforWindows"
+          "PackageIdentifier": "Schniz.fnm"
         },
         {
           "PackageIdentifier": "junegunn.fzf"
