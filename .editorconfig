@@ -1,9 +1,8 @@
-# Convenciones de formato del repo. Lo leen VS Code, Neovim, JetBrains, etc.,
-# así que cualquiera que lo clone escribe en el mismo estilo sin configurar nada.
-# https://editorconfig.org
+# The repo's format conventions. VS Code, Neovim, JetBrains and others read it, so anyone who
+# clones the repo writes in the same style with no setup. https://editorconfig.org
 root = true
 
-# ----- DEFAULT: tabs (el editor usa insertSpaces=false, tabSize=2) -----
+# Tabs by default (the editor uses insertSpaces=false, tabSize=2).
 [*]
 charset = utf-8
 end_of_line = lf
@@ -12,22 +11,21 @@ trim_trailing_whitespace = true
 indent_style = tab
 indent_size = 2
 
-# ----- MARKDOWN: espacios; no recortar (2 espacios finales = salto de línea) -----
+# Markdown: spaces, and no trimming (2 trailing spaces are a line break).
 [*.md]
 indent_style = space
 indent_size = 4
 trim_trailing_whitespace = false
 
-# ----- SHELL (Git Bash): espacios, como el estilo actual de los .bashrc -----
-# switch_case_indent es clave propia de shfmt: indenta los `case` (equivale a
-# `-ci`). shfmt solo lee .editorconfig cuando se ejecuta sin flags, como hace la
-# extension mkhl.shfmt de VS Code.
+# Shell (Git Bash): spaces, like the current .bashrc style. switch_case_indent is shfmt's own
+# key: it indents `case` (like `-ci`). shfmt only reads .editorconfig when run without flags, as
+# the mkhl.shfmt VS Code extension does.
 [{.bashrc,.bash_profile,*.sh}]
 indent_style = space
 indent_size = 4
 switch_case_indent = true
 
-# ----- YAML: la especificacion prohibe tabuladores para indentar -----
+# YAML: the spec forbids tabs for indentation.
 [*.{yml,yaml}]
 indent_style = space
 indent_size = 2

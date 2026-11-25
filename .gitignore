@@ -1,18 +1,18 @@
-# === Backups creados durante migración ===
+# Backups install.ps1 makes before replacing a file
 *.pre-dotfiles.bak
 
-# === Editor temp files ===
+# Editor temp files
 *.swp
 *.swo
 *~
 
-# === OS junk ===
+# OS junk
 Thumbs.db
 desktop.ini
 .DS_Store
 
-# === Datos sensibles (NUNCA commitear) ===
-# Literales personales/empresa para la higiene (los lee tools/check.ps1):
+# Sensitive data: never commit it.
+# Personal and company literals for the hygiene check (tools/check.ps1 reads them):
 tools/hygiene-patterns.local
 .env
 .env.*
@@ -23,15 +23,15 @@ tools/hygiene-patterns.local
 *_ed25519
 secrets/
 
-# === VS Code MCP config (puede contener tokens) ===
+# VS Code MCP config (can hold tokens)
 mcp.json
 syncLocalSettings.json
 
-# === Snapshot local de apps (registro privado, NO publicar) ===
-# 60-apps/winget-full.local.json lleva las apps personales; se queda solo en tu maquina.
+# Local app snapshot, a private record: 60-apps/winget-full.local.json lists personal apps and
+# stays on each machine.
 *.local.json
 
-# === Cache local ===
+# Local cache
 .cache/
 *.cache
 *.log

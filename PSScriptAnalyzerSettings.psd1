@@ -1,26 +1,24 @@
-# PSScriptAnalyzerSettings.psd1
-# Reglas de PSScriptAnalyzer para el repo. Lo usan tools/check.ps1 y el CI.
-# Se parte de las reglas por defecto y se excluyen solo las que violamos a
-# proposito, cada una con su motivo.
+# PSScriptAnalyzer rules for the repo, used by tools/check.ps1 and CI. It starts from the default
+# rules and excludes only the ones the scripts break on purpose, each with its reason.
 @{
     ExcludeRules = @(
-        # Los .ps1 son instaladores interactivos: Write-Host es salida CON COLOR
-        # para el usuario, no datos de pipeline. Es el uso correcto aqui.
+        # The .ps1 files are interactive installers: Write-Host is COLORED output for the user,
+        # not pipeline data. That is the right use here.
         'PSAvoidUsingWriteHost',
 
-        # Los scripts implementan su propio -DryRun; no necesitan ShouldProcess
-        # (-WhatIf) en cada funcion helper interna.
+        # The scripts implement their own -DryRun; internal helpers do not need ShouldProcess
+        # (-WhatIf) each.
         'PSUseShouldProcessForStateChangingFunctions',
 
-        # Falso positivo con comandos nativos (npm, pnpm), que si usan posicionales.
+        # False positive with native commands (npm, pnpm), which do use positional arguments.
         'PSAvoidUsingPositionalParameters',
 
-        # Falso positivo: $DryRun es un switch a nivel de script usado dentro de las
-        # funciones por alcance dinamico; el analizador no lo reconoce como usado.
+        # False positive: $DryRun is a script-level switch used inside the functions through
+        # dynamic scope; the analyzer does not see it as used.
         'PSReviewUnusedParameter',
 
-        # Idiom oficial de oh-my-posh en el perfil: 'oh-my-posh init ... | iex'.
-        # La entrada es la salida confiable de oh-my-posh, no input del usuario.
+        # oh-my-posh's official idiom in the profile: 'oh-my-posh init ... | iex'. The input is
+        # oh-my-posh's trusted output, not user input.
         'PSAvoidUsingInvokeExpression'
     )
 }

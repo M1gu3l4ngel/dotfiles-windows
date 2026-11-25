@@ -1,28 +1,23 @@
-# .prettierignore
-# Archivos del repo que Prettier no debe reformatear al guardar en VS Code.
-# El estilo del repo esta en .prettierrc.json (tabuladores, como .editorconfig);
-# sin el, el repo heredaria el estilo global de ~/.prettierrc.json.
+# Repo files Prettier must not reformat on save in VS Code. The repo's style is in
+# .prettierrc.json (tabs, like .editorconfig); without it, the repo would inherit the global
+# ~/.prettierrc.json.
 
-# ----- MARKDOWN -----
-# Las listas anidadas van con 4 espacios (.claude/rules/documentation.md) y
-# Prettier las realinea a 2. tools/check-docs.ps1 vigila su estructura.
+# Nested lists use 4 spaces (.claude/rules/documentation.md) and Prettier realigns them to 2.
+# tools/check-docs.ps1 watches their structure.
 *.md
 
-# ----- COMPARTIDOS CON DOTFILES-PARROT -----
-# Copias de los de Parrot (el tema del prompt y el estilo global):
-# reformatearlos aqui los separaria.
+# Copies of dotfiles-parrot's files (the prompt theme and the global style): reformatting them
+# here would make them drift apart.
 10-shell/oh-my-posh/capr4n.omp.json
 40-format/
 
-# ----- CAPA DE CLAUDE CODE -----
-# Este repo es su fuente (Parrot la tomara de aqui). Sus archivos mezclan
-# estilos; unificarlos es un cambio propio, no algo que haga el formateo al guardar.
+# This repo is the Claude Code layer's source (Parrot will take it from here). Its files mix
+# styles; unifying them is a change of its own, not something format on save should do.
 50-claude/
 
-# ----- GENERADOS -----
-# Formato de `winget export` (curado a mano): se conserva el de winget para que
-# copiar entradas de un export no produzca diffs de formato.
+# `winget export` format (curated by hand): winget's format is kept so that copying entries from
+# an export produces no format diffs.
 60-apps/*.json
-# Windows Terminal reescribe su settings.json entero (4 espacios) cada vez que se
-# cambia un ajuste desde su interfaz: reformatearlo daria un diff gigante en cada cambio.
+# Windows Terminal rewrites its whole settings.json (4 spaces) every time a setting changes from
+# its UI: reformatting it would give a huge diff on each change.
 20-terminal/windows-terminal/settings.json

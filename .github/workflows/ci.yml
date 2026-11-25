@@ -1,8 +1,6 @@
-# .github/workflows/ci.yml
-# CI del repo: en cada push a main y en cada pull request corre tools/check.ps1
-# (sintaxis, PSScriptAnalyzer, JSON, higiene del repo publico, LF, documentacion
-# bilingue, presupuesto de 50-claude/ y gitleaks). node ya viene en windows-latest.
-# El resultado aparece como check junto a cada commit. En local: .\tools\check.ps1
+# Runs tools/check.ps1, the same checks as a local run, on every push to main and every pull
+# request. A Windows runner, because the scripts target PowerShell 5.1 and 7; node already comes
+# with windows-latest. The result shows as a check next to each commit.
 name: CI
 
 on:
@@ -10,40 +8,39 @@ on:
     branches: [main]
   pull_request:
 
-# Minimo privilegio: el workflow solo necesita leer el codigo.
+# Least privilege: the workflow only needs to read the code.
 permissions:
   contents: read
 
-# Un push nuevo cancela la ejecucion anterior de la misma rama.
+# Saves Actions minutes: a new push cancels the previous run of the same ref.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   check:
-    name: Comprobaciones
+    name: Checks
     runs-on: windows-latest
     timeout-minutes: 15
     steps:
-      # Accion fijada por SHA de commit, no por etiqueta: una etiqueta puede
-      # moverse a otro codigo; un SHA no.
-      - name: Descargar el repo
+      # Pinned by commit SHA: a tag can be moved to other code.
+      - name: Check out the repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0 # historial completo: gitleaks revisa todos los commits
+          fetch-depth: 0 # full history: gitleaks scans every commit
           persist-credentials: false
 
-      - name: Instalar PSScriptAnalyzer
+      - name: Install PSScriptAnalyzer
         shell: pwsh
         run: |
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
           Install-Module -Name PSScriptAnalyzer -Scope CurrentUser -Force
 
-      # gitleaks no viene en el runner: se descarga en version fijada y se verifica
-      # su SHA-256 antes de usarlo. Va a la carpeta temporal del runner, fuera del
-      # repo: el zip trae un README.md, y dentro del repo el check de documentacion
-      # bilingue lo toma por un documento sin pareja en espanol.
-      - name: Instalar gitleaks
+      # gitleaks is not on the runner: it is downloaded at a pinned version and its SHA-256 is
+      # verified before use. It goes to the runner's temp folder, outside the repo: the zip has a
+      # README.md, and inside the repo the bilingual docs check would take it for a document with
+      # no Spanish pair.
+      - name: Install gitleaks
         shell: pwsh
         env:
           GITLEAKS_VERSION: "8.30.1"
@@ -54,10 +51,10 @@ jobs:
           $bin = Join-Path $env:RUNNER_TEMP 'gitleaks-bin'
           Invoke-WebRequest -Uri $url -OutFile $zip
           $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
-          if ($hash -ne $env:GITLEAKS_SHA256) { throw "SHA-256 de gitleaks no coincide" }
+          if ($hash -ne $env:GITLEAKS_SHA256) { throw "gitleaks SHA-256 does not match" }
           Expand-Archive -Path $zip -DestinationPath $bin -Force
           Add-Content -Path $env:GITHUB_PATH -Value $bin
 
-      - name: Ejecutar comprobaciones
+      - name: Run the checks
         shell: pwsh
         run: .\tools\check.ps1

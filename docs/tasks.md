@@ -79,7 +79,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 encaja; JSDoc o ayuda basada en comentarios; dentro del cuerpo solo el porqué.
 Sin cambiar comportamiento, un commit por carpeta.
 
-- [ ] Migrar `.github/` y los archivos de configuración de la raíz
 - [ ] Decidir con Parrot `40-format`, que es copia idéntica de la suya
 - [ ] Check en `tools/check.ps1` (y CI) que falle ante un comentario en español, con las exenciones en su salida
 - [ ] Nota de lo aprendido en `docs/contributing/comments.md`
