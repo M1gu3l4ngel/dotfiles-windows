@@ -1,0 +1,15 @@
+{
+	"project": "dotfiles-windows",
+	"platforms": {
+		"install": "Instalación",
+		"shell": "Shell",
+		"terminal": "Terminal",
+		"vscode": "VS Code",
+		"claude": "Claude Code",
+		"repo": "Repositorio"
+	},
+	"devices": {
+		"here": "Esta PC",
+		"new": "PC nueva"
+	}
+}
