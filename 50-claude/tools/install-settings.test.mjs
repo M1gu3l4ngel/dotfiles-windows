@@ -2,10 +2,12 @@
 // machine's own entries, backs up before writing and never writes in --check mode.
 
 import assert from "node:assert/strict";
-import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, test } from "node:test";
+import { fileURLToPath } from "node:url";
 import { addMissingHooks, addMissingPermissions, installSettings } from "./install-settings.mjs";
 
 const dir = mkdtempSync(path.join(tmpdir(), "install-settings-"));
@@ -58,6 +60,22 @@ test("rules are added, never removed", () => {
 		"Read(**/.ssh/**)",
 		"Read(**/.gnupg/**)",
 	]);
+});
+
+test("runs from the command line also through a link, as ~/.claude/tools is", () => {
+	const linkDir = path.join(dir, "linked-tools");
+	symlinkSync(path.dirname(fileURLToPath(import.meta.url)), linkDir, "junction");
+	const settingsPath = path.join(dir, "cli", "settings.json");
+	const run = () =>
+		execFileSync(process.execPath, [
+			path.join(linkDir, "install-settings.mjs"),
+			"--check",
+			"--settings",
+			settingsPath,
+			"--template",
+			templatePath,
+		]);
+	assert.throws(run, (/** @type {any} */ error) => error.status === 1 && /MISSING/.test(String(error.stdout)));
 });
 
 test("an existing file is completed with a backup, and a second run changes nothing", () => {

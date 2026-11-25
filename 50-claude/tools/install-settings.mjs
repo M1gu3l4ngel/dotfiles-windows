@@ -9,7 +9,7 @@
 // Usage: node install-settings.mjs [--check] [--settings <file>] [--template <file>] [--home <dir>]
 // --check reports and changes nothing; the exit code is 1 when something is missing.
 
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -146,7 +146,10 @@ export function installSettings({ settingsPath, templatePath, home, check = fals
 	};
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+// Runs only from the command line, not when the test imports it. Both sides are real paths: run
+// through the ~/.claude/tools link, argv holds the link and import.meta.url the file it points to.
+const invoked = process.argv[1] ? realpathSync(process.argv[1]) : "";
+if (invoked === realpathSync(fileURLToPath(import.meta.url))) {
 	const { values } = parseArgs({
 		options: {
 			check: { type: "boolean", default: false },
