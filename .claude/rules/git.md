@@ -21,16 +21,18 @@ cuerpo con un guion por cambio concreto (sin cuerpo solo si el título lo dice
 todo).
 
 ```
-type(scope): resumen en español
+type(scope): imperative summary in English
 
-- Qué cambió, en concreto.
-- Otro cambio del mismo commit.
+- What changed, concretely.
+- Another change in the same commit.
 ```
 
 - `type` en inglés: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
 - `scope` opcional: el componente afectado (`install`, `bootstrap`, `vscode`...).
-- Texto en español. Dice qué cambió en el repo, sin nombres del plan de trabajo
-  ("tanda", "bloque", "fase") ni trailers de atribución.
+- **Todo el mensaje en inglés**, en imperativo (`add`, `fix`, `remove`), como
+  Linux, Kubernetes, Angular, Google, Microsoft y GitHub; nunca en dos idiomas,
+  que duplica el texto y rompe el tope del título. Dice qué cambió en el repo,
+  sin nombres del plan de trabajo ("batch", "phase") ni trailers de atribución.
 
 ## Identidad y firma
 
