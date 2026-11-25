@@ -16,28 +16,95 @@
 //
 // Portable Windows/Linux. Solo la ruta de este archivo en settings.json cambia por maquina.
 
+import { execFileSync } from "node:child_process";
+import path from "node:path";
+
 /**
  * @typedef {object} CommandRule
  * @property {RegExp} pattern Se prueba contra el comando con el contenido de las comillas tapado.
- * @property {(command: string) => boolean} [applies] Condicion extra, sobre el comando original.
+ * @property {(command: string, cwd: string) => boolean} [applies] Condicion extra, sobre el comando
+ *   original y la carpeta de la sesion.
  * @property {"deny" | "ask"} decision
  * @property {string} reason
  */
+
+// Repos cuya unica rama es main (el cerebro de la empresa): no tienen staging ni CI que gaste
+// minutos, asi que subir a main es su flujo normal. Se reconocen por la URL de su remoto, no por
+// la carpeta, que cambia de una maquina a otra.
+const MAIN_ONLY_REPOS = /[/:]creaskar\/brain(?:\.git)?$/i;
+
+/**
+ * La carpeta donde corre el git del comando: la de un `cd`, `Set-Location` o `git -C` delante,
+ * o la de la sesion.
+ *
+ * @param {string} command
+ * @param {string} cwd
+ */
+function resolveCommandDir(command, cwd) {
+	const match = /(?:\bgit\s+-C\s+|\b(?:cd|Set-Location)\s+)("[^"]+"|'[^']+'|[^\s;&|]+)/i.exec(command);
+	if (!match?.[1]) return cwd;
+	return path.resolve(cwd, match[1].replaceAll(/^["']|["']$/g, ""));
+}
+
+/** @param {string} dir */
+function isMainOnlyRepo(dir) {
+	try {
+		const url = execFileSync("git", ["-C", dir, "remote", "get-url", "origin"], {
+			encoding: "utf8",
+			stdio: ["ignore", "pipe", "ignore"],
+		});
+		return MAIN_ONLY_REPOS.test(url.trim());
+	} catch {
+		return false;
+	}
+}
 
 // Temporales y caches regenerables: borrarlos no pide confirmacion.
 const TEMP_TARGET =
 	/\$\{?(env:)?(TEMP|TMP|TMPDIR)\b|(^|[\s"'\\/])(tmp|temp)[\\/]|scratchpad|[\\/]dev[\\/]scratch[\\/]|node_modules|[\\/]\.next\b|[\\/]coverage\b/i;
 
+// Un `git push`, también con opciones globales delante (`git -C ../otro push`): sin ellas en el
+// patrón, ese comando se saltaba todas las reglas de subida.
+const GIT_PUSH = String.raw`\bgit(?:\s+-[cC]\s+\S+)*\s+push\b`;
+
+// `add` y `commit` no estan: los hace Claude al cerrar cada cambio verificado
+// (~/.claude/CLAUDE.md, Interaccion). Lo que reescribe historia o arbol sigue siendo del usuario.
 const GIT_WRITE =
-	/\bgit\s+(?:-[cC]\s+\S+\s+)*(add|commit|push|pull|reset|rebase|merge|checkout|switch|restore|clean|stash|cherry-pick|revert|tag|mv|rm|apply|am)\b/;
+	/\bgit\s+(?:-[cC]\s+\S+\s+)*(pull|reset|rebase|merge|checkout|switch|restore|clean|stash|cherry-pick|revert|tag|mv|rm|apply|am)\b/;
 
 /** @type {readonly CommandRule[]} */
 const RULES = [
 	{
+		pattern: /\bgit\b[^;&|]*(--no-gpg-sign|commit\.gpgsign=false)/,
+		decision: "deny",
+		reason: "commit sin firma: los commits van siempre firmados; si la clave caduco, pide al usuario que la desbloquee.",
+	},
+	{
+		pattern: /\bgit\s+add\b[^;&|]*\s(-A|--all|\.)(?=\s|$|[;&|])/,
+		decision: "deny",
+		reason: "git add -A o `.`: se anaden por ruta solo los archivos del cambio.",
+	},
+	{
+		pattern: new RegExp(String.raw`${GIT_PUSH}[^;&|]*(\s-f\b|--force|\s\+)`),
+		decision: "deny",
+		reason: "push forzado: nunca, en ningun repo.",
+	},
+	{
+		pattern: new RegExp(String.raw`${GIT_PUSH}[^;&|]*\b(main|master)\b`),
+		applies: (command, cwd) => !isMainOnlyRepo(resolveCommandDir(command, cwd)),
+		decision: "deny",
+		reason: "push a main: nunca; main lo promueve el usuario (salvo en un repo de solo main, como el cerebro).",
+	},
+	{
+		pattern: new RegExp(GIT_PUSH),
+		decision: "ask",
+		reason: "push: solo si el usuario eligio «Commit y push»; cada push gasta minutos de Actions.",
+	},
+	{
 		pattern: GIT_WRITE,
 		decision: "deny",
 		reason:
-			"git de escritura: el commit, el push y todo lo que cambia el arbol los hace el usuario " +
+			"git de escritura: lo que reescribe historia o arbol lo hace el usuario " +
 			"(~/.claude/CLAUDE.md, Interaccion). Sugiere el comando; de lectura valen status, log, diff y show.",
 	},
 	{
@@ -74,23 +141,29 @@ function unquoted(command) {
 	return command.replaceAll(/'[^']*'|"(?:[^"\\]|\\.)*"/g, (m) => `${m[0]}${"_".repeat(m.length - 2)}${m.at(-1)}`);
 }
 
-/** @param {string} command */
-function findRule(command) {
+/**
+ * @param {string} command
+ * @param {string} cwd
+ */
+function findRule(command, cwd) {
 	const masked = unquoted(command);
-	return RULES.find((rule) => rule.pattern.test(masked) && (rule.applies?.(command) ?? true));
+	return RULES.find((rule) => rule.pattern.test(masked) && (rule.applies?.(command, cwd) ?? true));
 }
 
 let input = "";
 for await (const chunk of process.stdin) input += chunk;
 
 let command = "";
+let cwd = process.cwd();
 try {
-	command = String(JSON.parse(input).tool_input?.command ?? "");
+	const parsed = JSON.parse(input);
+	command = String(parsed.tool_input?.command ?? "");
+	if (typeof parsed.cwd === "string") cwd = parsed.cwd;
 } catch {
 	process.exit(0);
 }
 
-const rule = findRule(command);
+const rule = findRule(command, cwd);
 if (rule) {
 	process.stdout.write(
 		JSON.stringify({
