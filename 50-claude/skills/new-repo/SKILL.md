@@ -11,7 +11,7 @@ se nombran sus repos, plantillas) **no está aquí**: vive en su cerebro, y lo q
 diga el cerebro manda sobre lo de aquí.
 
 Ya aplican y no se repiten: documentación bilingüe, editar con Edit/Write,
-commits y push, disco `D:` y formato (`~/.claude/CLAUDE.md`).
+commits y push, carpeta de trabajo y formato (`~/.claude/CLAUDE.md`).
 
 ## 1. Antes de tocar nada
 
@@ -19,11 +19,12 @@ commits y push, disco `D:` y formato (`~/.claude/CLAUDE.md`).
   dueño (personal, organización propia, empleador o cliente), visibilidad, qué
   es en una frase, stack y web.
 - **Cerebro**: si el repo es de una organización, busca su repo `brain` hermano
-  (`D:\Dev\projects\<organización>\brain`) y lee su README, su `CLAUDE.md` y lo
+  (`<trabajo>/projects/<organización>/brain`) y lee su README, su `CLAUDE.md` y lo
   que su `AGENTS.md` señale para repos (en los cerebros de `brain-template`,
   `40-engineering/`): nombre de la organización en GitHub, convención de nombres,
   web, plantillas, rama de trabajo, receta del README y dónde está su catálogo.
-- **Carpeta**: `D:\Dev\projects\<organización o personal>\<repo>`.
+- **Carpeta**: `<trabajo>/projects/<organización o personal>/<repo>`, con
+  `<trabajo>` la carpeta de trabajo de `~/.claude/entorno.md`.
 - **Publicar es confirmar**: crear el repo remoto lo publica. Confirma nombre,
   dueño y visibilidad antes de `gh repo create`.
 

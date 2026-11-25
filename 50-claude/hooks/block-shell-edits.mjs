@@ -6,7 +6,7 @@
 // editors, redirections to a file, heredocs into an interpreter, writing cmdlets and inline code
 // that writes.
 //
-// Output sent to a temp folder (logs, scratchpad, D:\Dev\scratch, /tmp) or to /dev/null passes:
+// Output sent to a temp folder (logs, scratchpad, the work folder's scratch, /tmp) or /dev/null passes:
 // the rule protects working files, not a command's output. Running a script already written with
 // Write (`node scratchpad/sweep.mjs`) passes too. Runs the same on Windows and Linux.
 
@@ -79,7 +79,7 @@ if (violation) {
 				permissionDecisionReason:
 					`Blocked by ~/.claude/hooks/block-shell-edits.mjs (${violation}). Files are ` +
 					"changed with Edit or Write (see ~/.claude/CLAUDE.md). If the output is a log, " +
-					"write it to the scratchpad, D:\\Dev\\scratch or $TEMP.",
+					"write it to the scratchpad, the work folder's scratch or $TEMP.",
 			},
 		}),
 	);

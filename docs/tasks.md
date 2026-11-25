@@ -95,7 +95,7 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 # Fase 6 — Capa de Claude universal (Windows y Linux)
 
-## Textos neutros en el código compartido
+## Herramientas compartidas en 50-claude/tools
 
 **Plataforma:** Claude Code.
 
@@ -104,17 +104,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 **Requiere:** nada.
 
 **Estado:** en curso.
-
-- [ ] El `reason` de `block-shell-edits.mjs` no nombra `D:\Dev\scratch`
-- [ ] El skill `new-repo` da la carpeta de proyectos y el check de docs sin rutas de Windows
-
-## Herramientas compartidas en 50-claude/tools
-
-**Plataforma:** Claude Code.
-
-**Prioridad:** Mejora.
-
-**Requiere:** nada.
 
 - [ ] Diseño aprobado: rutas, argumentos y formato de `links.json`
 - [ ] `install-settings.mjs` (con `--check`) fusiona `~/.claude/settings.json` y `install.ps1` lo llama
