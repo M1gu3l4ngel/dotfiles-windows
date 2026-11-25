@@ -10,7 +10,7 @@ specific to a machine stays local (it is not versioned).
 
 | File | Linked to | What it is |
 |---|---|---|
-| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Universal rules: bilingual documentation, disk, editing with Edit/Write, confirming before deleting, interaction, compaction |
+| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Universal rules: bilingual documentation, work folder, editing with Edit/Write, confirming before deleting, interaction, compaction |
 | `rules/repo-conventions.md` | `~/.claude/rules/repo-conventions.md` | Global rule (Spanish, loaded in every project): what every repo has, and to report what is missing as a finding |
 | `skills/new-repo/` | `~/.claude/skills/new-repo` | Global skill (Spanish): creates a well-built repo, or completes an existing one: GitHub description and topics, `main` protection, license, bilingual README with a diagram, CHANGELOG, `CLAUDE.md`, formatting, CI and the organization's brain catalog. Company specifics live in each company's brain |
 | `statusline.mjs` | `~/.claude/statusline.mjs` | Status line (model, context in tokens, folder) |
@@ -22,6 +22,7 @@ specific to a machine stays local (it is not versioned).
 | `settings.template.json` | — (template) | Portable base for `settings.json`: generic secret `deny`/`ask` rules, hook and status line registration, `skillOverrides` and the preferences that hold on any PC (`theme`, `tui`, `autoUpdatesChannel`) |
 | `check-budget.mjs` | — (script) | Budget guard: counts the lines of `CLAUDE.md`, the status line, the hooks, the rule and the skill, and fails if they exceed it. Run by `tools/check.ps1` and CI; on its own: `node 50-claude/check-budget.mjs`. Portable |
 | `panel/` | `~/.claude/panel` | Task panel: an artifact generated from a repo's `docs/tasks.md` and `docs/backlog.md`, with its hooks. Each repo turns it on with `.claude/panel.json`. See [panel/README.md](panel/README.md) |
+| `tools/install-settings.mjs` | — (script) | Creates `~/.claude/settings.json` from the template, or adds the hooks and `deny`/`ask` rules it lacks, with a dated backup; `--check` only reports. The installer of each system calls it (`install.ps1` here, `install.sh` in dotfiles-parrot). Portable |
 | `entorno.template.md` | — (template) | Sections of the local `~/.claude/entorno.md` (Spanish, like `CLAUDE.md`), valid on Windows and Linux, with no data from any machine |
 
 ## What is NOT versioned (stays local, per machine)

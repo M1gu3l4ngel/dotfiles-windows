@@ -10,7 +10,7 @@ máquina se queda local (no se versiona).
 
 | Archivo | Enlazado a | Qué es |
 |---|---|---|
-| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Reglas universales: documentación bilingüe, disco, editar con Edit/Write, confirmar antes de borrar, interacción, compactación |
+| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Reglas universales: documentación bilingüe, carpeta de trabajo, editar con Edit/Write, confirmar antes de borrar, interacción, compactación |
 | `rules/repo-conventions.md` | `~/.claude/rules/repo-conventions.md` | Regla global (en español, se carga en todos los proyectos): lo que tiene todo repo, y avisar como hallazgo lo que falte |
 | `skills/new-repo/` | `~/.claude/skills/new-repo` | Skill global (en español): crea un repo bien armado, o completa uno existente: descripción y topics en GitHub, protección de `main`, licencia, README bilingüe con diagrama, CHANGELOG, `CLAUDE.md`, formato, CI y el catálogo del cerebro de la organización. Lo de cada empresa vive en su cerebro |
 | `statusline.mjs` | `~/.claude/statusline.mjs` | Barra de estado (modelo, contexto en tokens, carpeta) |
@@ -22,6 +22,7 @@ máquina se queda local (no se versiona).
 | `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos, registro de los hooks y de la barra de estado, `skillOverrides` y las preferencias que valen en cualquier PC (`theme`, `tui`, `autoUpdatesChannel`) |
 | `check-budget.mjs` | — (script) | Guarda de presupuesto: cuenta las líneas de `CLAUDE.md`, la línea de estado, los hooks, la regla y el skill, y falla si exceden. Lo corren `tools/check.ps1` y el CI; suelto: `node 50-claude/check-budget.mjs`. Portable |
 | `panel/` | `~/.claude/panel` | Panel de tareas: un artefacto generado desde `docs/tasks.md` y `docs/backlog.md` de un repo, con sus hooks. Cada repo lo activa con `.claude/panel.json`. Ver [panel/README.es.md](panel/README.es.md) |
+| `tools/install-settings.mjs` | — (script) | Crea `~/.claude/settings.json` desde la plantilla, o le añade los hooks y las reglas `deny`/`ask` que le faltan, con un backup fechado; `--check` solo informa. Lo llama el instalador de cada sistema (`install.ps1` aquí, `install.sh` en dotfiles-parrot). Portable |
 | `entorno.template.md` | — (plantilla) | Secciones del `~/.claude/entorno.md` local (en español, como `CLAUDE.md`), válidas en Windows y en Linux, sin datos de ninguna máquina |
 
 ## Qué NO se versiona (queda local, por máquina)

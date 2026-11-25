@@ -162,6 +162,14 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
 		Fail 'Command hook: failed tests'
 		$hookTests | Select-String 'not ok' | ForEach-Object { Write-Host "       $_" }
 	}
+	# The shared tools other repos and dotfiles-parrot run: their tests are the contract.
+	$toolTests = @(Get-ChildItem (Join-Path $repo '50-claude\tools') -Filter '*.test.mjs' | ForEach-Object FullName)
+	$toolOut = node --test --test-reporter=tap @toolTests 2>&1
+	if ($LASTEXITCODE -eq 0) { Pass "Shared tools: $((($toolOut | Select-String '^# pass ') -replace '^# pass ', '')) tests" }
+	else {
+		Fail 'Shared tools: failed tests'
+		$toolOut | Select-String 'not ok' | ForEach-Object { Write-Host "       $_" }
+	}
 	# Comments are English here (docs/contributing/comments.md); a session that loads a Spanish-only
 	# rule would write them in Spanish again. The exemptions print on every run.
 	$commentTests = node --test --test-reporter=tap (Join-Path $PSScriptRoot 'check-comments.test.mjs') 2>&1

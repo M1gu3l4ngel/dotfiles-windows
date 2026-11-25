@@ -27,6 +27,7 @@ param([switch]$Check)
 $ErrorActionPreference = 'Stop'
 $DotfilesRoot = $PSScriptRoot
 $BackupSuffix = '.pre-dotfiles.bak'
+$SettingsTool = "$DotfilesRoot\50-claude\tools\install-settings.mjs"
 
 # The REAL Documents folder, not "$env:USERPROFILE\Documents": it can be redirected to another
 # drive, and PowerShell looks for its profiles at the real path.
@@ -104,96 +105,19 @@ function Install-Symlink {
 	}
 }
 
-# Adds to $Settings the $Template hooks it does not register, compared by event and file
-# ("Stop: x.mjs"): a hook registered for one event can be missing from another the template added
-# later. It goes into the group with the same matcher, or a new one. Returns what it added; the
-# rest of $Settings is left as is.
-function Add-MissingHook {
-	param($Settings, $Template)
-	$added = @()
-	if (-not $Settings.hooks) { $Settings | Add-Member -NotePropertyName hooks -NotePropertyValue ([pscustomobject]@{}) }
-	foreach ($hookEvent in $Template.hooks.PSObject.Properties) {
-		$name = $hookEvent.Name
-		if (-not $Settings.hooks.$name) { $Settings.hooks | Add-Member -NotePropertyName $name -NotePropertyValue @() -Force }
-		foreach ($group in @($hookEvent.Value)) {
-			foreach ($hook in @($group.hooks)) {
-				if ($hook.command -notmatch 'hooks/([\w-]+\.mjs)') { continue }
-				$file = $Matches[1]
-				$registered = @($Settings.hooks.$name) | ForEach-Object { @($_.hooks) } |
-					Where-Object { $_.command -match [regex]::Escape($file) }
-				if ($registered) { continue }
-				$target = @($Settings.hooks.$name) | Where-Object { $_.matcher -eq $group.matcher } | Select-Object -First 1
-				if ($target) { $target.hooks = @($target.hooks) + $hook }
-				else {
-					$newGroup = [ordered]@{}
-					if ($null -ne $group.matcher) { $newGroup.matcher = $group.matcher }
-					$newGroup.hooks = @($hook)
-					$Settings.hooks.$name = @($Settings.hooks.$name) + [pscustomobject]$newGroup
-				}
-				$added += "${name}: $file"
-			}
-		}
-	}
-	$added
-}
-
-# Adds to $Settings the $Template `deny` and `ask` rules it lacks. It never removes: each
-# machine's own rules stay. Without this, a new safety rule in the template never reached an
-# installed machine. Returns what it added.
-function Add-MissingPermission {
-	param($Settings, $Template)
-	$added = @()
-	if (-not $Settings.permissions) { $Settings | Add-Member -NotePropertyName permissions -NotePropertyValue ([pscustomobject]@{}) }
-	foreach ($kind in 'deny', 'ask') {
-		$current = @($Settings.permissions.$kind | Where-Object { $_ })
-		$missing = @($Template.permissions.$kind | Where-Object { $_ -and $current -notcontains $_ })
-		if ($missing.Count -eq 0) { continue }
-		$Settings.permissions | Add-Member -NotePropertyName $kind -NotePropertyValue (@($current) + $missing) -Force
-		$added += $missing | ForEach-Object { "${kind}: $_" }
-	}
-	$added
-}
-
-# Claude Code only runs a hook registered in ~/.claude/settings.json. That file is local (it holds
-# the user's path and whatever Claude Code writes on each machine), so it is not linked: if it is
-# missing it is created from the template with this machine's home; if it exists, only the
-# template's missing hooks and rules are added, with a backup first.
+# Claude Code only runs a hook registered in ~/.claude/settings.json, a local file that is merged,
+# never linked. The merge lives in 50-claude/tools/install-settings.mjs, shared with
+# dotfiles-parrot's install.sh, so both systems apply the same template the same way. Node arrives
+# in bootstrap.ps1 before this script; without it the links still go in.
 function Install-ClaudeSetting {
-	param(
-		[string]$TemplatePath,
-		[string]$SettingsPath
-	)
-
 	Write-Host ""
 	Write-Host "[Claude settings.json]" -ForegroundColor Magenta
-	# Forward slashes in JSON: a backslash would need escaping.
-	$template = [IO.File]::ReadAllText($TemplatePath, [Text.Encoding]::UTF8)
-	$template = $template.Replace('REEMPLAZA_RUTA_HOME', ($env:USERPROFILE -replace '\\', '/'))
-	# UTF-8 without BOM: Claude Code does not read the file if it starts with a BOM.
-	$utf8 = New-Object Text.UTF8Encoding $false
-
-	if (-not (Test-Path $SettingsPath)) {
-		$settingsDir = Split-Path $SettingsPath -Parent
-		if (-not (Test-Path $settingsDir)) { New-Item -ItemType Directory -Path $settingsDir -Force | Out-Null }
-		[IO.File]::WriteAllText($SettingsPath, $template, $utf8)
-		Write-Host "  Created from the template: $SettingsPath" -ForegroundColor Green
+	if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+		Write-Warning "  node not found: settings.json not merged. Install Node and run .\install.ps1 again."
 		return
 	}
-
-	$settings = [IO.File]::ReadAllText($SettingsPath, [Text.Encoding]::UTF8) | ConvertFrom-Json
-	$templateObject = $template | ConvertFrom-Json
-	$addedHooks = @(Add-MissingHook -Settings $settings -Template $templateObject)
-	$addedRules = @(Add-MissingPermission -Settings $settings -Template $templateObject)
-	if ($addedHooks.Count + $addedRules.Count -eq 0) {
-		Write-Host "  Already has the template's hooks and rules - skip" -ForegroundColor Green
-		return
-	}
-	$backup = "$SettingsPath$BackupSuffix." + (Get-Date -Format 'yyyyMMddHHmmss')
-	Copy-Item -LiteralPath $SettingsPath -Destination $backup
-	[IO.File]::WriteAllText($SettingsPath, ($settings | ConvertTo-Json -Depth 32), $utf8)
-	if ($addedHooks.Count -gt 0) { Write-Host "  Hooks registered: $($addedHooks -join ', ')" -ForegroundColor Green }
-	if ($addedRules.Count -gt 0) { Write-Host "  Rules added: $($addedRules -join ', ')" -ForegroundColor Green }
-	Write-Host "  Backup of the previous file: $backup" -ForegroundColor Yellow
+	node $SettingsTool | ForEach-Object { Write-Host $_ -ForegroundColor Green }
+	if ($LASTEXITCODE -ne 0) { throw "install-settings.mjs failed (exit $LASTEXITCODE)" }
 }
 
 # After each `git pull` of the repo, git runs githooks/post-merge, which runs this installer
@@ -213,7 +137,6 @@ function Install-GitHook {
 # What an install would check, without touching anything: the way to confirm the links are
 # still right after moving something in the repo or after a git pull.
 function Test-Installation {
-	param([string]$SettingsPath, [string]$TemplatePath)
 	$bad = 0
 	$labels = @{ ok = 'ok'; missing = 'MISSING'; stale = 'STALE PATH'; foreign = 'FOREIGN' }
 	foreach ($link in $Links) {
@@ -222,18 +145,14 @@ function Test-Installation {
 		$color = if ($state -eq 'ok') { 'Green' } else { 'Red' }
 		Write-Host ('  {0,-11} {1}' -f $labels[$state], $link.Target) -ForegroundColor $color
 	}
-	if (Test-Path $SettingsPath) {
-		$template = [IO.File]::ReadAllText($TemplatePath, [Text.Encoding]::UTF8) | ConvertFrom-Json
-		$settings = [IO.File]::ReadAllText($SettingsPath, [Text.Encoding]::UTF8) | ConvertFrom-Json
-		# Add-MissingHook works on this in-memory copy: the file is not touched.
-		$missingHooks = @(Add-MissingHook -Settings $settings -Template $template)
-		if ($missingHooks.Count -eq 0) { Write-Host '  ok          Claude Code hooks registered' -ForegroundColor Green }
-		else { $bad++; Write-Host "  MISSING     unregistered hooks: $($missingHooks -join ', ')" -ForegroundColor Red }
-		$missingRules = @(Add-MissingPermission -Settings $settings -Template $template)
-		if ($missingRules.Count -eq 0) { Write-Host '  ok          template deny/ask rules' -ForegroundColor Green }
-		else { $bad++; Write-Host "  MISSING     template rules: $($missingRules -join ', ')" -ForegroundColor Red }
+	if (Get-Command node -ErrorAction SilentlyContinue) {
+		foreach ($line in @(node $SettingsTool --check)) {
+			$color = if ($line -match '^\s*ok\b') { 'Green' } else { 'Red' }
+			Write-Host $line -ForegroundColor $color
+		}
+		if ($LASTEXITCODE -ne 0) { $bad++ }
 	}
-	else { $bad++; Write-Host "  MISSING     $SettingsPath" -ForegroundColor Red }
+	else { $bad++; Write-Host '  MISSING     node, needed to check ~/.claude/settings.json' -ForegroundColor Red }
 	if ((git -C $DotfilesRoot config --get core.hooksPath) -eq 'githooks') { Write-Host '  ok          git post-merge on' -ForegroundColor Green }
 	else { $bad++; Write-Host '  MISSING     git post-merge (core.hooksPath)' -ForegroundColor Red }
 	Write-Host ''
@@ -245,11 +164,9 @@ function Test-Installation {
 Write-Host "=== dotfiles-windows installer ===" -ForegroundColor Magenta
 Write-Host "Repo root: $DotfilesRoot" -ForegroundColor Gray
 
-$settingsPath = "$env:USERPROFILE\.claude\settings.json"
-$templatePath = "$DotfilesRoot\50-claude\settings.template.json"
 if ($Check) {
 	Write-Host '-Check mode: report only, nothing changes.' -ForegroundColor Yellow
-	if (Test-Installation -SettingsPath $settingsPath -TemplatePath $templatePath) { exit 0 }
+	if (Test-Installation) { exit 0 }
 	exit 1
 }
 
@@ -262,7 +179,7 @@ foreach ($link in $Links) {
 	Install-Symlink -Source $link.Source -Target $link.Target -Label $link.Label
 }
 
-Install-ClaudeSetting -TemplatePath $templatePath -SettingsPath $settingsPath
+Install-ClaudeSetting
 Install-GitHook
 
 Write-Host ""

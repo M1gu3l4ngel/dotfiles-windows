@@ -37,6 +37,10 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- La fusión de `~/.claude/settings.json` pasa de `install.ps1` a
+  `50-claude/tools/install-settings.mjs` (con `--check` y tests), para que el `install.sh` de
+  dotfiles-parrot aplique la plantilla igual. El resultado es el mismo que antes.
+
 - `block-forbidden-commands.mjs` pregunta antes de un `git pull --ff-only` en vez de
   denegarlo: un fast-forward no pierde trabajo, y un clon de solo lectura lo necesita. Un pull
   que hace rebase, merge o fuerza sigue denegado. `git -C <carpeta> add -A` también se deniega

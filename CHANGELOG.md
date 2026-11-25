@@ -36,6 +36,10 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- The `~/.claude/settings.json` merge moves from `install.ps1` to
+  `50-claude/tools/install-settings.mjs` (with `--check` and tests), so dotfiles-parrot's
+  `install.sh` applies the template the same way. The result is the same as before.
+
 - `block-forbidden-commands.mjs` asks before a `git pull --ff-only` instead of denying it: a
   fast-forward loses no work, and a read-only clone needs it. A pull that rebases, merges or
   forces is still denied. `git -C <folder> add -A` is now denied too: it slipped through.
