@@ -63,6 +63,13 @@ If you already have the stack installed and only want these configs:
 Before creating each link, `install.ps1` renames your existing file with the
 `.pre-dotfiles.bak` suffix. To roll back, use `uninstall.ps1` (below).
 
+To see the state of each link, the Claude Code hooks and the `post-merge` hook
+without changing anything (it exits with 1 if something is wrong):
+
+```powershell
+.\install.ps1 -Check
+```
+
 ## Uninstall
 
 Reverts the symlinks and restores your original files (the `.pre-dotfiles.bak`

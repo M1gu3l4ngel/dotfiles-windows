@@ -12,9 +12,12 @@
 #
 # Uso:
 #   cd ~\dotfiles
-#   .\install.ps1
+#   .\install.ps1          enlaza lo que falte
+#   .\install.ps1 -Check   solo informa del estado de cada enlace; sale con 1 si algo no esta bien
 
 #Requires -Version 5.1
+[CmdletBinding()]
+param([switch]$Check)
 
 $ErrorActionPreference = 'Stop'
 $DotfilesRoot = $PSScriptRoot
@@ -65,15 +68,16 @@ function Install-Symlink {
 
 	# Si el target ya existe, evaluar.
 	$Backup = $null
-	if (Test-Path $Target) {
-		$item = Get-Item $Target -Force
-		# Si ya es symlink al source correcto (comparando rutas normalizadas), listo.
-		$existing = @($item.Target)[0]
-		if ($item.LinkType -eq 'SymbolicLink' -and $existing -and
-			([IO.Path]::GetFullPath($existing) -ieq [IO.Path]::GetFullPath($Source))) {
-			Write-Host "  Ya symlinked correctamente - skip" -ForegroundColor Green
-			return
-		}
+	$state = Get-DotfilesLinkState -Source $Source -Target $Target -DotfilesRoot $DotfilesRoot
+	if ($state -eq 'ok') {
+		Write-Host "  Ya symlinked correctamente - skip" -ForegroundColor Green
+		return
+	}
+	if ($state -eq 'stale') {
+		# Enlace a una ruta vieja del repo (se movio una carpeta): no guarda nada propio.
+		Write-Host "  Enlace a una ruta vieja del repo: se actualiza" -ForegroundColor Cyan
+	}
+	elseif ($state -eq 'foreign') {
 		# Backup del archivo existente. Si ya hay un .bak de una corrida anterior,
 		# se le anade la fecha en vez de sobrescribirlo o borrarlo sin respaldo:
 		# esa copia puede ser la unica de la config original.
@@ -188,8 +192,45 @@ function Install-GitHook {
 	Write-Host "  Activado: cada git pull vuelve a correr install.ps1" -ForegroundColor Green
 }
 
+# -Check: lo mismo que comprobaria una instalacion, sin tocar nada. Es la verificacion de que
+# los enlaces siguen bien tras mover algo en el repo o tras un git pull.
+function Test-Installation {
+	param([string]$SettingsPath, [string]$TemplatePath)
+	$bad = 0
+	$labels = @{ ok = 'ok'; missing = 'FALTA'; stale = 'RUTA VIEJA'; foreign = 'AJENO' }
+	foreach ($link in $Links) {
+		$state = Get-DotfilesLinkState -Source $link.Source -Target $link.Target -DotfilesRoot $DotfilesRoot
+		if ($state -ne 'ok') { $bad++ }
+		$color = if ($state -eq 'ok') { 'Green' } else { 'Red' }
+		Write-Host ('  {0,-11} {1}' -f $labels[$state], $link.Target) -ForegroundColor $color
+	}
+	if (Test-Path $SettingsPath) {
+		$template = [IO.File]::ReadAllText($TemplatePath, [Text.Encoding]::UTF8) | ConvertFrom-Json
+		$settings = [IO.File]::ReadAllText($SettingsPath, [Text.Encoding]::UTF8) | ConvertFrom-Json
+		# Add-MissingHook trabaja sobre esta copia en memoria: el archivo no se toca.
+		$missingHooks = @(Add-MissingHook -Settings $settings -Template $template)
+		if ($missingHooks.Count -eq 0) { Write-Host '  ok          hooks de Claude Code registrados' -ForegroundColor Green }
+		else { $bad++; Write-Host "  FALTA       hooks sin registrar: $($missingHooks -join ', ')" -ForegroundColor Red }
+	}
+	else { $bad++; Write-Host "  FALTA       $SettingsPath" -ForegroundColor Red }
+	if ((git -C $DotfilesRoot config --get core.hooksPath) -eq 'githooks') { Write-Host '  ok          git post-merge activo' -ForegroundColor Green }
+	else { $bad++; Write-Host '  FALTA       git post-merge (core.hooksPath)' -ForegroundColor Red }
+	Write-Host ''
+	if ($bad -eq 0) { Write-Host "Todo instalado: $($Links.Count) enlaces, hooks y post-merge." -ForegroundColor Green; return $true }
+	Write-Host "$bad comprobaciones fallidas. Corre .\install.ps1 para arreglarlas." -ForegroundColor Red
+	return $false
+}
+
 Write-Host "=== Instalador dotfiles-windows ===" -ForegroundColor Magenta
 Write-Host "Root del repo: $DotfilesRoot" -ForegroundColor Gray
+
+$settingsPath = "$env:USERPROFILE\.claude\settings.json"
+$templatePath = "$DotfilesRoot\claude\settings.template.json"
+if ($Check) {
+	Write-Host 'Modo -Check: solo se informa, no se cambia nada.' -ForegroundColor Yellow
+	if (Test-Installation -SettingsPath $settingsPath -TemplatePath $templatePath) { exit 0 }
+	exit 1
+}
 
 # Falla temprano y limpio si no se pueden crear symlinks, antes de mover nada.
 if (-not (Test-SymlinkCapability)) {
@@ -201,8 +242,7 @@ foreach ($link in $Links) {
 	Install-Symlink -Source $link.Source -Target $link.Target -Label $link.Label
 }
 
-Install-ClaudeSetting -TemplatePath "$DotfilesRoot\claude\settings.template.json" `
-	-SettingsPath "$env:USERPROFILE\.claude\settings.json"
+Install-ClaudeSetting -TemplatePath $templatePath -SettingsPath $settingsPath
 Install-GitHook
 
 Write-Host ""

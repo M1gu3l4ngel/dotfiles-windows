@@ -6,6 +6,30 @@
 # Se invoca con la raiz del repo y la ruta real de Documentos, que cada script
 # calcula (Documentos puede estar redirigido a otra unidad).
 
+# Estado de un enlace en disco, sin tocar nada:
+#   ok      symlink al Source correcto
+#   missing no hay nada en el destino
+#   stale   symlink a otra ruta dentro del repo (una carpeta que se movio): es nuestro y
+#           se reemplaza sin backup, porque no guarda nada que no este ya en el repo
+#   foreign archivo real o symlink ajeno: install.ps1 lo respalda antes de enlazar
+# Se mira con Get-Item y no con Test-Path: un symlink roto da False en PowerShell 5.1 y True
+# en 7, y aqui hace falta saber que es un enlace aunque su destino ya no exista.
+function Get-DotfilesLinkState {
+	param(
+		[Parameter(Mandatory)][string]$Source,
+		[Parameter(Mandatory)][string]$Target,
+		[Parameter(Mandatory)][string]$DotfilesRoot
+	)
+	$item = Get-Item -LiteralPath $Target -Force -ErrorAction SilentlyContinue
+	if (-not $item) { return 'missing' }
+	if ($item.LinkType -ne 'SymbolicLink') { return 'foreign' }
+	$existing = [IO.Path]::GetFullPath(@($item.Target)[0])
+	if ($existing -ieq [IO.Path]::GetFullPath($Source)) { return 'ok' }
+	$root = [IO.Path]::GetFullPath($DotfilesRoot).TrimEnd('\') + '\'
+	if ($existing.StartsWith($root, [StringComparison]::OrdinalIgnoreCase)) { return 'stale' }
+	return 'foreign'
+}
+
 function Get-DotfilesLink {
 	param(
 		[Parameter(Mandatory)][string]$DotfilesRoot,

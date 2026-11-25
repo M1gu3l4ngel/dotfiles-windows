@@ -33,6 +33,7 @@ Documentación oficial de Claude Code (para mantener estas reglas al día):
 | Instalación completa del entorno | `.\bootstrap.ps1` |
 | Ver qué haría sin cambiar nada | `.\bootstrap.ps1 -DryRun` |
 | Solo symlinks de configuración | `.\install.ps1` |
+| Estado de los enlaces sin tocar nada (tras mover algo) | `.\install.ps1 -Check` |
 | Comprobaciones (las mismas del CI) | `.\tools\check.ps1` |
 
 `.\tools\check.ps1` debe pasar antes de proponer un commit.

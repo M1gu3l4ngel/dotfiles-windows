@@ -63,6 +63,13 @@ Si ya tienes el stack instalado y solo quieres estas configs:
 Antes de crear cada enlace, `install.ps1` renombra tu archivo existente con el
 sufijo `.pre-dotfiles.bak`. Para volver atrás, usa `uninstall.ps1` (abajo).
 
+Para ver el estado de cada enlace, de los hooks de Claude Code y del hook
+`post-merge` sin cambiar nada (sale con 1 si algo no está bien):
+
+```powershell
+.\install.ps1 -Check
+```
+
 ## Desinstalar
 
 Revierte los symlinks y restaura tus archivos originales (los `.pre-dotfiles.bak`).

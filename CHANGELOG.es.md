@@ -67,6 +67,10 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `install.ps1 -Check` informa del estado de cada enlace, de los hooks de
+  Claude Code y de `post-merge` sin cambiar nada. Un enlace a una ruta vieja
+  dentro del repo (una carpeta movida) se reemplaza sin backup; antes se movía a
+  `.pre-dotfiles.bak` y `uninstall.ps1` lo habría restaurado después.
 - El perfil de PowerShell encuentra el tema del prompt a través de su propio
   enlace, como `.bashrc`, en vez de suponer que el repo está en `~\dotfiles`.
 - `claude/settings.template.json` registra la barra de estado (en una PC nueva
