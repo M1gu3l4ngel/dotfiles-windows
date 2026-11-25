@@ -56,3 +56,13 @@ español).
   código, actualizar su documentación en el mismo commit.
 - Markdown: bloques de código con el lenguaje indicado (`powershell`, `bash`,
   `json`, `ini`).
+
+## Diagramas
+
+- Donde un flujo o una relación se entiende mejor dibujado, un diagrama
+  **Mermaid** (bloque con lenguaje `mermaid`, GitHub lo dibuja): `flowchart`, etiquetas entre
+  comillas, `<br/>` y `·` para separar, sin colores propios (se ve en tema
+  claro y oscuro).
+- Es un bloque de código: idéntico en las dos versiones, con etiquetas en
+  inglés. El texto de alrededor lo explica en cada idioma.
+- Pocos y con propósito: un diagrama que repite una lista sobra.

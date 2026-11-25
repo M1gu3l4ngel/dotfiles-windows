@@ -2,16 +2,64 @@
 
 # dotfiles-windows
 
-Windows 11 development setup: PowerShell, oh-my-posh, Windows Terminal,
-VS Code, WSL and the development toolchain, with one-command install.
+Windows 11 development environment in one command: PowerShell 7 with
+oh-my-posh, Windows Terminal, VS Code, WSL, the development toolchain and a
+global Claude Code layer. Idempotent, with verified downloads.
 
 [![CI](https://github.com/M1gu3l4ngel/dotfiles-windows/actions/workflows/ci.yml/badge.svg)](https://github.com/M1gu3l4ngel/dotfiles-windows/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ![Desktop](assets/preview.png)
 
+## What is in the repo
+
+Each numbered folder is one area of the environment, with its own README.
+
+| Folder | Contents |
+|---|---|
+| `10-shell/` | PowerShell and Git Bash profiles and the prompt theme (`capr4n`, shared with Parrot) ([10-shell/README.md](10-shell/README.md)) |
+| `20-terminal/` | Windows Terminal settings ([20-terminal/README.md](20-terminal/README.md)) |
+| `30-vscode/` | VS Code settings, keybindings and extension list ([30-vscode/README.md](30-vscode/README.md)) |
+| `40-format/` | Global Prettier and EditorConfig style for projects without their own ([40-format/README.md](40-format/README.md)) |
+| `50-claude/` | Global Claude Code layer: `CLAUDE.md`, hooks, status line, task panel and settings template ([50-claude/README.md](50-claude/README.md)) |
+| `60-apps/` | Environment apps: the essential ones, which `bootstrap.ps1` installs, and the optional ones ([60-apps/README.md](60-apps/README.md)) |
+
+And around them:
+
+| Path | Contents |
+|---|---|
+| `bootstrap.ps1` | One-command environment install |
+| `install.ps1` | Configuration symlinks (`-Check` to see their state) |
+| `uninstall.ps1` | Revert the symlinks and restore the backups (`-DryRun` to simulate) |
+| `lib/` | Shared code (the symlink mapping) |
+| `githooks/` | `post-merge`: re-runs `install.ps1` after each `git pull` |
+| `tools/` | Checks (`check.ps1`, the same as CI) and the prompt name helper |
+| `docs/` | Guides: new PC, commit signing, formatting ([docs/README.md](docs/README.md)) |
+| `.claude/rules/` | Project conventions (loaded by Claude Code) |
+
+## How it works
+
+`bootstrap.ps1` installs the tools; `install.ps1` links each configuration file
+from the repo to where its program reads it. Since they are links, editing the
+repo is editing the live configuration, and a `git pull` on another PC applies
+it there.
+
+```mermaid
+flowchart LR
+    B["bootstrap.ps1"] --> W["winget<br/>60-apps/essential.json"]
+    B --> F["Nerd font<br/>SHA-256 verified"]
+    B --> N["Node · pnpm · Claude Code"]
+    B --> U["WSL Ubuntu"]
+    B --> I["install.ps1<br/>lib/links.ps1"]
+    I -- "symlinks" --> H["PowerShell · Git Bash · Terminal<br/>VS Code · ~/.claude"]
+    G["git pull"] -- "githooks/post-merge" --> I
+```
+
 ## Reproduce in one command
 
-On a new PC (it will prompt for UAC for WSL, Docker and some apps). From PowerShell:
+Step by step from a freshly installed Windows, with each window and reboot:
+[docs/getting-started.md](docs/getting-started.md). The short version, from
+PowerShell as administrator (it will prompt for UAC for WSL, Docker and some apps):
 
 ```powershell
 git clone https://github.com/M1gu3l4ngel/dotfiles-windows.git $env:USERPROFILE\dotfiles
@@ -30,8 +78,10 @@ Afterwards, complete the manual steps (GPG/SSH keys) that the script itself list
   it first and reopen the terminal: `winget install Git.Git`. `bootstrap.ps1`
   installs and updates everything else idempotently (git included: if it's already
   there, it skips it).
-- **Developer Mode** enabled (Settings → Privacy & security → For developers) or
+- **Developer Mode** enabled (Settings → System → For developers) or
   run PowerShell as administrator: required to create the symlinks.
+- Local scripts allowed: a new Windows blocks them (`Restricted` policy). Once,
+  from PowerShell: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 - Recommended: run `bootstrap.ps1` as administrator (WSL and Docker require it).
 
 ## What bootstrap.ps1 does
@@ -42,7 +92,7 @@ without breaking anything (for example after a reboot).
 | Step | What it installs or configures |
 |---|---|
 | 1 | Environment variables pointing to `D:` (or `C:` if there is no `D:`), including `PNPM_HOME`; they go first so Rust installs there |
-| 2 | Essential winget set: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, WSL and CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt) |
+| 2 | Essential apps from `60-apps/essential.json`: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, nvm-windows and CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt) |
 | 3 | CaskaydiaCove Nerd Font (download verified by SHA-256) |
 | 4 | Node (nvm-windows) + pnpm + Claude Code in `<disk>\Dev\npm-global` |
 | 5 | WSL Ubuntu 26.04 (requires a reboot) |
@@ -88,24 +138,6 @@ It does not uninstall apps or touch environment variables or WSL.
 
 1. SSH and GPG keys, and commit signing: [docs/gpg-signing.md](docs/gpg-signing.md).
 
-## Structure
-
-| Path | Contents |
-|---|---|
-| `bootstrap.ps1` | One-command environment install |
-| `install.ps1` | Configuration symlinks |
-| `uninstall.ps1` | Revert the symlinks and restore the backups (`-DryRun` to simulate) |
-| `lib/` | Shared code (the symlink mapping) |
-| `githooks/` | `post-merge`: re-runs `install.ps1` after each `git pull` |
-| `10-shell/` | PowerShell and Git Bash profiles and the prompt theme (`capr4n`, shared with Parrot) ([10-shell/README.md](10-shell/README.md)) |
-| `20-terminal/` | Windows Terminal settings ([20-terminal/README.md](20-terminal/README.md)) |
-| `30-vscode/` | VS Code settings, keybindings and extension list ([30-vscode/README.md](30-vscode/README.md)) |
-| `40-format/` | Global Prettier and EditorConfig style for projects without their own ([docs/formatting.md](docs/formatting.md)) |
-| `50-claude/` | Global Claude Code layer: `CLAUDE.md`, hooks, status line, task panel and settings template ([50-claude/README.md](50-claude/README.md)) |
-| `60-apps/` | Environment apps: the essential ones, which `bootstrap.ps1` installs, and the optional ones ([60-apps/README.md](60-apps/README.md)) |
-| `docs/` | Detailed guides |
-| `.claude/rules/` | Project conventions (loaded by Claude Code) |
-
 ## Reproducibility across machines
 
 The repo detects the work disk (`D:` or `C:`) and does not depend on fixed user
@@ -138,13 +170,6 @@ first time), and that covers the rest:
 What is not versioned does not travel: keys, `~/.claude/entorno.md` and
 `POSH_NAME`. New VS Code extensions are installed by running `.\bootstrap.ps1` again.
 
-## Application snapshot
-
-`60-apps/essential.json` is the environment, which `bootstrap.ps1` installs, and
-`60-apps/optional.json` the other development tools, reinstallable with
-`winget import`. Personal apps are not versioned: they are restored with the system
-image. Details in [60-apps/README.md](60-apps/README.md).
-
 ## Visual prompt name (optional)
 
 By default the prompt shows your Windows username. If you prefer to show a different
@@ -174,6 +199,7 @@ same terminal: `Remove-Item Env:POSH_NAME` (PowerShell) or `unset POSH_NAME`
 
 | Symptom | Cause | Fix |
 |---|---|---|
+| "running scripts is disabled on this system" | `Restricted` policy on a new Windows | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
 | `install.ps1` fails to create symlinks | Developer Mode off | Enable it, or run as administrator |
 | The prompt does not appear in a new terminal | The profile did not load | `. $PROFILE`, or reopen the terminal |
 | Icons show as squares | Missing CaskaydiaCove Nerd Font | Re-run `bootstrap.ps1` |
@@ -182,7 +208,8 @@ same terminal: `Remove-Item Env:POSH_NAME` (PowerShell) or `unset POSH_NAME`
 
 ## Documentation and contributing
 
-Guides in [docs/](docs/README.md). Conventions in `.claude/rules/`. To contribute
+Guides in [docs/](docs/README.md), starting with the new PC one:
+[docs/getting-started.md](docs/getting-started.md). Conventions in `.claude/rules/`. To contribute
 or modify the repo: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Credits and license

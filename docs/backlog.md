@@ -67,3 +67,13 @@ Los plugins de TypeScript y Rust necesitan sus binarios; sin ellos fallan al
 arrancar.
 
 - [ ] `enabledPlugins` en `50-claude/settings.template.json` y sus binarios en `bootstrap.ps1`
+
+### Identidad de git fija en el bootstrap
+
+**Plataforma:** Instalación.
+
+`Invoke-Step6Git` de `bootstrap.ps1` escribe el nombre y el correo noreply del
+dueño: quien haga un fork firma con una identidad ajena si no lo cambia antes.
+`docs/getting-started` lo avisa.
+
+- [ ] Leer nombre y correo de parámetros de `bootstrap.ps1`, con los del dueño por defecto

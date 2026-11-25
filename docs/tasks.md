@@ -29,6 +29,7 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] [Esta PC] Windows Terminal abre con PowerShell 7, Monokai Soda y la fuente de siempre
 - [ ] [PC nueva] `bootstrap.ps1` instala las 18 apps de `60-apps/essential.json`
 - [ ] [PC nueva] `bootstrap.ps1` instala las 39 extensiones de VS Code y los `.ps1` se formatean al guardar
+- [ ] En GitHub, los diagramas del README y de `docs/getting-started` se dibujan en tema claro y oscuro
 
 ## Panel de tareas
 
@@ -52,8 +53,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 **Estado:** en curso.
 
-- [ ] README como índice de las carpetas numeradas
-- [ ] Guía `docs/getting-started` en pareja: una PC nueva desde cero
 - [ ] `CONTRIBUTING` al día con las reglas del repo
 - [ ] Corregir las entradas desfasadas del CHANGELOG
 - [ ] Probar `bootstrap.ps1` y la guía en Windows Sandbox

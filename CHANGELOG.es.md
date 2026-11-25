@@ -10,6 +10,11 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Añadido
 
+- `docs/getting-started`: una PC nueva desde cero, paso a paso, con un diagrama
+  de las repeticiones. El README pasa a ser un índice de las carpetas numeradas,
+  con un diagrama de «Cómo funciona», y ahora dice que un Windows nuevo bloquea
+  los scripts (`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`): sin eso,
+  la instalación en un comando fallaba en su primer comando.
 - Panel de tareas global (`claude/panel/`, enlazado en `~/.claude/panel`): un
   artefacto generado desde `docs/tasks.md` y `docs/backlog.md` de cualquier
   repo que lo active con `.claude/panel.json`, con su parser y tests, los

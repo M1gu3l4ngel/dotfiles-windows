@@ -10,8 +10,8 @@
 ## Symlinks
 
 - `install.ps1` crea symlinks con `New-Item -ItemType SymbolicLink`.
-- Requiere **Developer Mode** activado (Settings → Privacy & security → For
-  developers) o ejecutar como administrador. Sin eso, la creación falla; el
+- Requiere **Developer Mode** activado (Settings → System → For developers) o
+  ejecutar como administrador. Sin eso, la creación falla; el
   script lo valida antes de tocar nada.
 
 ## Toolchain y apps

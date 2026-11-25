@@ -10,6 +10,11 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- `docs/getting-started`: a new PC from scratch, step by step, with a diagram of
+  the re-runs. The README becomes an index of the numbered folders, with a
+  "How it works" diagram, and now says that a new Windows blocks scripts
+  (`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`): without it the
+  one-command install failed at its first command.
 - Global task panel (`claude/panel/`, linked to `~/.claude/panel`): an
   artifact generated from `docs/tasks.md` and `docs/backlog.md` of any repo
   that turns it on with `.claude/panel.json`, with its parser and tests, the
