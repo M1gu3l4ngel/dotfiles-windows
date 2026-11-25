@@ -37,6 +37,11 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `block-forbidden-commands.mjs` pregunta antes de un `git pull --ff-only` en vez de
+  denegarlo: un fast-forward no pierde trabajo, y un clon de solo lectura lo necesita. Un pull
+  que hace rebase, merge o fuerza sigue denegado. `git -C <carpeta> add -A` también se deniega
+  ahora: se colaba.
+
 - El `CLAUDE.md` global vale en Windows y en Linux: habla de «la carpeta de trabajo» de
   `entorno.md` en vez de `D:`, pide decir con qué privilegios corre un comando y pasa las
   trampas de cada sistema (junctions, robocopy, borrados sin papelera) a `entorno.md`, cuya

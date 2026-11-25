@@ -41,6 +41,25 @@ test("rewriting history stays blocked", () => {
 	assert.equal(decide("git push --force origin staging"), "deny");
 });
 
+test("a fast-forward pull asks and does not hide a write after it", () => {
+	assert.equal(decide("git pull --ff-only"), "ask");
+	assert.equal(decide("git -C ~/dotfiles-windows pull --ff-only"), "ask");
+	assert.equal(decide("git pull"), "deny");
+	assert.equal(decide("git pull --ff-only --rebase"), "deny");
+	assert.equal(decide("git pull --ff-only --force"), "deny");
+	assert.equal(decide("git pull --ff-only; git reset --hard"), "deny");
+	assert.equal(decide("git fetch origin"), "allow");
+});
+
+test("Linux paths get the same decisions", () => {
+	assert.equal(decide("git -C ~/dotfiles-windows tag -l"), "allow");
+	assert.equal(decide("git -C ~/Dev/projects/x push"), "ask");
+	assert.equal(decide("rm -rf ~/Dev/projects/x"), "ask");
+	assert.equal(decide("rm -rf /tmp/x"), "allow");
+	assert.equal(decide("rm -rf ~/Dev/scratch/x"), "allow");
+	assert.equal(decide("git -C ~/Dev/projects/x add -A"), "deny");
+});
+
 test("a command inside quotes is not a command", () => {
 	assert.equal(decide('rg "git reset --hard" docs'), "allow");
 });

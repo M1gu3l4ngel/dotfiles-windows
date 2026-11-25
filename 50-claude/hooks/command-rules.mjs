@@ -48,6 +48,11 @@ const GIT_TAG_FORBIDDEN = new RegExp(
 );
 const GIT_SIGNED_TAG = new RegExp(String.raw`${GIT_TAG}(?=[^;&|]*\s(?:-s|--sign)\b)[^;&|]*`, "g");
 
+// A fast-forward pull loses no work and rewrites no history, so it asks instead of denying (a
+// read-only clone needs it). Any option that merges, rebases or forces keeps it a write.
+const GIT_FF_PULL =
+	/\bgit\s+(?:-[cC]\s+\S+\s+)*pull\b(?=[^;&|]*\s--ff-only\b)(?![^;&|]*\s(?:-r|--rebase\S*|--no-ff|--squash|-f|--force)\b)[^;&|]*/g;
+
 /**
  * Masks quoted text with `_`, keeping the length: a `git commit` inside a search pattern or a
  * message is not a command.
@@ -92,7 +97,7 @@ export function buildCommandRules({ isMainProtected }) {
 				"unsigned commit: commits are always signed; if the key expired, ask the user to unlock it.",
 		},
 		{
-			pattern: /\bgit\s+add\b[^;&|]*\s(-A|--all|\.)(?=\s|$|[;&|])/,
+			pattern: /\bgit\s+(?:-[cC]\s+\S+\s+)*add\b[^;&|]*\s(-A|--all|\.)(?=\s|$|[;&|])/,
 			decision: "deny",
 			reason: "git add -A or `.`: add only the change's files, by path.",
 		},
@@ -123,12 +128,20 @@ export function buildCommandRules({ isMainProtected }) {
 			pattern: GIT_WRITE,
 			applies: (command) =>
 				GIT_WRITE.test(
-					stripQuotedText(command).replaceAll(GIT_READ_ONLY, " ").replaceAll(GIT_SIGNED_TAG, " "),
+					stripQuotedText(command)
+						.replaceAll(GIT_READ_ONLY, " ")
+						.replaceAll(GIT_SIGNED_TAG, " ")
+						.replaceAll(GIT_FF_PULL, " "),
 				),
 			decision: "deny",
 			reason:
 				"git write: whatever rewrites history or the tree is the user's. Suggest the command; " +
 				"status, log, diff and show are fine.",
+		},
+		{
+			pattern: GIT_FF_PULL,
+			decision: "ask",
+			reason: "fast-forward pull: it changes the working tree; only if the user expects it.",
 		},
 		{
 			pattern: /\brobocopy\b/i,

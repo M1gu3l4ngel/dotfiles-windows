@@ -65,6 +65,13 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] En una sesión nueva, Claude pone el trabajo en la carpeta de trabajo de `entorno.md` y dice con qué privilegios corre cada comando que te pide
 - [ ] En Parrot, `~/.claude/entorno.md` se rellena con la plantilla nueva sin secciones que solo valgan en Windows
 
+## Pull con fast-forward en el hook
+
+**Plataforma:** Claude Code.
+
+- [ ] En Parrot, `git -C ~/dotfiles-windows pull --ff-only` pide aprobación en vez de bloquearse
+- [ ] `git pull` sin `--ff-only` sigue bloqueado
+
 ## Código en inglés
 
 **Plataforma:** Repositorio.
@@ -88,19 +95,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 # Fase 6 — Capa de Claude universal (Windows y Linux)
 
-## Hook de comandos: pull con fast-forward pregunta
-
-**Plataforma:** Claude Code.
-
-**Prioridad:** P2.
-
-**Requiere:** nada.
-
-**Estado:** en curso.
-
-- [ ] `git pull --ff-only` pasa de `deny` a `ask` en `command-rules.mjs`
-- [ ] Tests con rutas de Linux: `git tag -l` pasa, `git push` pregunta, `rm -rf ~/Dev/projects/x` pregunta, `rm -rf /tmp/x` pasa, `git add -A` se deniega
-
 ## Tabla de Troubleshooting del README
 
 **Plataforma:** Repositorio.
@@ -108,6 +102,8 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 **Prioridad:** P2.
 
 **Requiere:** nada.
+
+**Estado:** en curso.
 
 - [ ] La fila de fnm en `README.md` y `README.es.md` termina en `||` y se come la de «Unverified»: separarlas
 

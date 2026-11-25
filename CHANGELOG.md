@@ -36,6 +36,10 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `block-forbidden-commands.mjs` asks before a `git pull --ff-only` instead of denying it: a
+  fast-forward loses no work, and a read-only clone needs it. A pull that rebases, merges or
+  forces is still denied. `git -C <folder> add -A` is now denied too: it slipped through.
+
 - The global `CLAUDE.md` works on Windows and Linux: it names "the work folder" from
   `entorno.md` instead of `D:`, asks to say which privileges a command needs, and moves the
   system traps (junctions, robocopy, deletes without a recycle bin) to `entorno.md`, whose
