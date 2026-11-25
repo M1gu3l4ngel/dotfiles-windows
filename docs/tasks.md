@@ -51,3 +51,17 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] [Esta PC] «Por probar» muestra una tarjeta por plataforma y el filtro de dispositivo
 - [ ] [Esta PC] Buscar abre los bloques con resultados y resalta el texto
 - [ ] [Esta PC] Al abrir una sesión nueva en este repo, Claude dice si el panel está al día
+
+---
+
+# Aplazado — cada uno con el evento que lo dispara
+
+- [ ] Leer el nombre y el correo de git de parámetros de `bootstrap.ps1` (`Invoke-Step6Git`), con los del dueño por defecto: hoy quien haga un fork firma con una identidad ajena si no lo cambia antes, y `docs/getting-started` solo lo avisa — antes de anunciar el repo o cuando alguien haga un fork
+- [ ] Script idempotente de ajustes de Windows, con `-DryRun`: el modo de desarrollador y los ajustes del registro se hacen a mano en una PC nueva — en la próxima PC nueva
+- [ ] Enlazar en WSL un `.bashrc` que cargue oh-my-posh con el tema del repo: Ubuntu 26.04 trae el de serie (`.claude/rules/environment.md`) — cuando se trabaje en WSL a diario
+- [ ] `enabledPlugins` en `50-claude/settings.template.json` y sus binarios (TypeScript, Rust) en `bootstrap.ps1`: sin los binarios los plugins LSP fallan al arrancar — cuando se activen los plugins LSP en esta PC
+- [ ] Reglas `ask` concretas para lo que importa en `C:`, en `~/.claude/settings.json` y, si valen en cualquier PC, en `50-claude/settings.template.json`: se quitó la regla `ask` de Edit sobre todo el perfil porque pedía aprobación en cada edición — la próxima vez que se toque la plantilla de settings
+- [ ] Numerar las carpetas de dotfiles-parrot como aquí — en la próxima sesión de trabajo en Parrot
+- [ ] Que dotfiles-parrot tome la capa de Claude de este repo en vez de mantener una copia — en la próxima sesión de trabajo en Parrot
+- [ ] Que el otro repo con panel propio use `~/.claude/panel/` para la vista Tareas y conserve su vista Estilo como extensión: hoy son dos copias de la página que se desalinean — la próxima vez que se toque el panel de ese repo
+- [ ] Documentar cómo llamar a `50-claude/panel/check.mjs` desde el CI de un repo con panel, para que falle con tareas mal escritas — cuando un segundo repo use el panel global

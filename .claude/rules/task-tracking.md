@@ -26,8 +26,12 @@ plataformas y los dispositivos válidos son los de `.claude/panel.json`.
 - Al cerrar un bloque, lo que el usuario debe comprobar entra en `# Por probar`,
   una casilla por comprobación, con `[Esta PC]` o `[PC nueva]` delante si solo
   vale en una. Sale cuando el usuario dice que lo probó, nunca antes.
-- `docs/backlog.md` (bloques `###`) es lo diferido que no bloquea nada: cada
-  bloque lleva su porqué y el archivo concreto, para retomarlo meses después.
+- Lo diferido va en `docs/tasks.md`, fuera del orden de las fases: `# Lo hace
+  el dueño`, `# Aplazado` (cada casilla con su porqué, el archivo y, tras una
+  raya, el evento que la dispara) y `# Bloqueado por terceros` (se re-verifica,
+  no se decide).
+- `docs/backlog.md` (bloques `###`) solo para mejoras de baja prioridad sin
+  evento que las dispare; normalmente queda vacío.
 
 ## Cómo se escribe una tarea
 

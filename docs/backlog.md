@@ -1,79 +1,14 @@
-# Backlog — dotfiles-windows
+# Backlog — mejoras diferidas (baja prioridad)
 
-Lo diferido que no bloquea nada. Cada bloque lleva su porqué y dónde se toca.
+Lugar para mejoras técnicas **diferidas** que no bloquean nada pero conviene ir
+puliendo con el tiempo. Lo aplazado con un evento que lo dispara va en
+`docs/tasks.md`, sección «Aplazado»; aquí, solo los ítems de baja prioridad o
+progresivos sin evento: optimizaciones acotadas, deuda menor, "nice-to-have"
+técnicos.
 
-### El otro repo con panel propio pasa al global
+**Solo pendiente:** al completar un ítem se borra de aquí — lo hecho vive en git,
+nunca se anota como "hecho" (misma regla que `tasks.md`).
 
-**Plataforma:** Claude Code.
-
-Ese repo genera su panel con `pnpm generate:panel` y una copia de la página. Dos
-versiones que se desalinean: la global (`50-claude/panel/`) es la fuente. Se queda
-solo su vista Estilo, como extensión, porque se genera del código de su app.
-
-- [ ] Usar `~/.claude/panel/` para la vista Tareas y conservar Estilo como extensión
-
-### Parrot sigue esta estructura
-
-**Plataforma:** Repositorio.
-
-dotfiles-parrot comparte el prompt y la capa de Claude; este repo pasa a ser la
-fuente de esa capa.
-
-- [ ] Numerar las carpetas de Parrot como aquí
-- [ ] Tomar la capa de Claude de este repo en vez de mantener una copia
-
-### Prompt de WSL
-
-**Plataforma:** Shell.
-
-Ubuntu 26.04 trae el `.bashrc` de serie: nadie le configura el prompt
-(`.claude/rules/environment.md`).
-
-- [ ] Enlazar en WSL un `.bashrc` que cargue oh-my-posh con el tema del repo
-
-### Check del panel en el CI de otros repos
-
-**Plataforma:** Claude Code.
-
-`50-claude/panel/check.mjs` valida el formato sin generar nada; en el CI de cada repo
-con panel evitaría tareas mal escritas.
-
-- [ ] Documentar cómo llamarlo desde el CI de un repo que use el panel
-
-### Ajustes de Windows por script
-
-**Plataforma:** Instalación.
-
-Developer Mode y ajustes del registro se hacen a mano en una PC nueva
-(`bootstrap.ps1`, paso de pasos manuales).
-
-- [ ] Script idempotente de ajustes de Windows, con `-DryRun`
-
-### Volver a proteger C: con reglas concretas
-
-**Plataforma:** Claude Code.
-
-Se quitó la regla `ask` de Edit sobre todo el perfil porque pedía aprobación en
-cada edición, incluso en modo automático. Faltan reglas `ask` estrechas para lo
-que sí importa en `C:`.
-
-- [ ] Reglas `ask` concretas en `~/.claude/settings.json` y, si valen en cualquier PC, en `50-claude/settings.template.json`
-
-### Plugins LSP en la plantilla
-
-**Plataforma:** Claude Code, Instalación.
-
-Los plugins de TypeScript y Rust necesitan sus binarios; sin ellos fallan al
-arrancar.
-
-- [ ] `enabledPlugins` en `50-claude/settings.template.json` y sus binarios en `bootstrap.ps1`
-
-### Identidad de git fija en el bootstrap
-
-**Plataforma:** Instalación.
-
-`Invoke-Step6Git` de `bootstrap.ps1` escribe el nombre y el correo noreply del
-dueño: quien haga un fork firma con una identidad ajena si no lo cambia antes.
-`docs/getting-started` lo avisa.
-
-- [ ] Leer nombre y correo de parámetros de `bootstrap.ps1`, con los del dueño por defecto
+Formato: cada bloque `###` lleva su `**Plataforma:**`, el contexto (por qué está
+diferido, archivos) y lo que hay que hacer como casillas `- [ ]`. De ahí se genera
+el panel, y `.\tools\check.ps1` falla si un bloque no tiene plataforma o casillas.
