@@ -68,11 +68,8 @@ function Get-DotfilesLink {
 			Target = "$env:USERPROFILE\.bash_profile"
 			Label  = 'Git Bash profile (carga .bashrc)'
 		},
-		@{
-			Source = "$DotfilesRoot\oh-my-posh\capr4n.omp.json"
-			Target = "$env:LOCALAPPDATA\Programs\oh-my-posh\themes\capr4n.omp.json"
-			Label  = 'oh-my-posh theme (capr4n)'
-		},
+		# El tema de oh-my-posh no se enlaza: el perfil de PowerShell y .bashrc lo leen
+		# directamente del repo.
 		@{
 			Source = "$DotfilesRoot\windows-terminal\settings.json"
 			Target = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"

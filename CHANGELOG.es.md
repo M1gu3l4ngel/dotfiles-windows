@@ -67,6 +67,9 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `install.ps1` ya no enlaza el tema del prompt en
+  `%LOCALAPPDATA%\Programs\oh-my-posh\themes`: nada lo leía ahí; el perfil de
+  PowerShell y `.bashrc` lo leen del repo.
 - `vscode/settings.json` quita ajustes sin nada instalado detrás (la ruta de
   PHP, `gitCommitter.*`, `aiCommit.language`) e `importCost.debug`.
 - `bootstrap.ps1` instala las extensiones de VS Code que falten de
