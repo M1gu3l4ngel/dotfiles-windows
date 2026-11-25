@@ -2,71 +2,55 @@
 
 # Contributing
 
-It is a personal repo, but it follows a standard flow to keep it clean and
-reproducible.
+Thank you for helping. It is a personal repo, but it follows a standard flow to keep it clean and
+reproducible on any Windows 11 PC.
 
-## Flow
+## Before you start
 
-1. Create a branch from `main`.
-2. Make the changes following the conventions below.
-3. Run the checks from the repo root. They must all pass:
+- **A bug or a small fix:** open a pull request directly, or an issue with the
+  [bug report form](https://github.com/M1gu3l4ngel/dotfiles-windows/issues/new/choose).
+- **A new app, a new folder or a change to what `bootstrap.ps1` installs:** open an issue first
+  and describe the problem it solves. It changes every PC that pulls the repo, so it is agreed
+  before it is written.
+- **A vulnerability:** never in a public issue; follow [`SECURITY.md`](SECURITY.md).
+- **Conduct:** everyone who takes part follows the [code of conduct](CODE_OF_CONDUCT.md).
 
-   ```powershell
-   .\tools\check.ps1
-   ```
+## Set up
 
-4. Make a commit following the commit format.
-5. Open a pull request. CI runs the same checks and reports the result on
-   GitHub.
+It needs Windows 11, PowerShell 7, git and Node.js 24; the [README](README.md#prerequisites)
+explains how to get them. Clone the repo, make a branch from `main` and run the checks from its
+root, in PowerShell 7 as a normal user. They are the same ones CI runs:
 
-If the change is visible to the user, add it to the changelog
-([CHANGELOG.md](CHANGELOG.md) and its Spanish pair) under the
-"Unreleased" / "Sin publicar" section.
-
-## Commits
-
-[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format: a
-title of 72 characters at most, a blank line and a body with one dash per
-concrete change (no body only when the title says it all). The text is written
-in English, in the imperative:
-
-```
-type(scope): <summary>
-
-- <change>
-- <change>
+```powershell
+.\tools\check.ps1
 ```
 
-- `type` in English: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
-- `scope` optional: the affected component (`install`, `bootstrap`, `vscode`...).
-- **One commit per verified change**: two independent changes go in two
-  commits, so each one can be reviewed and reverted on its own.
-- Add files by path, never with `git add -A` or `git add .`.
+To see what the installer would change on your PC without changing anything:
 
-The repo is public and every commit publishes the author's email: use the GitHub
-**noreply email** and **sign commits with GPG**. How to set it up:
-[docs/gpg-signing.md](docs/gpg-signing.md).
+```powershell
+.\bootstrap.ps1 -DryRun
+.\install.ps1 -Check
+```
 
-## Documentation in two languages
+## What a change has to keep
 
-All documentation exists in English (`X.md`) and Spanish (`X.es.md`), with the
-language selector on the first line. When you change a document, change its
-pair in the same commit. `.\tools\check.ps1` (`50-claude/tools/check-docs.mjs`) fails if
-they do not share the same structure (sections, tables, lists, links), if their
-code blocks differ (commands are not translated) or if there are broken links
-or anchors.
+- **Nothing personal or from a company:** no username, email, IP, hostname, key fingerprint or
+  internal endpoint. Review `30-vscode/vscode/settings.json` before committing: extensions
+  write keys there. Details in `.claude/rules/security.md`.
+- **Verified downloads:** apps come from winget; anything else is downloaded at a pinned
+  version and verified with SHA-256.
+- **Idempotent scripts:** each step checks whether it is already done, so a script can run
+  again without breaking anything.
+- **Documents in pairs:** `X.md` in English and `X.es.md` in Spanish, with the same sections,
+  identical code blocks and the language selector on line 1. `.\tools\check.ps1`
+  (`50-claude/tools/check-docs.mjs`) checks it, links and anchors included. Where a flow reads
+  better drawn, a Mermaid diagram, identical in both languages, with English labels.
+- **English** in code comments, script output, hook messages and test names, following
+  [docs/contributing/comments.md](docs/contributing/comments.md). The rules in
+  `.claude/rules/` and the task lists (`docs/tasks.md`, `docs/backlog.md`) are Spanish only.
+- **Plain documentation:** no emojis, commands that copy and work as they are.
 
-Where a flow reads better drawn, use a Mermaid diagram: it is a code block, so
-it is identical in both languages, with English labels.
-
-Code comments, script output, hook messages and test names are written in
-English, following [docs/contributing/comments.md](docs/contributing/comments.md).
-The rules in `.claude/rules/` and the task lists (`docs/tasks.md`,
-`docs/backlog.md`) are written in Spanish only.
-
-## Conventions
-
-They live in `.claude/rules/`. They are plain Markdown: they work the same for
+The conventions live in `.claude/rules/`. They are plain Markdown: they work the same for
 people and for Claude Code, which loads them automatically.
 
 | File | What it defines |
@@ -79,16 +63,33 @@ people and for Claude Code, which loads them automatically.
 | `environment.md` | Disks, Developer Mode, symlinks, WSL |
 | `task-tracking.md` | `docs/tasks.md` and `docs/backlog.md` (in Spanish): what is left to do, and the task panel generated from them |
 
-The most important points:
+## Commits and pull requests
 
-- Never include personal or company data (username, emails, IPs, fingerprints,
-  internal endpoints). Review `30-vscode/vscode/settings.json` before committing:
-  extensions write keys there.
-- Anything that does not come from winget is downloaded at a pinned version and
-  verified with SHA-256.
-- Documentation stays plain, without emojis.
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/): a title
+of 72 characters at most, a blank line and a body with one dash per concrete change (no body
+only when the title says it all), in English and in the imperative:
 
-## Reporting issues
+```
+type(scope): <summary>
 
-Open an issue with what you expected, what happened, the Windows version and the
-steps to reproduce it (with a screenshot if it is visual).
+- <change>
+- <change>
+```
+
+- `type` in English: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
+- `scope` optional: the affected component (`install`, `bootstrap`, `vscode`...).
+- **One commit per verified change**: two independent changes go in two commits, so each one
+  can be reviewed and reverted on its own.
+- Add files by path, never with `git add -A` or `git add .`.
+- The repo is public and every commit publishes the author's email: use the GitHub **noreply
+  email** and **sign commits with GPG**, as [docs/gpg-signing.md](docs/gpg-signing.md)
+  explains.
+
+A pull request does one thing and fills in its template. A change people notice adds its line
+under "Unreleased" in [CHANGELOG.md](CHANGELOG.md) and under "Sin publicar" in its Spanish
+pair. CI has to pass: the same checks as `.\tools\check.ps1`, plus the secrets scan.
+
+## License
+
+By contributing, you agree that your contribution is licensed under [MIT](LICENSE), like the
+rest of the repo.

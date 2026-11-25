@@ -10,6 +10,14 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Añadido
 
+- Archivos de comunidad: `SECURITY.md` (reportes privados por GitHub), `CODE_OF_CONDUCT.md`
+  (Contributor Covenant 2.1), la plantilla de pull request y los formularios de error y de
+  mejora, sin issues en blanco y con las vulnerabilidades enviadas a `SECURITY.md`.
+  `CONTRIBUTING` sigue las secciones estándar, y el README termina en Documentación, Contribuir,
+  Seguridad y Licencia.
+- `check-docs.mjs --community personal|shared|public` falla si a un repo le falta un archivo de
+  los que lleva su tipo (NOTICE incluido con Apache-2.0), y deja fuera `.github/`, cuyas
+  plantillas van solo en inglés. `tools/check.ps1` lo corre como repo público.
 - `tools/check.ps1` falla ante un comentario de código en español
   (`50-claude/tools/check-comments.mjs`, compartido con cualquier repo por `~/.claude/tools` y
   configurado con su `.claude/comments.json`, con tests) e imprime lo que exime: Markdown,

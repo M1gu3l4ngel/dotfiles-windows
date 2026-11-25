@@ -3,6 +3,22 @@
 Solo lo que falta: lo hecho se borra. Formato y reglas en
 `.claude/rules/task-tracking.md`; el panel de tareas es una vista de este archivo.
 
+# Fase 7 — Documentación estándar en todos los repos
+
+## Guía global de documentación
+
+**Plataforma:** Claude Code.
+
+**Prioridad:** P1.
+
+**Requiere:** nada.
+
+**Estado:** en curso.
+
+- [ ] `skills/new-repo/docs-standard.md`: qué archivos lleva un repo según su visibilidad y el orden de secciones de cada uno
+- [ ] `skills/new-repo/templates/` con cada archivo en inglés y español, listo para rellenar
+- [ ] `repo-conventions`, `SKILL.md`, el `CLAUDE.md` global y `.claude/rules/documentation.md` apuntan a la guía, sin repetirla
+
 # Por probar
 
 ## Prompt tras los arreglos del perfil
@@ -89,6 +105,15 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] Tras el push, el README en GitHub muestra el logo oscuro con el tema claro y el blanco con el tema oscuro, en inglés y en español
 - [ ] Los enlaces de la cabecera (Install, Structure, How it works, Documentation, Contributing) llevan a su sección en los dos idiomas
 
+## Archivos de comunidad
+
+**Plataforma:** Repositorio.
+
+- [ ] Tras el push, la pestaña Community Standards de GitHub (Insights → Community) marca todo en verde
+- [ ] Tras el push, «New issue» ofrece los formularios de error y de mejora y el enlace de vulnerabilidad, sin issue en blanco
+- [ ] Tras activar el reporte privado, Security → «Report a vulnerability» abre el formulario
+- [ ] La fila de enlaces del README (Documentation, Contributing, Security, License) lleva a su sección en los dos idiomas
+
 ## Código en inglés
 
 **Plataforma:** Repositorio.
@@ -112,7 +137,9 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 # Lo hace el dueño
 
-- [ ] Copiar `50-claude/hooks/command-rules.mjs` (commit `3f13e95`, sha256 `b972400a…`) al proyecto que guarda su copia idéntica, para que su check `hook-rules-copy` vuelva a pasar
+- [ ] Activar el reporte privado de vulnerabilidades que promete `SECURITY.md` (hoy está apagado), en PowerShell como usuario normal: `gh api -X PUT repos/M1gu3l4ngel/dotfiles-windows/private-vulnerability-reporting`
+
+- [ ] Copiar `50-claude/hooks/command-rules.mjs` (commit `56292ab`, sha256 `d4739ae4…`) al proyecto que guarda su copia idéntica, para que su check `hook-rules-copy` vuelva a pasar
 
 # Aplazado — cada uno con el evento que lo dispara
 

@@ -127,10 +127,11 @@ else { Fail "CRLF found in: $($crlf -join ', ')" }
 
 # Each X.md (English) has its X.es.md (Spanish) with the same structure, links and code blocks.
 # What it compares is detailed in 50-claude/tools/check-docs.mjs. Besides its defaults (CLAUDE.md,
-# .claude/, the task lists), the global rule, the skill and the entorno.md template are Spanish
-# only, like the agent instructions they are.
+# .claude/, .github/, the task lists), the global rule, the skill and the entorno.md template are
+# Spanish only, like the agent instructions they are. The repo is public, so it also needs every
+# community file a public repo carries.
 if (Get-Command node -ErrorAction SilentlyContinue) {
-	$docsOut = node (Join-Path $repo '50-claude\tools\check-docs.mjs') $repo --exclude 50-claude/rules/ --exclude 50-claude/skills/ --exclude 50-claude/entorno.template.md 2>&1
+	$docsOut = node (Join-Path $repo '50-claude\tools\check-docs.mjs') $repo --community public --exclude 50-claude/rules/ --exclude 50-claude/skills/ --exclude 50-claude/entorno.template.md 2>&1
 	if ($LASTEXITCODE -eq 0) { Pass ($docsOut -join ' ') }
 	else {
 		Fail 'Bilingual docs out of sync:'

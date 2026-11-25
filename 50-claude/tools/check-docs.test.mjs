@@ -7,7 +7,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, describe, it } from "node:test";
-import { checkDocs, isExcluded, slug } from "./check-docs.mjs";
+import { checkCommunity, checkDocs, isExcluded, slug } from "./check-docs.mjs";
 
 const root = mkdtempSync(path.join(tmpdir(), "check-docs-"));
 after(() => rmSync(root, { recursive: true, force: true }));
@@ -72,6 +72,37 @@ describe("checkDocs", () => {
 	});
 });
 
+describe("checkCommunity", () => {
+	/** @param {string[]} files */
+	function repo(files, license = "MIT License") {
+		const dir = mkdtempSync(path.join(root, "community-"));
+		for (const file of files) {
+			mkdirSync(path.dirname(path.join(dir, file)), { recursive: true });
+			writeFileSync(path.join(dir, file), file === "LICENSE" ? license : "");
+		}
+		return dir;
+	}
+
+	it("asks a personal repo for README and CHANGELOG only", () => {
+		assert.deepEqual(checkCommunity(repo(["README.md", "CHANGELOG.md"]), "personal"), []);
+	});
+
+	it("asks a shared repo for CONTRIBUTING and the pull request template", () => {
+		const problems = checkCommunity(repo(["README.md", "CHANGELOG.md"]), "shared").join("\n");
+		assert.match(problems, /CONTRIBUTING\.md: missing \(required in a shared repo\)/);
+		assert.match(problems, /\.github\/pull_request_template\.md: missing/);
+	});
+
+	it("asks a public repo for the community files, and NOTICE under Apache-2.0", () => {
+		const all = ["README.md", "CHANGELOG.md", "CONTRIBUTING.md", ".github/pull_request_template.md", "CODE_OF_CONDUCT.md", "SECURITY.md", "LICENSE"];
+		const issues = ["config.yml", "bug_report.yml", "feature_request.yml"].map((f) => `.github/ISSUE_TEMPLATE/${f}`);
+		assert.deepEqual(checkCommunity(repo([...all, ...issues]), "public"), []);
+		const problems = checkCommunity(repo(all, "Apache License\nVersion 2.0"), "public").join("\n");
+		assert.match(problems, /NOTICE: missing/);
+		assert.match(problems, /bug_report\.yml: missing/);
+	});
+});
+
 describe("helpers", () => {
 	it("builds GitHub anchors, keeping accents and numbering repeats", () => {
 		const seen = new Map();
@@ -82,6 +113,7 @@ describe("helpers", () => {
 	it("leaves out every CLAUDE.md, folders ending in / and exact paths", () => {
 		assert.equal(isExcluded("50-claude/CLAUDE.md", []), true);
 		assert.equal(isExcluded(".claude/rules/git.md", [".claude/"]), true);
+		assert.equal(isExcluded(".github/pull_request_template.md", [".github/"]), true);
 		assert.equal(isExcluded("docs/tasks.md", ["docs/tasks.md"]), true);
 		assert.equal(isExcluded("docs/tasks-old.md", ["docs/tasks.md"]), false);
 	});

@@ -2,73 +2,58 @@
 
 # Contribuir
 
-Es un repo personal, pero sigue un flujo estándar para mantenerlo limpio y
-reproducible.
+Gracias por ayudar. Es un repo personal, pero sigue un flujo estándar para mantenerlo limpio y
+reproducible en cualquier PC con Windows 11.
 
-## Flujo
+## Antes de empezar
 
-1. Crea una rama desde `main`.
-2. Haz los cambios siguiendo las convenciones de abajo.
-3. Ejecuta las comprobaciones desde la raíz del repo. Deben pasar todas:
+- **Un error o un arreglo pequeño:** abre un pull request directamente, o un issue con el
+  [formulario de error](https://github.com/M1gu3l4ngel/dotfiles-windows/issues/new/choose).
+- **Una app nueva, una carpeta nueva o un cambio en lo que instala `bootstrap.ps1`:** abre antes
+  un issue y describe el problema que resuelve. Cambia cada PC que hace pull del repo, así que se
+  acuerda antes de escribirse.
+- **Una vulnerabilidad:** nunca en un issue público; sigue [`SECURITY.es.md`](SECURITY.es.md).
+- **Conducta:** todo el que participa sigue el [código de conducta](CODE_OF_CONDUCT.es.md).
 
-   ```powershell
-   .\tools\check.ps1
-   ```
+## Preparar
 
-4. Haz un commit siguiendo el formato de commits.
-5. Abre un pull request. El CI ejecuta las mismas comprobaciones y marca el
-   resultado en GitHub.
+Necesita Windows 11, PowerShell 7, git y Node.js 24; el [README](README.es.md#requisitos-previos)
+explica cómo conseguirlos. Clona el repo, crea una rama desde `main` y corre las comprobaciones
+desde su raíz, en PowerShell 7 como usuario normal. Son las mismas que corre el CI:
 
-Si el cambio es visible para el usuario, añádelo al changelog
-([CHANGELOG.es.md](CHANGELOG.es.md) y su pareja en inglés) en la sección
-"Sin publicar" / "Unreleased".
-
-## Commits
-
-Formato [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/): un
-título de 72 caracteres como máximo, una línea en blanco y un cuerpo con un
-guion por cambio concreto (sin cuerpo solo si el título lo dice todo). El texto
-va en inglés, en imperativo:
-
-```
-type(scope): <summary>
-
-- <change>
-- <change>
+```powershell
+.\tools\check.ps1
 ```
 
-- `type` en inglés: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
-- `scope` opcional: el componente afectado (`install`, `bootstrap`, `vscode`...).
-- **Un commit por cambio verificado**: dos cambios independientes van en dos
-  commits, para que cada uno se pueda revisar y revertir solo.
-- Los archivos se añaden por ruta, nunca con `git add -A` ni `git add .`.
+Para ver qué cambiaría el instalador en tu PC sin cambiar nada:
 
-El repo es público y cada commit publica el email del autor: usa el **email
-noreply** de GitHub y **firma los commits con GPG**. Cómo configurarlo:
-[docs/gpg-signing.es.md](docs/gpg-signing.es.md).
+```powershell
+.\bootstrap.ps1 -DryRun
+.\install.ps1 -Check
+```
 
-## Documentación en dos idiomas
+## Qué tiene que mantener un cambio
 
-Toda la documentación existe en inglés (`X.md`) y en español (`X.es.md`), con
-el selector de idioma en la primera línea. Al cambiar un documento, cambia
-también su pareja en el mismo commit. `.\tools\check.ps1`
-(`50-claude/tools/check-docs.mjs`) falla si no tienen la misma estructura (secciones,
-tablas, listas, enlaces), si sus bloques de código difieren (los comandos no se
-traducen) o si hay enlaces o anclas rotos.
+- **Nada personal ni de una empresa:** ni usuario, ni email, ni IP, ni hostname, ni fingerprint
+  de clave, ni endpoint interno. Revisa `30-vscode/vscode/settings.json` antes de commitear: las
+  extensiones escriben keys ahí. Detalle en `.claude/rules/security.md`.
+- **Descargas verificadas:** las apps vienen de winget; lo demás se descarga en versión fija y
+  se verifica con SHA-256.
+- **Scripts idempotentes:** cada paso comprueba si ya está hecho, así que un script puede volver
+  a correr sin romper nada.
+- **Documentos en pareja:** `X.md` en inglés y `X.es.md` en español, con las mismas secciones,
+  bloques de código idénticos y el selector de idioma en la línea 1. `.\tools\check.ps1`
+  (`50-claude/tools/check-docs.mjs`) lo comprueba, enlaces y anclas incluidos. Donde un flujo se
+  entiende mejor dibujado, un diagrama Mermaid, idéntico en los dos idiomas, con etiquetas en
+  inglés.
+- **Inglés** en los comentarios del código, la salida de los scripts, los mensajes de los hooks
+  y los nombres de los tests, según
+  [docs/contributing/comments.es.md](docs/contributing/comments.es.md). Las reglas de
+  `.claude/rules/` y las listas de tareas (`docs/tasks.md`, `docs/backlog.md`) van solo en español.
+- **Documentación sobria:** sin emojis, con comandos que se copian y funcionan tal cual.
 
-Donde un flujo se entiende mejor dibujado, va un diagrama Mermaid: es un bloque
-de código, así que es idéntico en los dos idiomas, con etiquetas en inglés.
-
-Los comentarios del código, la salida de los scripts, los mensajes de los hooks
-y los nombres de los tests se escriben en inglés, según
-[docs/contributing/comments.es.md](docs/contributing/comments.es.md). Las reglas
-de `.claude/rules/` y las listas de tareas (`docs/tasks.md`, `docs/backlog.md`)
-se escriben solo en español.
-
-## Convenciones
-
-Están en `.claude/rules/`. Son Markdown normal: sirven igual para personas y para
-Claude Code, que las carga automáticamente.
+Las convenciones están en `.claude/rules/`. Son Markdown normal: sirven igual para personas y
+para Claude Code, que las carga automáticamente.
 
 | Archivo | Qué define |
 |---|---|
@@ -80,15 +65,34 @@ Claude Code, que las carga automáticamente.
 | `environment.md` | Discos, Developer Mode, symlinks, WSL |
 | `task-tracking.md` | `docs/tasks.md` y `docs/backlog.md` (en español): lo que falta por hacer, y el panel de tareas que se genera de ellos |
 
-Lo más importante:
+## Commits y pull requests
 
-- Nunca incluyas datos personales ni de empresa (usuario, emails, IPs,
-  fingerprints, endpoints internos). Revisa `30-vscode/vscode/settings.json` antes de
-  commitear: las extensiones escriben keys ahí.
-- Lo que no venga de winget se descarga en versión fija y se verifica con SHA-256.
-- La documentación va sobria, sin emojis.
+Los commits siguen [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/): un
+título de 72 caracteres como máximo, una línea en blanco y un cuerpo con un guion por cambio
+concreto (sin cuerpo solo si el título lo dice todo), en inglés y en imperativo:
 
-## Reportar problemas
+```
+type(scope): <summary>
 
-Abre un issue con qué esperabas, qué pasó, versión de Windows y los pasos para
-reproducirlo (con captura si es visual).
+- <change>
+- <change>
+```
+
+- `type` en inglés: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
+- `scope` opcional: el componente afectado (`install`, `bootstrap`, `vscode`...).
+- **Un commit por cambio verificado**: dos cambios independientes van en dos commits, para que
+  cada uno se pueda revisar y revertir solo.
+- Los archivos se añaden por ruta, nunca con `git add -A` ni `git add .`.
+- El repo es público y cada commit publica el email del autor: usa el **email noreply** de
+  GitHub y **firma los commits con GPG**, como explica
+  [docs/gpg-signing.es.md](docs/gpg-signing.es.md).
+
+Un pull request hace una sola cosa y rellena su plantilla. Un cambio que se nota añade su línea
+en «Sin publicar» de [CHANGELOG.es.md](CHANGELOG.es.md) y en «Unreleased» de su pareja en
+inglés. El CI tiene que pasar: las mismas comprobaciones que `.\tools\check.ps1`, más el escaneo
+de secretos.
+
+## Licencia
+
+Al contribuir, aceptas que tu contribución se licencia bajo [MIT](LICENSE), como el resto del
+repo.

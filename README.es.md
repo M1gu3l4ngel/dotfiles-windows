@@ -17,8 +17,10 @@
   <a href="#reproducir-en-un-comando">Instalar</a> ·
   <a href="#qué-hay-en-el-repo">Estructura</a> ·
   <a href="#cómo-funciona">Cómo funciona</a> ·
-  <a href="docs/README.es.md">Documentación</a> ·
-  <a href="CONTRIBUTING.es.md">Contribuir</a>
+  <a href="#documentación">Documentación</a> ·
+  <a href="#contribuir">Contribuir</a> ·
+  <a href="#seguridad">Seguridad</a> ·
+  <a href="#licencia">Licencia</a>
 </p>
 
 <p align="center">
@@ -58,6 +60,7 @@ Y alrededor:
 | `githooks/` | `post-merge`: vuelve a correr `install.ps1` tras cada `git pull` |
 | `tools/` | Comprobaciones (`check.ps1`, las mismas del CI) y el asistente del nombre del prompt |
 | `docs/` | Guías: PC nueva, firma de commits, formato ([docs/README.es.md](docs/README.es.md)) |
+| `.github/` | CI, Dependabot y las plantillas de issues y pull requests |
 | `.claude/rules/` | Convenciones del proyecto (las carga Claude Code) |
 
 ## Cómo funciona
@@ -236,15 +239,23 @@ terminal: `Remove-Item Env:POSH_NAME` (PowerShell) o `unset POSH_NAME`
 | `Can't find an installed Node version matching …` al entrar en una carpeta | El repo pide una versión de Node que no tienes | Contesta `y` y fnm la instala; `N` deja la actual |
 | GitHub muestra "Unverified" | El UID de la clave GPG no tiene el email noreply | [docs/gpg-signing.es.md](docs/gpg-signing.es.md) |
 
-## Documentación y contribución
+## Documentación
 
 Guías en [docs/](docs/README.es.md), empezando por la de PC nueva:
-[docs/getting-started.es.md](docs/getting-started.es.md). Convenciones en `.claude/rules/`. Para
-contribuir o modificar el repo: [CONTRIBUTING.es.md](CONTRIBUTING.es.md).
+[docs/getting-started.es.md](docs/getting-started.es.md). Convenciones en `.claude/rules/`.
 
-## Créditos y licencia
+## Contribuir
 
-El prompt de oh-my-posh y la paleta de colores se comparten con
+Los cambios son bienvenidos: el flujo, las comprobaciones y el formato de los commits están en
+[CONTRIBUTING.es.md](CONTRIBUTING.es.md), y todo el que participa sigue el
+[código de conducta](CODE_OF_CONDUCT.es.md).
+
+## Seguridad
+
+Una vulnerabilidad se reporta en privado, nunca en un issue público:
+[SECURITY.es.md](SECURITY.es.md).
+
+## Licencia
+
+[MIT](LICENSE). El prompt de oh-my-posh y la paleta de colores se comparten con
 [dotfiles-parrot](https://github.com/M1gu3l4ngel/dotfiles-parrot).
-
-Licencia [MIT](LICENSE).

@@ -17,8 +17,10 @@
   <a href="#reproduce-in-one-command">Install</a> ·
   <a href="#what-is-in-the-repo">Structure</a> ·
   <a href="#how-it-works">How it works</a> ·
-  <a href="docs/README.md">Documentation</a> ·
-  <a href="CONTRIBUTING.md">Contributing</a>
+  <a href="#documentation">Documentation</a> ·
+  <a href="#contributing">Contributing</a> ·
+  <a href="#security">Security</a> ·
+  <a href="#license">License</a>
 </p>
 
 <p align="center">
@@ -58,6 +60,7 @@ And around them:
 | `githooks/` | `post-merge`: re-runs `install.ps1` after each `git pull` |
 | `tools/` | Checks (`check.ps1`, the same as CI) and the prompt name helper |
 | `docs/` | Guides: new PC, commit signing, formatting ([docs/README.md](docs/README.md)) |
+| `.github/` | CI, Dependabot, and the issue and pull request templates |
 | `.claude/rules/` | Project conventions (loaded by Claude Code) |
 
 ## How it works
@@ -235,15 +238,23 @@ same terminal: `Remove-Item Env:POSH_NAME` (PowerShell) or `unset POSH_NAME`
 | `Can't find an installed Node version matching …` on entering a folder | The repo asks for a Node version you do not have | Answer `y` and fnm installs it; `N` keeps the current one |
 | GitHub shows "Unverified" | The GPG key UID does not have the noreply email | [docs/gpg-signing.md](docs/gpg-signing.md) |
 
-## Documentation and contributing
+## Documentation
 
 Guides in [docs/](docs/README.md), starting with the new PC one:
-[docs/getting-started.md](docs/getting-started.md). Conventions in `.claude/rules/`. To contribute
-or modify the repo: [CONTRIBUTING.md](CONTRIBUTING.md).
+[docs/getting-started.md](docs/getting-started.md). Conventions in `.claude/rules/`.
 
-## Credits and license
+## Contributing
 
-The oh-my-posh prompt and the color palette are shared with
+Changes are welcome: the flow, the checks and the commit format are in
+[CONTRIBUTING.md](CONTRIBUTING.md), and everyone who takes part follows the
+[code of conduct](CODE_OF_CONDUCT.md).
+
+## Security
+
+A vulnerability is reported privately, never in a public issue:
+[SECURITY.md](SECURITY.md).
+
+## License
+
+[MIT](LICENSE). The oh-my-posh prompt and the color palette are shared with
 [dotfiles-parrot](https://github.com/M1gu3l4ngel/dotfiles-parrot).
-
-Licensed [MIT](LICENSE).
