@@ -88,7 +88,7 @@ To keep your personal email **out of the public key**, you have two options:
 
 ## 3. Configure git to sign
 
-The email, signed commits and tags, and the GnuPG path are already in `15-git/gitconfig`. The key is specific to each machine, so it goes in `~/.gitconfig.local`, outside the repository:
+Signed commits and tags and the GnuPG path are already in `15-git/gitconfig`, and `bootstrap.ps1` wrote the noreply email to `~/.gitconfig.local`. The key is specific to each machine, so it goes in that same file, outside the repository:
 
 ```powershell
 git config --file ~/.gitconfig.local user.signingkey <fingerprint>

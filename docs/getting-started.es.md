@@ -23,9 +23,9 @@ flowchart TD
 - Windows 11 con sesión iniciada y conexión a internet.
 - `winget` disponible: viene con App Installer de la Microsoft Store. Si
   `winget --version` falla en PowerShell, actualiza App Installer desde la Store.
-- Si hiciste un fork del repo: `bootstrap.ps1` pone el nombre y el correo
-  noreply de git del dueño (función `Invoke-Step6Git`). Cámbialos por los tuyos
-  antes del paso 5.
+- Si hiciste un fork del repo: en el paso 5, pasa a `bootstrap.ps1` tu nombre
+  de git y tu correo noreply de GitHub con `-GitName` y `-GitEmail`. Sin ellos usa
+  los del dueño. Van a `~/.gitconfig.local`, fuera del repo.
 
 ## 2. Activar el modo de desarrollador
 

@@ -131,7 +131,7 @@ without breaking anything (for example after a reboot).
 | 3 | CaskaydiaCove Nerd Font (download verified by SHA-256) |
 | 4 | Node with fnm (versions in `<disk>\Dev\fnm`; each terminal switches to the repo's version on entering it) + pnpm + Claude Code in `<disk>\Dev\npm-global` |
 | 5 | WSL Ubuntu 26.04 (requires a reboot) |
-| 6 | git: name, noreply email and defaults |
+| 6 | git identity in `~/.gitconfig.local`, if the machine has none: `-GitName` and `-GitEmail`, the owner's by default |
 | 7 | Configuration symlinks, and the Claude Code `settings.json` if the machine has none (`install.ps1`) |
 | 8 | VS Code extensions from `30-vscode/vscode/extensions.txt` (only the missing ones) |
 | 9 | Shows the manual steps that involve secrets (GPG/SSH) |

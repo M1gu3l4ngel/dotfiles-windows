@@ -51,6 +51,11 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- The git identity leaves the public repo: `15-git/gitconfig` keeps only what can be public, and
+  `bootstrap.ps1` writes the name and email to `~/.gitconfig.local` from `-GitName` and
+  `-GitEmail` (the owner's by default) when the machine has none, instead of
+  `git config --global`, which wrote through the link into the repo. A fork commits under its own
+  name, and `install.ps1 -Check` reports a missing identity.
 - The README header follows the `new-repo` recipe, like the owner's other repos: logo with its
   light and dark versions, centered description, a row of links and badges. The global
   `repo-conventions` rule now asks for that header, compared with another repo of the same owner.

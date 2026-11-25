@@ -17,12 +17,25 @@
   Changes nothing; only reports what it would do. Use it to try the script on a machine that is
   already set up.
 
+.PARAMETER GitName
+  The git user.name written to ~/.gitconfig.local when the machine has none. Defaults to the
+  repo owner's: a fork passes its own.
+
+.PARAMETER GitEmail
+  The git user.email written to ~/.gitconfig.local when the machine has none: the GitHub noreply
+  address, which every public commit shows. Defaults to the repo owner's.
+
 .EXAMPLE
   .\bootstrap.ps1
   .\bootstrap.ps1 -DryRun
+  .\bootstrap.ps1 -GitName '<user>' -GitEmail '<id>+<user>@users.noreply.github.com'
 #>
 [CmdletBinding()]
-param([switch]$DryRun)
+param(
+	[switch]$DryRun,
+	[string]$GitName = 'M1gu3l4ngel',
+	[string]$GitEmail = '88590762+M1gu3l4ngel@users.noreply.github.com'
+)
 
 $ErrorActionPreference = 'Stop'
 $DotfilesRoot = $PSScriptRoot
@@ -262,13 +275,19 @@ function Invoke-Step5Wsl {
 	wsl --install -d $WslDistro
 }
 
+# The identity goes in ~/.gitconfig.local, never through --global: ~/.gitconfig is the link to
+# 15-git/gitconfig, so --global would write into the public repo. The defaults (branch, signing)
+# already come from that file. An identity the machine already has is kept.
 function Invoke-Step6Git {
-	Step 'git config (identity + defaults)'
-	if ($DryRun) { Would 'git config user.name / user.email (noreply) / init.defaultBranch'; return }
-	git config --global user.name  'M1gu3l4ngel'
-	git config --global user.email '88590762+M1gu3l4ngel@users.noreply.github.com'
-	git config --global init.defaultBranch 'main'
-	Ok 'git identity + defaults (GPG signing is in the manual steps)'
+	Step 'git identity (~/.gitconfig.local)'
+	$local = Join-Path $env:USERPROFILE '.gitconfig.local'
+	foreach ($key in ([ordered]@{ 'user.name' = $GitName; 'user.email' = $GitEmail }).GetEnumerator()) {
+		$current = git config --file $local --get $key.Key 2>$null
+		if ($current) { Ok "$($key.Key) already set: $current"; continue }
+		if ($DryRun) { Would "git config --file ~/.gitconfig.local $($key.Key) '$($key.Value)'"; continue }
+		git config --file $local $key.Key $key.Value
+		Ok "$($key.Key) = $($key.Value) (GPG signing is in the manual steps)"
+	}
 }
 
 function Invoke-Step7Symlink {
@@ -307,7 +326,7 @@ function Invoke-Step9Manual {
 		'     Upload ~/.ssh/id_ed25519.pub to GitHub -> Settings -> SSH and GPG keys.',
 		'',
 		'3. GPG key (commit signing + "Verified" badge):',
-		'     gpg --quick-generate-key "M1gu3l4ngel <88590762+M1gu3l4ngel@users.noreply.github.com>" default default 2y',
+		"     gpg --quick-generate-key `"$GitName <$GitEmail>`" default default 2y",
 		'     git config --file ~/.gitconfig.local user.signingkey <fingerprint>',
 		'     (signing is already on in 15-git/gitconfig; the key belongs to each machine)',
 		'     Upload the public key to GitHub. Details in docs/gpg-signing.md.'

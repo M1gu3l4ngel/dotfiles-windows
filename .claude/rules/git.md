@@ -47,5 +47,8 @@ type(scope): imperative summary in English
 
 ## `.gitconfig`
 
-No se versiona en este repo: acumula entradas `safe.directory` por máquina y
-revela rutas de proyectos. Se configura una vez (ver README).
+`15-git/gitconfig` es la parte que puede ser pública: firma, rama por defecto y
+cuentas personales. Lo de cada persona o máquina (identidad, clave de firma,
+organizaciones, `safe.directory`) vive en `~/.gitconfig.local`, nunca en el
+repo; `bootstrap.ps1` escribe ahí la identidad (`-GitName`, `-GitEmail`).
+Nunca `git config --global`: `~/.gitconfig` es el enlace al repo público.

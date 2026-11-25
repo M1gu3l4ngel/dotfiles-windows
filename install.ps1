@@ -155,8 +155,11 @@ function Test-Installation {
 	else { $bad++; Write-Host '  MISSING     node, needed to check ~/.claude/settings.json' -ForegroundColor Red }
 	if ((git -C $DotfilesRoot config --get core.hooksPath) -eq 'githooks') { Write-Host '  ok          git post-merge on' -ForegroundColor Green }
 	else { $bad++; Write-Host '  MISSING     git post-merge (core.hooksPath)' -ForegroundColor Red }
+	# The identity is per person, in ~/.gitconfig.local; without it every commit fails.
+	if ((git config --get user.name) -and (git config --get user.email)) { Write-Host '  ok          git identity' -ForegroundColor Green }
+	else { $bad++; Write-Host '  MISSING     git identity in ~/.gitconfig.local (bootstrap.ps1 -GitName -GitEmail)' -ForegroundColor Red }
 	Write-Host ''
-	if ($bad -eq 0) { Write-Host "All installed: $($Links.Count) links, hooks and post-merge." -ForegroundColor Green; return $true }
+	if ($bad -eq 0) { Write-Host "All installed: $($Links.Count) links, hooks, post-merge and git identity." -ForegroundColor Green; return $true }
 	Write-Host "$bad checks failed. Run .\install.ps1 to fix them." -ForegroundColor Red
 	return $false
 }
