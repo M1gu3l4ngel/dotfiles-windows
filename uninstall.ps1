@@ -1,18 +1,17 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  Desinstalador de dotfiles-windows: revierte lo que hizo install.ps1.
+  Undoes what install.ps1 did: removes the repo's symlinks and restores the backed-up originals.
 
 .DESCRIPTION
-  Por cada symlink que install.ps1 crea: si el destino es un symlink que apunta a
-  este repo, lo quita; y si existe un backup .pre-dotfiles.bak, restaura el archivo
-  original. No desinstala apps, ni toca variables de entorno ni WSL.
+  For each symlink install.ps1 creates: if the target is a symlink to this repo, it removes it,
+  and if a .pre-dotfiles.bak backup exists, it restores the original file. Anything else in the
+  target is left alone. It does not uninstall apps or touch environment variables or WSL.
 
-  El mapeo de symlinks se comparte con install.ps1 (lib/links.ps1).
+  The symlink map is shared with install.ps1 (lib/links.ps1).
 
 .PARAMETER DryRun
-  Muestra que haria sin tocar nada (equivale a un -WhatIf). Recomendado antes de
-  ejecutar de verdad.
+  Shows what it would do without touching anything, like -WhatIf. Run it before the real thing.
 
 .EXAMPLE
   .\uninstall.ps1 -DryRun
@@ -41,7 +40,7 @@ function Uninstall-Symlink {
 	$backup = "$Target$BackupSuffix"
 	$hasBackup = Test-Path $backup
 
-	# Es NUESTRO symlink solo si apunta (ruta normalizada) al Source del repo.
+	# It is OURS only if it points (normalized path) to the repo's Source.
 	$isOurs = $false
 	if ($item -and $item.LinkType -eq 'SymbolicLink') {
 		$existing = @($item.Target)[0]
@@ -51,47 +50,45 @@ function Uninstall-Symlink {
 	}
 
 	if ($isOurs) {
-		if ($DryRun) { Would "quitaria el symlink: $Target" }
-		# Delete() del enlace quita solo el enlace: Remove-Item sobre un enlace de carpeta
-		# puede atravesarlo y borrar lo que hay en el repo.
-		else { $item.Delete(); Write-Host "  Symlink quitado" -ForegroundColor Green }
+		if ($DryRun) { Would "would remove the symlink: $Target" }
+		# The link's Delete() removes only the link: Remove-Item on a folder link can go through
+		# it and delete what is in the repo.
+		else { $item.Delete(); Write-Host "  Symlink removed" -ForegroundColor Green }
 
 		if ($hasBackup) {
-			if ($DryRun) { Would "restauraria el original: $backup -> $Target" }
-			else { Move-Item -Path $backup -Destination $Target -Force; Write-Host "  Original restaurado desde el backup" -ForegroundColor Green }
+			if ($DryRun) { Would "would restore the original: $backup -> $Target" }
+			else { Move-Item -Path $backup -Destination $Target -Force; Write-Host "  Original restored from the backup" -ForegroundColor Green }
 		}
-		elseif (-not $DryRun) { Write-Host "  (no habia backup previo; el destino queda sin archivo)" -ForegroundColor Gray }
+		elseif (-not $DryRun) { Write-Host "  (no earlier backup; the target is left without a file)" -ForegroundColor Gray }
 	}
 	elseif ($item) {
-		# Hay algo en el destino, pero NO es un symlink nuestro: no se toca.
-		Write-Host "  No es un symlink de este repo - no se toca" -ForegroundColor Yellow
-		if ($hasBackup) { Write-Host "  Aviso: hay un backup huerfano, revisalo a mano: $backup" -ForegroundColor Yellow }
+		Write-Host "  Not a symlink of this repo - left alone" -ForegroundColor Yellow
+		if ($hasBackup) { Write-Host "  Warning: orphan backup, review it by hand: $backup" -ForegroundColor Yellow }
 	}
 	else {
-		# El destino no existe.
 		if ($hasBackup) {
-			if ($DryRun) { Would "restauraria el original: $backup -> $Target" }
+			if ($DryRun) { Would "would restore the original: $backup -> $Target" }
 			else {
 				New-Item -ItemType Directory -Force -Path (Split-Path $Target -Parent) | Out-Null
 				Move-Item -Path $backup -Destination $Target -Force
-				Write-Host "  Original restaurado desde el backup" -ForegroundColor Green
+				Write-Host "  Original restored from the backup" -ForegroundColor Green
 			}
 		}
-		else { Write-Host "  Nada que revertir" -ForegroundColor Gray }
+		else { Write-Host "  Nothing to undo" -ForegroundColor Gray }
 	}
 }
 
-Write-Host "=== Desinstalador dotfiles-windows ===" -ForegroundColor Magenta
-Write-Host "Root del repo: $DotfilesRoot" -ForegroundColor Gray
-if ($DryRun) { Write-Host "MODO DRY-RUN: no se cambiara nada, solo se reporta." -ForegroundColor Yellow }
+Write-Host "=== dotfiles-windows uninstaller ===" -ForegroundColor Magenta
+Write-Host "Repo root: $DotfilesRoot" -ForegroundColor Gray
+if ($DryRun) { Write-Host "DRY-RUN MODE: nothing changes, report only." -ForegroundColor Yellow }
 
 foreach ($link in $Links) {
 	Uninstall-Symlink -Source $link.Source -Target $link.Target -Label $link.Label
 }
 
 Write-Host ""
-Write-Host "=== Desinstalacion completa ===" -ForegroundColor Magenta
+Write-Host "=== Uninstall complete ===" -ForegroundColor Magenta
 if (-not $DryRun) {
-	Write-Host "Reabre tus terminales para que tomen la config restaurada." -ForegroundColor Cyan
+	Write-Host "Reopen your terminals so they pick up the restored config." -ForegroundColor Cyan
 }
 Write-Host ""

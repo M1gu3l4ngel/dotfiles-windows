@@ -1,19 +1,18 @@
-# lib/links.ps1
-# Mapeo compartido de symlinks: archivo en el repo (Source) -> ruta destino en el
-# sistema (Target). Lo usan install.ps1 y uninstall.ps1, para que el mapeo viva en
-# un solo sitio y nunca se desincronicen.
+# Shared symlink map: file in the repo (Source) -> path where the system reads it (Target).
+# install.ps1 and uninstall.ps1 both dot-source it, so the map lives in one place and the two
+# scripts can never drift apart.
 #
-# Se invoca con la raiz del repo y la ruta real de Documentos, que cada script
-# calcula (Documentos puede estar redirigido a otra unidad).
+# Each script passes the repo root and the real Documents path, which it computes itself
+# (Documents can be redirected to another drive).
 
-# Estado de un enlace en disco, sin tocar nada:
-#   ok      symlink al Source correcto
-#   missing no hay nada en el destino
-#   stale   symlink a otra ruta dentro del repo (una carpeta que se movio): es nuestro y
-#           se reemplaza sin backup, porque no guarda nada que no este ya en el repo
-#   foreign archivo real o symlink ajeno: install.ps1 lo respalda antes de enlazar
-# Se mira con Get-Item y no con Test-Path: un symlink roto da False en PowerShell 5.1 y True
-# en 7, y aqui hace falta saber que es un enlace aunque su destino ya no exista.
+# State of a link on disk, without touching anything:
+#   ok      symlink to the right Source
+#   missing nothing at the target
+#   stale   symlink to another path inside the repo (a folder that moved): it is ours and is
+#           replaced without a backup, because it holds nothing that is not already in the repo
+#   foreign real file or someone else's symlink: install.ps1 backs it up before linking
+# Get-Item and not Test-Path: a broken symlink gives False in PowerShell 5.1 and True in 7, and
+# here we need to know it is a link even when its target no longer exists.
 function Get-DotfilesLinkState {
 	param(
 		[Parameter(Mandatory)][string]$Source,
@@ -36,10 +35,10 @@ function Get-DotfilesLink {
 		[Parameter(Mandatory)][string]$DocumentsPath
 	)
 
-	# Carpeta de trabajo, con la misma regla que Get-WorkDrive de bootstrap.ps1:
-	# los proyectos viven en <disco>\Dev, fuera del perfil. Prettier y EditorConfig
-	# buscan su configuracion subiendo carpetas, asi que el estilo global se enlaza
-	# en el perfil (~) y tambien aqui, o no alcanzaria a los proyectos.
+	# Work folder, with the same rule as Get-WorkDrive in bootstrap.ps1: projects live in
+	# <drive>\Dev, outside the profile. Prettier and EditorConfig look for their config walking up
+	# folders, so the global style is linked in the profile (~) and here too, or it would not
+	# reach the projects.
 	$workDev = if (Test-Path 'D:\') { 'D:\Dev' } else { 'C:\Dev' }
 
 	@(
@@ -53,11 +52,10 @@ function Get-DotfilesLink {
 			Target = "$DocumentsPath\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
 			Label  = 'Windows PowerShell (legacy) profile'
 		},
-		# NOTA: deliberadamente NO se instala perfil para el host de VS Code
-		# (Microsoft.VSCode_profile.ps1). Cargarlo cuesta ~872 ms en CADA terminal
-		# integrada de VS Code (medido el 2026-09-18), donde se abren muchas. La
-		# terminal de VS Code se queda sin oh-my-posh a proposito; la consola normal
-		# si lo tiene. Git Bash abre como login shell, que lee .bash_profile.
+		# No profile for the VS Code host (Microsoft.VSCode_profile.ps1), on purpose: loading it
+		# costs about 872 ms in EVERY VS Code integrated terminal, and many get opened. That
+		# terminal stays without oh-my-posh; the normal console has it. Git Bash opens as a login
+		# shell, which reads .bash_profile.
 		@{
 			Source = "$DotfilesRoot\10-shell\bash\.bashrc"
 			Target = "$env:USERPROFILE\.bashrc"
@@ -66,10 +64,11 @@ function Get-DotfilesLink {
 		@{
 			Source = "$DotfilesRoot\10-shell\bash\.bash_profile"
 			Target = "$env:USERPROFILE\.bash_profile"
-			Label  = 'Git Bash profile (carga .bashrc)'
+			Label  = 'Git Bash profile (loads .bashrc)'
 		},
-		# Git: la parte publica (este archivo va sin acentos: sin BOM, PowerShell 5.1 lo leeria mal). Lo privado (organizaciones de clientes y del trabajo) vive en
-		# ~/.gitconfig.local, que no se versiona y gitconfig incluye si existe.
+		# Git: the public part (ASCII only: without a BOM, PowerShell 5.1 would misread it). The
+		# private part (client and work organizations) lives in ~/.gitconfig.local, which is not
+		# versioned and gitconfig includes if it exists.
 		@{
 			Source = "$DotfilesRoot\15-git\gitconfig"
 			Target = "$env:USERPROFILE\.gitconfig"
@@ -78,10 +77,10 @@ function Get-DotfilesLink {
 		@{
 			Source = "$DotfilesRoot\15-git\gitconfig-personal"
 			Target = "$env:USERPROFILE\.gitconfig-personal"
-			Label  = 'Git cuenta personal de GitHub'
+			Label  = 'Git personal GitHub account'
 		},
-		# El tema de oh-my-posh no se enlaza: el perfil de PowerShell y .bashrc lo leen
-		# directamente del repo.
+		# The oh-my-posh theme is not linked: the PowerShell profile and .bashrc read it straight
+		# from the repo.
 		@{
 			Source = "$DotfilesRoot\20-terminal\windows-terminal\settings.json"
 			Target = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
@@ -118,57 +117,57 @@ function Get-DotfilesLink {
 			Label  = 'Claude hook block-forbidden-commands'
 		},
 		@{
-			# Las reglas que importa el hook anterior. Enlazadas para que cada proyecto compare su
-			# copia con esta, la fuente unica (`hook-rules-copy`).
+			# The rules the previous hook imports. Linked so each project can compare its copy
+			# with this one, the single source (`hook-rules-copy`).
 			Source = "$DotfilesRoot\50-claude\hooks\command-rules.mjs"
 			Target = "$env:USERPROFILE\.claude\hooks\command-rules.mjs"
-			Label  = 'Claude reglas de comandos'
+			Label  = 'Claude command rules'
 		},
 		@{
 			Source = "$DotfilesRoot\50-claude\hooks\reply-in-spanish.mjs"
 			Target = "$env:USERPROFILE\.claude\hooks\reply-in-spanish.mjs"
 			Label  = 'Claude hook reply-in-spanish'
 		},
-		# Regla global: Claude Code carga ~/.claude/rules/*.md en todos los proyectos.
+		# Global rule: Claude Code loads ~/.claude/rules/*.md in every project.
 		@{
 			Source = "$DotfilesRoot\50-claude\rules\repo-conventions.md"
 			Target = "$env:USERPROFILE\.claude\rules\repo-conventions.md"
-			Label  = 'Claude regla repo-conventions'
+			Label  = 'Claude rule repo-conventions'
 		},
-		# Skill global: la carpeta, como pide Claude Code (~/.claude/skills/<nombre>/SKILL.md).
+		# Global skill: the folder, as Claude Code expects (~/.claude/skills/<name>/SKILL.md).
 		@{
 			Source = "$DotfilesRoot\50-claude\skills\new-repo"
 			Target = "$env:USERPROFILE\.claude\skills\new-repo"
 			Label  = 'Claude skill new-repo'
 		},
-		# Panel de tareas: la carpeta entera (pagina, tema, generador y sus hooks), porque los
-		# modulos se importan entre si por ruta relativa.
+		# Task panel: the whole folder (page, theme, generator and its hooks), because the modules
+		# import each other by relative path.
 		@{
 			Source = "$DotfilesRoot\50-claude\panel"
 			Target = "$env:USERPROFILE\.claude\panel"
-			Label  = 'Claude panel de tareas'
+			Label  = 'Claude task panel'
 		},
-		# Estilo global (copia de dotfiles-parrot, no un enlace a el): solo cubre
-		# proyectos sin .prettierrc ni .editorconfig propios.
+		# Global style (a copy of dotfiles-parrot's, not a link to it): it only covers projects
+		# without their own .prettierrc or .editorconfig.
 		@{
 			Source = "$DotfilesRoot\40-format\prettierrc.json"
 			Target = "$env:USERPROFILE\.prettierrc.json"
-			Label  = 'Prettier global (perfil)'
+			Label  = 'Global Prettier (profile)'
 		},
 		@{
 			Source = "$DotfilesRoot\40-format\prettierrc.json"
 			Target = "$workDev\.prettierrc.json"
-			Label  = 'Prettier global (carpeta de trabajo)'
+			Label  = 'Global Prettier (work folder)'
 		},
 		@{
 			Source = "$DotfilesRoot\40-format\editorconfig"
 			Target = "$env:USERPROFILE\.editorconfig"
-			Label  = 'EditorConfig global (perfil)'
+			Label  = 'Global EditorConfig (profile)'
 		},
 		@{
 			Source = "$DotfilesRoot\40-format\editorconfig"
 			Target = "$workDev\.editorconfig"
-			Label  = 'EditorConfig global (carpeta de trabajo)'
+			Label  = 'Global EditorConfig (work folder)'
 		}
 	)
 }

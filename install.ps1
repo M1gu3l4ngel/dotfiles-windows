@@ -1,21 +1,26 @@
-# install.ps1
-# Instalador idempotente de dotfiles-windows.
-# Crea symlinks desde las ubicaciones estandar hacia los archivos del repo, y el
-# settings.json de Claude Code desde su plantilla si la maquina aun no lo tiene.
-# Antes de cualquier sobreescritura hace backup con sufijo .pre-dotfiles.bak
-# (con fecha si ya existe uno, para no perder ninguna version).
-#
-# Requisitos:
-#   - Developer Mode activado (Settings -> Privacy & security -> For developers)
-#     o ejecutar como administrador (cualquiera de los dos permite crear symlinks).
-#   - PowerShell 5.1 o superior.
-#
-# Uso:
-#   cd ~\dotfiles
-#   .\install.ps1          enlaza lo que falte
-#   .\install.ps1 -Check   solo informa del estado de cada enlace; sale con 1 si algo no esta bien
-
 #Requires -Version 5.1
+<#
+.SYNOPSIS
+  Links each configuration file in the repo to where its program reads it.
+
+.DESCRIPTION
+  Idempotent: a link that is already right is skipped, and a real file in the way is moved to
+  <file>.pre-dotfiles.bak first (with a timestamp if that backup already exists, so no version is
+  lost). It also creates ~/.claude/settings.json from 50-claude/settings.template.json, or adds the
+  template's missing hooks and deny/ask rules to an existing one, and turns on githooks/post-merge
+  so each git pull runs this script again.
+
+  Creating symlinks needs Developer Mode (Settings -> System -> For developers) or an elevated
+  shell; the script checks that before touching anything.
+
+.PARAMETER Check
+  Only reports the state of each link, the Claude Code hooks and rules and the post-merge hook.
+  Changes nothing; exits with 1 if something is wrong.
+
+.EXAMPLE
+  .\install.ps1
+  .\install.ps1 -Check
+#>
 [CmdletBinding()]
 param([switch]$Check)
 
@@ -23,20 +28,16 @@ $ErrorActionPreference = 'Stop'
 $DotfilesRoot = $PSScriptRoot
 $BackupSuffix = '.pre-dotfiles.bak'
 
-# Ubicacion REAL de la carpeta Documentos. No usar "$env:USERPROFILE\Documents":
-# esa carpeta puede estar redirigida a otra unidad (aqui esta en D:\Documentos) y
-# PowerShell busca sus perfiles en la ruta real, no en la de C:.
+# The REAL Documents folder, not "$env:USERPROFILE\Documents": it can be redirected to another
+# drive, and PowerShell looks for its profiles at the real path.
 $DocumentsPath = [Environment]::GetFolderPath('MyDocuments')
 
-# Mapeo de symlinks: definido en lib/links.ps1 (compartido con uninstall.ps1, para
-# que el mapeo viva en un solo sitio y no se desincronicen).
 . "$PSScriptRoot\lib\links.ps1"
 $Links = Get-DotfilesLink -DotfilesRoot $DotfilesRoot -DocumentsPath $DocumentsPath
 
-# Comprueba si el sistema puede crear symlinks SIN fallar a mitad del proceso:
-# un administrador siempre puede; un usuario normal solo con Developer Mode
-# (que habilita SeCreateSymbolicLinkPrivilege). Se valida ANTES de tocar nada,
-# para no mover archivos y luego quedarnos sin poder crear el enlace.
+# Checked BEFORE touching anything, so no file is moved aside and then left without its link:
+# an administrator can always create symlinks; a normal user only with Developer Mode (which
+# grants SeCreateSymbolicLinkPrivilege).
 function Test-SymlinkCapability {
 	$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 	if ($isAdmin) { return $true }
@@ -55,35 +56,31 @@ function Install-Symlink {
 	Write-Host "[$Label]" -ForegroundColor Magenta
 
 	if (-not (Test-Path $Source)) {
-		Write-Warning "  Source no existe en el repo: $Source - skip"
+		Write-Warning "  Source missing from the repo: $Source - skip"
 		return
 	}
 
-	# Asegurar que el directorio destino existe
 	$TargetDir = Split-Path $Target -Parent
 	if (-not (Test-Path $TargetDir)) {
-		Write-Host "  Creando directorio: $TargetDir" -ForegroundColor Cyan
+		Write-Host "  Creating folder: $TargetDir" -ForegroundColor Cyan
 		New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
 	}
 
-	# Si el target ya existe, evaluar.
 	$Backup = $null
 	$state = Get-DotfilesLinkState -Source $Source -Target $Target -DotfilesRoot $DotfilesRoot
 	if ($state -eq 'ok') {
-		Write-Host "  Ya symlinked correctamente - skip" -ForegroundColor Green
+		Write-Host "  Already linked - skip" -ForegroundColor Green
 		return
 	}
 	if ($state -eq 'stale') {
-		# Enlace a una ruta vieja del repo (se movio una carpeta): no guarda nada propio.
-		# Se quita el enlace con su Delete(), que nunca entra en la carpeta a la que apunta;
-		# Remove-Item sobre un enlace de carpeta puede atravesarlo.
-		Write-Host "  Enlace a una ruta vieja del repo: se actualiza" -ForegroundColor Cyan
+		# A link to an old repo path (a folder moved): it holds nothing of its own. Its Delete()
+		# never enters the folder it points to; Remove-Item on a folder link can go through it.
+		Write-Host "  Link to an old repo path: updating it" -ForegroundColor Cyan
 		(Get-Item -LiteralPath $Target -Force).Delete()
 	}
 	elseif ($state -eq 'foreign') {
-		# Backup del archivo existente. Si ya hay un .bak de una corrida anterior,
-		# se le anade la fecha en vez de sobrescribirlo o borrarlo sin respaldo:
-		# esa copia puede ser la unica de la config original.
+		# An existing .bak from an earlier run gets a timestamp instead of being overwritten: that
+		# copy may be the only one of the original config.
 		$Backup = "$Target$BackupSuffix"
 		if (Test-Path $Backup) {
 			$Backup = "$Backup." + (Get-Date -Format 'yyyyMMddHHmmss')
@@ -92,25 +89,25 @@ function Install-Symlink {
 		Move-Item -Path $Target -Destination $Backup -Force
 	}
 
-	# Crear el symlink. Si falla (p. ej. sin privilegios), restaurar el original
-	# desde el backup para no dejar al usuario sin su archivo.
+	# If the link fails (no privilege, for example), the original comes back from the backup so
+	# the user is not left without the file.
 	try {
 		New-Item -ItemType SymbolicLink -Path $Target -Target $Source -Force -ErrorAction Stop | Out-Null
-		Write-Host "  Symlink creado: $Target -> $Source" -ForegroundColor Green
+		Write-Host "  Symlink created: $Target -> $Source" -ForegroundColor Green
 	}
 	catch {
 		if ($Backup -and (Test-Path $Backup)) {
 			Move-Item -Path $Backup -Destination $Target -Force
-			Write-Warning "  Fallo al crear el symlink; se restauro el original desde $Backup"
+			Write-Warning "  Could not create the symlink; the original was restored from $Backup"
 		}
 		throw
 	}
 }
 
-# Anade a $Settings los hooks de $Template que no tiene registrados, comparando por
-# evento y archivo ("Stop: x.mjs"): un hook ya registrado en un evento puede faltar
-# en otro que la plantilla anadio despues. Va al grupo con el mismo matcher, o a uno
-# nuevo. Devuelve lo que anadio; el resto de $Settings no se toca.
+# Adds to $Settings the $Template hooks it does not register, compared by event and file
+# ("Stop: x.mjs"): a hook registered for one event can be missing from another the template added
+# later. It goes into the group with the same matcher, or a new one. Returns what it added; the
+# rest of $Settings is left as is.
 function Add-MissingHook {
 	param($Settings, $Template)
 	$added = @()
@@ -140,9 +137,9 @@ function Add-MissingHook {
 	$added
 }
 
-# Anade a $Settings las reglas `deny` y `ask` de $Template que no tiene. Nunca quita: las
-# reglas propias de cada maquina se quedan. Sin esto, una regla de seguridad nueva en la
-# plantilla no llegaba nunca a una maquina ya instalada. Devuelve lo que anadio.
+# Adds to $Settings the $Template `deny` and `ask` rules it lacks. It never removes: each
+# machine's own rules stay. Without this, a new safety rule in the template never reached an
+# installed machine. Returns what it added.
 function Add-MissingPermission {
 	param($Settings, $Template)
 	$added = @()
@@ -157,11 +154,10 @@ function Add-MissingPermission {
 	$added
 }
 
-# Claude Code solo ejecuta un hook si esta registrado en ~/.claude/settings.json.
-# Ese archivo es local (lleva la ruta del usuario y lo que Claude Code escribe en
-# cada maquina), asi que no se enlaza: si no existe, se crea desde la plantilla
-# con el home de esta maquina; si existe, solo se le anaden los hooks de la
-# plantilla que le faltan, con backup antes, y lo demas queda como estaba.
+# Claude Code only runs a hook registered in ~/.claude/settings.json. That file is local (it holds
+# the user's path and whatever Claude Code writes on each machine), so it is not linked: if it is
+# missing it is created from the template with this machine's home; if it exists, only the
+# template's missing hooks and rules are added, with a backup first.
 function Install-ClaudeSetting {
 	param(
 		[string]$TemplatePath,
@@ -170,17 +166,17 @@ function Install-ClaudeSetting {
 
 	Write-Host ""
 	Write-Host "[Claude settings.json]" -ForegroundColor Magenta
-	# JSON con barras normales: una barra invertida habria que escaparla.
+	# Forward slashes in JSON: a backslash would need escaping.
 	$template = [IO.File]::ReadAllText($TemplatePath, [Text.Encoding]::UTF8)
 	$template = $template.Replace('REEMPLAZA_RUTA_HOME', ($env:USERPROFILE -replace '\\', '/'))
-	# UTF-8 sin BOM: Claude Code no lee el archivo si empieza por un BOM.
+	# UTF-8 without BOM: Claude Code does not read the file if it starts with a BOM.
 	$utf8 = New-Object Text.UTF8Encoding $false
 
 	if (-not (Test-Path $SettingsPath)) {
 		$settingsDir = Split-Path $SettingsPath -Parent
 		if (-not (Test-Path $settingsDir)) { New-Item -ItemType Directory -Path $settingsDir -Force | Out-Null }
 		[IO.File]::WriteAllText($SettingsPath, $template, $utf8)
-		Write-Host "  Creado desde la plantilla: $SettingsPath" -ForegroundColor Green
+		Write-Host "  Created from the template: $SettingsPath" -ForegroundColor Green
 		return
 	}
 
@@ -189,38 +185,37 @@ function Install-ClaudeSetting {
 	$addedHooks = @(Add-MissingHook -Settings $settings -Template $templateObject)
 	$addedRules = @(Add-MissingPermission -Settings $settings -Template $templateObject)
 	if ($addedHooks.Count + $addedRules.Count -eq 0) {
-		Write-Host "  Ya existe, con los hooks y las reglas de la plantilla - skip" -ForegroundColor Green
+		Write-Host "  Already has the template's hooks and rules - skip" -ForegroundColor Green
 		return
 	}
 	$backup = "$SettingsPath$BackupSuffix." + (Get-Date -Format 'yyyyMMddHHmmss')
 	Copy-Item -LiteralPath $SettingsPath -Destination $backup
 	[IO.File]::WriteAllText($SettingsPath, ($settings | ConvertTo-Json -Depth 32), $utf8)
-	if ($addedHooks.Count -gt 0) { Write-Host "  Hooks registrados: $($addedHooks -join ', ')" -ForegroundColor Green }
-	if ($addedRules.Count -gt 0) { Write-Host "  Reglas anadidas: $($addedRules -join ', ')" -ForegroundColor Green }
-	Write-Host "  Backup del anterior: $backup" -ForegroundColor Yellow
+	if ($addedHooks.Count -gt 0) { Write-Host "  Hooks registered: $($addedHooks -join ', ')" -ForegroundColor Green }
+	if ($addedRules.Count -gt 0) { Write-Host "  Rules added: $($addedRules -join ', ')" -ForegroundColor Green }
+	Write-Host "  Backup of the previous file: $backup" -ForegroundColor Yellow
 }
 
-# Tras cada `git pull` del repo, git ejecuta githooks/post-merge, que vuelve a correr
-# este instalador: lo que traiga el pull (enlaces nuevos, hooks de Claude sin
-# registrar) queda aplicado sin hacer nada mas. La carpeta va versionada; git solo
-# necesita saber que la use.
+# After each `git pull` of the repo, git runs githooks/post-merge, which runs this installer
+# again: whatever the pull brings (new links, unregistered Claude hooks) is applied with no extra
+# step. The folder is versioned; git only needs to be told to use it.
 function Install-GitHook {
 	Write-Host ""
 	Write-Host "[git post-merge]" -ForegroundColor Magenta
 	if ((git -C $DotfilesRoot config --get core.hooksPath) -eq 'githooks') {
-		Write-Host "  Ya activo - skip" -ForegroundColor Green
+		Write-Host "  Already on - skip" -ForegroundColor Green
 		return
 	}
 	git -C $DotfilesRoot config core.hooksPath githooks
-	Write-Host "  Activado: cada git pull vuelve a correr install.ps1" -ForegroundColor Green
+	Write-Host "  Turned on: each git pull runs install.ps1 again" -ForegroundColor Green
 }
 
-# -Check: lo mismo que comprobaria una instalacion, sin tocar nada. Es la verificacion de que
-# los enlaces siguen bien tras mover algo en el repo o tras un git pull.
+# What an install would check, without touching anything: the way to confirm the links are
+# still right after moving something in the repo or after a git pull.
 function Test-Installation {
 	param([string]$SettingsPath, [string]$TemplatePath)
 	$bad = 0
-	$labels = @{ ok = 'ok'; missing = 'FALTA'; stale = 'RUTA VIEJA'; foreign = 'AJENO' }
+	$labels = @{ ok = 'ok'; missing = 'MISSING'; stale = 'STALE PATH'; foreign = 'FOREIGN' }
 	foreach ($link in $Links) {
 		$state = Get-DotfilesLinkState -Source $link.Source -Target $link.Target -DotfilesRoot $DotfilesRoot
 		if ($state -ne 'ok') { $bad++ }
@@ -230,37 +225,36 @@ function Test-Installation {
 	if (Test-Path $SettingsPath) {
 		$template = [IO.File]::ReadAllText($TemplatePath, [Text.Encoding]::UTF8) | ConvertFrom-Json
 		$settings = [IO.File]::ReadAllText($SettingsPath, [Text.Encoding]::UTF8) | ConvertFrom-Json
-		# Add-MissingHook trabaja sobre esta copia en memoria: el archivo no se toca.
+		# Add-MissingHook works on this in-memory copy: the file is not touched.
 		$missingHooks = @(Add-MissingHook -Settings $settings -Template $template)
-		if ($missingHooks.Count -eq 0) { Write-Host '  ok          hooks de Claude Code registrados' -ForegroundColor Green }
-		else { $bad++; Write-Host "  FALTA       hooks sin registrar: $($missingHooks -join ', ')" -ForegroundColor Red }
+		if ($missingHooks.Count -eq 0) { Write-Host '  ok          Claude Code hooks registered' -ForegroundColor Green }
+		else { $bad++; Write-Host "  MISSING     unregistered hooks: $($missingHooks -join ', ')" -ForegroundColor Red }
 		$missingRules = @(Add-MissingPermission -Settings $settings -Template $template)
-		if ($missingRules.Count -eq 0) { Write-Host '  ok          reglas deny/ask de la plantilla' -ForegroundColor Green }
-		else { $bad++; Write-Host "  FALTA       reglas de la plantilla: $($missingRules -join ', ')" -ForegroundColor Red }
+		if ($missingRules.Count -eq 0) { Write-Host '  ok          template deny/ask rules' -ForegroundColor Green }
+		else { $bad++; Write-Host "  MISSING     template rules: $($missingRules -join ', ')" -ForegroundColor Red }
 	}
-	else { $bad++; Write-Host "  FALTA       $SettingsPath" -ForegroundColor Red }
-	if ((git -C $DotfilesRoot config --get core.hooksPath) -eq 'githooks') { Write-Host '  ok          git post-merge activo' -ForegroundColor Green }
-	else { $bad++; Write-Host '  FALTA       git post-merge (core.hooksPath)' -ForegroundColor Red }
+	else { $bad++; Write-Host "  MISSING     $SettingsPath" -ForegroundColor Red }
+	if ((git -C $DotfilesRoot config --get core.hooksPath) -eq 'githooks') { Write-Host '  ok          git post-merge on' -ForegroundColor Green }
+	else { $bad++; Write-Host '  MISSING     git post-merge (core.hooksPath)' -ForegroundColor Red }
 	Write-Host ''
-	if ($bad -eq 0) { Write-Host "Todo instalado: $($Links.Count) enlaces, hooks y post-merge." -ForegroundColor Green; return $true }
-	Write-Host "$bad comprobaciones fallidas. Corre .\install.ps1 para arreglarlas." -ForegroundColor Red
+	if ($bad -eq 0) { Write-Host "All installed: $($Links.Count) links, hooks and post-merge." -ForegroundColor Green; return $true }
+	Write-Host "$bad checks failed. Run .\install.ps1 to fix them." -ForegroundColor Red
 	return $false
 }
 
-Write-Host "=== Instalador dotfiles-windows ===" -ForegroundColor Magenta
-Write-Host "Root del repo: $DotfilesRoot" -ForegroundColor Gray
+Write-Host "=== dotfiles-windows installer ===" -ForegroundColor Magenta
+Write-Host "Repo root: $DotfilesRoot" -ForegroundColor Gray
 
 $settingsPath = "$env:USERPROFILE\.claude\settings.json"
 $templatePath = "$DotfilesRoot\50-claude\settings.template.json"
 if ($Check) {
-	Write-Host 'Modo -Check: solo se informa, no se cambia nada.' -ForegroundColor Yellow
+	Write-Host '-Check mode: report only, nothing changes.' -ForegroundColor Yellow
 	if (Test-Installation -SettingsPath $settingsPath -TemplatePath $templatePath) { exit 0 }
 	exit 1
 }
 
-# Falla temprano y limpio si no se pueden crear symlinks, antes de mover nada.
 if (-not (Test-SymlinkCapability)) {
-	Write-Error "No se pueden crear symlinks. Activa Developer Mode (Settings -> Privacy & security -> For developers) o ejecuta PowerShell como administrador. No se toco ningun archivo."
+	Write-Error "Cannot create symlinks. Turn on Developer Mode (Settings -> System -> For developers) or run PowerShell as administrator. No file was touched."
 	exit 1
 }
 
@@ -272,6 +266,6 @@ Install-ClaudeSetting -TemplatePath $templatePath -SettingsPath $settingsPath
 Install-GitHook
 
 Write-Host ""
-Write-Host "=== Instalacion completa ===" -ForegroundColor Magenta
-Write-Host "Comprueba el estado cuando quieras con: .\install.ps1 -Check" -ForegroundColor Cyan
+Write-Host "=== Install complete ===" -ForegroundColor Magenta
+Write-Host "Check the state any time with: .\install.ps1 -Check" -ForegroundColor Cyan
 Write-Host ""
