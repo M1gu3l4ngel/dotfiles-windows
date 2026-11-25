@@ -20,7 +20,15 @@
 - Apps del entorno por **winget** (no choco, no scoop, no instaladores manuales).
 - Módulos de PowerShell: `Install-Module -Scope CurrentUser` (sin admin).
 - Fuente: **CaskaydiaCove Nerd Font** (tabla `$NerdFonts`, verificada por SHA-256).
-- WSL Ubuntu comparte el mismo prompt.
+- WSL: `bootstrap.ps1` instala `$WslDistro` (Ubuntu 26.04). Su `.bashrc` es el de
+  serie: este repo aún no le configura el prompt (tarea en el backlog).
+
+## Dónde vive el repo
+
+- En `~\dotfiles` (`C:`), excepción explícita a la regla de que el trabajo va en
+  `D:`: `~` existe en cualquier PC, también en una de un solo disco, y es la ruta
+  que dan el README y la guía de PC nueva. El perfil y `.bashrc` sacan la ruta
+  real de su enlace, así que clonarlo en otra carpeta también funciona.
 
 ## Prompt compartido con Parrot
 
