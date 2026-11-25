@@ -26,7 +26,9 @@ for (const { file, maxLines } of BUDGETS) {
   try {
     lines = readFileSync(join(HERE, file), 'utf8').split(/\r?\n/).length;
   } catch {
-    console.log(`  ?  ${file} — no encontrado`);
+    // Un archivo vigilado que falta (renombrado, movido) dejaría su presupuesto sin vigilar en silencio.
+    failed = true;
+    console.log(`  XX  ${file} — no encontrado: actualiza BUDGETS`);
     continue;
   }
   const ok = lines <= maxLines;
