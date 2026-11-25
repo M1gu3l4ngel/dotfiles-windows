@@ -92,6 +92,10 @@ SSH and GPG keys are secrets and are not automated. Follow
 [gpg-signing.md](gpg-signing.md) to create them, upload them to GitHub and sign
 commits.
 
+The GitHub organizations you work with (your own, clients, work) go in
+`~/.gitconfig.local`, also by hand, so git picks the right account for each remote
+without asking: see [15-git/README.md](../15-git/README.md#what-stays-on-the-machine).
+
 ## 8. Optional
 
 - Other development tools, all at once (or pick from

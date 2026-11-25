@@ -93,6 +93,10 @@ Las claves SSH y GPG son secretos y no se automatizan. Sigue
 [gpg-signing.es.md](gpg-signing.es.md) para crearlas, subirlas a GitHub y
 firmar los commits.
 
+Las organizaciones de GitHub con las que trabajas (tuyas, de clientes, del
+trabajo) van en `~/.gitconfig.local`, también a mano, para que git elija la cuenta
+de cada remoto sin preguntar: ver [15-git/README.es.md](../15-git/README.es.md#lo-que-se-queda-en-la-máquina).
+
 ## 8. Opcional
 
 - Las demás herramientas de desarrollo, todas de golpe (o elige en

@@ -15,13 +15,17 @@ folder: every repository lives in the same `D:\Dev\projects`.
 
 ## What stays on the machine
 
-This repository is public, so client and work organizations and their accounts never enter it,
-and neither does the signing key, which is specific to each machine. They live in
-`~/.gitconfig.local`, which `gitconfig` includes last and git skips if it is missing:
+This repository is public, so no organization enters it: neither your own organizations nor
+client and work ones, nor their accounts, and neither does the signing key, which is specific to
+each machine. They live in `~/.gitconfig.local`, which `gitconfig` includes last and git skips if
+it is missing. On a new PC, write it by hand: an organization of yours points to
+`~/.gitconfig-personal`, and a work one to its own account file:
 
 ```ini
 [user]
 	signingkey = <fingerprint>
+[includeIf "hasconfig:remote.*.url:https://github.com/your-org/**"]
+	path = ~/.gitconfig-personal
 [includeIf "hasconfig:remote.*.url:https://github.com/example-org/**"]
 	path = ~/.gitconfig-example
 ```

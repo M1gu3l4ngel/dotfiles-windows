@@ -16,9 +16,7 @@
 # D:/Dev/projects. Without this, Git Credential Manager asks which one to use on every fetch.
 [includeIf "hasconfig:remote.*.url:https://github.com/M1gu3l4ngel/**"]
 	path = ~/.gitconfig-personal
-[includeIf "hasconfig:remote.*.url:https://github.com/creaskar/**"]
-	path = ~/.gitconfig-personal
-# What does not belong in a public repo (client or work organizations and their accounts) lives
-# in this machine-local file, outside the repo. If it does not exist, git ignores it.
+# What does not belong in a public repo (any organization, own, client or work, and its account)
+# lives in this machine-local file, outside the repo. If it does not exist, git ignores it.
 [include]
 	path = ~/.gitconfig.local

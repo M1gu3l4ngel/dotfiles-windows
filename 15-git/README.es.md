@@ -15,13 +15,17 @@ todos los repos viven en el mismo `D:\Dev\projects`.
 
 ## Lo que se queda en la máquina
 
-Este repo es público, así que las organizaciones de clientes y del trabajo y sus cuentas nunca
-entran en él, ni la clave de firma, que es de cada máquina. Viven en `~/.gitconfig.local`, que
-`gitconfig` incluye al final y git se salta si no existe:
+Este repo es público, así que ninguna organización entra en él: ni las tuyas ni las de clientes
+o del trabajo, ni sus cuentas, ni la clave de firma, que es de cada máquina. Viven en
+`~/.gitconfig.local`, que `gitconfig` incluye al final y git se salta si no existe. En una PC
+nueva se escribe a mano: una organización tuya apunta a `~/.gitconfig-personal`, y una del
+trabajo a su propio archivo de cuenta:
 
 ```ini
 [user]
 	signingkey = <fingerprint>
+[includeIf "hasconfig:remote.*.url:https://github.com/your-org/**"]
+	path = ~/.gitconfig-personal
 [includeIf "hasconfig:remote.*.url:https://github.com/example-org/**"]
 	path = ~/.gitconfig-example
 ```
