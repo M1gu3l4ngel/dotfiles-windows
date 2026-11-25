@@ -95,18 +95,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 # Fase 6 — Capa de Claude universal (Windows y Linux)
 
-## Tabla de Troubleshooting del README
-
-**Plataforma:** Repositorio.
-
-**Prioridad:** P2.
-
-**Requiere:** nada.
-
-**Estado:** en curso.
-
-- [ ] La fila de fnm en `README.md` y `README.es.md` termina en `||` y se come la de «Unverified»: separarlas
-
 ## Textos neutros en el código compartido
 
 **Plataforma:** Claude Code.
@@ -114,6 +102,8 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 **Prioridad:** Mejora.
 
 **Requiere:** nada.
+
+**Estado:** en curso.
 
 - [ ] El `reason` de `block-shell-edits.mjs` no nombra `D:\Dev\scratch`
 - [ ] El skill `new-repo` da la carpeta de proyectos y el check de docs sin rutas de Windows
@@ -145,7 +135,7 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 # Lo hace el dueño
 
-- [ ] Copiar `50-claude/hooks/command-rules.mjs` al proyecto que guarda su copia idéntica cuando cierre el bloque «Hook de comandos: pull con fast-forward pregunta», para que su check `hook-rules-copy` vuelva a pasar
+- [ ] Copiar `50-claude/hooks/command-rules.mjs` (commit `3f13e95`, sha256 `b972400a…`) al proyecto que guarda su copia idéntica, para que su check `hook-rules-copy` vuelva a pasar
 
 # Aplazado — cada uno con el evento que lo dispara
 

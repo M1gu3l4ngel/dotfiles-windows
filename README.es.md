@@ -206,7 +206,8 @@ terminal: `Remove-Item Env:POSH_NAME` (PowerShell) o `unset POSH_NAME`
 | El prompt no aparece en una terminal nueva | El perfil no se cargó | `. $PROFILE`, o reabrir la terminal |
 | Iconos como cuadrados | Falta CaskaydiaCove Nerd Font | Re-ejecutar `bootstrap.ps1` |
 | `fnm` no reconocido tras el bootstrap | PATH no refrescado | Reabrir PowerShell y volver a correr `bootstrap.ps1` |
-| `Can't find an installed Node version matching …` al entrar en una carpeta | El repo pide una versión de Node que no tienes | Contesta `y` y fnm la instala; `N` deja la actual || GitHub muestra "Unverified" | El UID de la clave GPG no tiene el email noreply | [docs/gpg-signing.es.md](docs/gpg-signing.es.md) |
+| `Can't find an installed Node version matching …` al entrar en una carpeta | El repo pide una versión de Node que no tienes | Contesta `y` y fnm la instala; `N` deja la actual |
+| GitHub muestra "Unverified" | El UID de la clave GPG no tiene el email noreply | [docs/gpg-signing.es.md](docs/gpg-signing.es.md) |
 
 ## Documentación y contribución
 
