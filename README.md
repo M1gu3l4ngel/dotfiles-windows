@@ -48,7 +48,8 @@ without breaking anything (for example after a reboot).
 | 5 | WSL Ubuntu 26.04 (requires a reboot) |
 | 6 | git: name, noreply email and defaults |
 | 7 | Configuration symlinks, and the Claude Code `settings.json` if the machine has none (`install.ps1`) |
-| 8 | Shows the manual steps that involve secrets (GPG/SSH) |
+| 8 | VS Code extensions from `vscode/extensions.txt` (only the missing ones) |
+| 9 | Shows the manual steps that involve secrets (GPG/SSH) |
 
 It only installs the **environment**. Personal apps are left untouched (see `apps/`).
 
@@ -86,11 +87,6 @@ It does not uninstall apps or touch environment variables or WSL.
 ## Manual steps (involve secrets, not automated)
 
 1. SSH and GPG keys, and commit signing: [docs/gpg-signing.md](docs/gpg-signing.md).
-2. Restore the VS Code extensions:
-
-   ```powershell
-   Get-Content .\vscode\extensions.txt | ForEach-Object { code --install-extension $_ }
-   ```
 
 ## Structure
 
@@ -140,8 +136,7 @@ first time), and that covers the rest:
   `.\bootstrap.ps1` yourself: installing programs is not automatic.
 
 What is not versioned does not travel: keys, `~/.claude/entorno.md` and
-`POSH_NAME`. New VS Code extensions are installed with the command in the
-manual steps.
+`POSH_NAME`. New VS Code extensions are installed by running `.\bootstrap.ps1` again.
 
 ## Application snapshot
 

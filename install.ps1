@@ -247,9 +247,5 @@ Install-GitHook
 
 Write-Host ""
 Write-Host "=== Instalacion completa ===" -ForegroundColor Magenta
-Write-Host ""
-Write-Host "Pasos manuales restantes (ver README.es.md):" -ForegroundColor Cyan
-Write-Host "  1. Configurar git con tu nombre, email y defaults"
-Write-Host "  2. Restaurar extensiones de VS Code:"
-Write-Host "     Get-Content `"$DotfilesRoot\vscode\extensions.txt`" | ForEach-Object { code --install-extension `$_ }"
+Write-Host "Comprueba el estado cuando quieras con: .\install.ps1 -Check" -ForegroundColor Cyan
 Write-Host ""

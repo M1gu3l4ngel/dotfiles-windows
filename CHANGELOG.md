@@ -66,6 +66,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `bootstrap.ps1` installs the missing VS Code extensions from
+  `vscode/extensions.txt`; it was a manual step. `install.ps1` no longer ends
+  with manual steps that `bootstrap.ps1` already covers.
 - `bootstrap.ps1` installs WSL with Ubuntu 26.04 (`$WslDistro`); 20.04 is no
   longer in the `wsl --install` catalog and the step failed on a new PC.
 - `install.ps1 -Check` reports the state of each link, the Claude Code hooks

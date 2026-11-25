@@ -67,6 +67,9 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `bootstrap.ps1` instala las extensiones de VS Code que falten de
+  `vscode/extensions.txt`; era un paso manual. `install.ps1` ya no termina con
+  pasos manuales que `bootstrap.ps1` ya cubre.
 - `bootstrap.ps1` instala WSL con Ubuntu 26.04 (`$WslDistro`); la 20.04 ya no
   está en el catálogo de `wsl --install` y el paso fallaba en una PC nueva.
 - `install.ps1 -Check` informa del estado de cada enlace, de los hooks de

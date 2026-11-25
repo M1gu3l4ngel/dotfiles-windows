@@ -296,7 +296,27 @@ function Invoke-Step7Symlink {
 	& "$DotfilesRoot\install.ps1"
 }
 
-function Invoke-Step8Manual {
+# Va despues de los symlinks: settings.json ya esta enlazado cuando las extensiones arrancan.
+# Idempotente: solo instala las de vscode/extensions.txt que `code --list-extensions` no tiene.
+function Invoke-Step8Extension {
+	Step 'Extensiones de VS Code (vscode/extensions.txt)'
+	Update-SessionPath
+	if (-not (Get-Command code -ErrorAction SilentlyContinue)) {
+		Warn 'code aun no esta en el PATH de esta sesion. Reabre PowerShell y vuelve a correr bootstrap.ps1.'
+		return
+	}
+	$wanted = Get-Content "$DotfilesRoot\vscode\extensions.txt" | Where-Object { $_.Trim() }
+	$installed = @(code --list-extensions 2>$null)
+	$missing = @($wanted | Where-Object { $installed -notcontains $_ })
+	if ($missing.Count -eq 0) { Ok "Las $($wanted.Count) extensiones ya estan instaladas"; return }
+	foreach ($ext in $missing) {
+		if ($DryRun) { Would "code --install-extension $ext"; continue }
+		code --install-extension $ext 2>&1 | Out-Null
+		if ($LASTEXITCODE -eq 0) { Ok "$ext instalada" } else { Warn "code devolvio $LASTEXITCODE para $ext - revisar a mano" }
+	}
+}
+
+function Invoke-Step9Manual {
 	Step 'Listo. Pasos MANUALES (secretos - no se automatizan)'
 	$lines = @(
 		'1. Reinicia si se instalo WSL o Docker por primera vez.',
@@ -310,12 +330,9 @@ function Invoke-Step8Manual {
 		'     git config --global user.signingkey <fingerprint>',
 		'     git config --global commit.gpgsign true',
 		'     git config --global gpg.program "C:\Program Files\GnuPG\bin\gpg.exe"',
-		'     Sube la clave publica a GitHub. Detalle en docs/gpg-signing.es.md.',
-		'',
-		'4. Extensiones de VS Code:'
+		'     Sube la clave publica a GitHub. Detalle en docs/gpg-signing.es.md.'
 	)
 	$lines | ForEach-Object { Write-Host "    $_" -ForegroundColor Gray }
-	Write-Host "         Get-Content `"$DotfilesRoot\vscode\extensions.txt`" | ForEach-Object { code --install-extension `$_ }" -ForegroundColor Gray
 }
 
 # =====================================================================
@@ -333,6 +350,7 @@ Invoke-Step4Node $drive
 Invoke-Step5Wsl
 Invoke-Step6Git
 Invoke-Step7Symlink
-Invoke-Step8Manual
+Invoke-Step8Extension
+Invoke-Step9Manual
 
 Write-Host "`n=== bootstrap completo ===" -ForegroundColor Magenta
