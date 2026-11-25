@@ -87,8 +87,11 @@ export function readDoc(text) {
 			doc.anchors.add(slug(line.replace(/^#+/, ""), seen));
 		} else if (stripped.startsWith("|")) doc.rows++;
 		else if (/^\s*([-*]|\d+\.) /.test(line)) doc.items++;
-		for (const match of line.matchAll(/\]\(([^)\s]+)\)/g)) {
-			if (!/^[a-z]+:/.test(match[1])) doc.links.push(match[1]);
+		// Markdown links and the HTML ones a README header uses (`<a href>`, `<img src>`, `<source
+		// srcset>`), so a logo or a header link that breaks is caught too.
+		for (const match of line.matchAll(/\]\(([^)\s]+)\)|\b(?:href|src|srcset)="([^"\s]+)"/g)) {
+			const target = match[1] ?? match[2];
+			if (!/^[a-z]+:/.test(target)) doc.links.push(target);
 		}
 	}
 	return doc;

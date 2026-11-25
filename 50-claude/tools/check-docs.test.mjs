@@ -58,6 +58,14 @@ describe("checkDocs", () => {
 		assert.match(problems, /anchor #no-existe does not exist/);
 	});
 
+	it("checks the HTML links and images of a README header", () => {
+		const header = (/** @type {string} */ anchor) => [`<img src="logo.svg" alt="x">`, `<a href="#${anchor}">x</a>`];
+		const ok = check({ "README.md": [...EN, ...header("setup")], "README.es.md": [...ES, ...header("instalación")] });
+		assert.match(ok.problems.join("\n"), /broken link to logo\.svg/);
+		const problems = check({ "README.md": [...EN, ...header("nope")], "README.es.md": [...ES, ...header("instalación")] }).problems;
+		assert.match(problems.join("\n"), /anchor #nope does not exist in README\.md/);
+	});
+
 	it("reports a broken link", () => {
 		const problems = check({ "README.md": [...EN, "[x](missing.md)"], "README.es.md": [...ES, "[x](missing.md)"] }).problems;
 		assert.match(problems.join("\n"), /broken link to missing\.md/);

@@ -38,6 +38,12 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- La cabecera del README sigue la receta de `new-repo`, como los otros repos del dueño: logo con
+  su versión clara y oscura, descripción centrada, una fila de enlaces y badges. La regla global
+  `repo-conventions` pide ahora esa cabecera, comparada con otro repo del mismo dueño.
+- `check-docs.mjs` revisa también los enlaces e imágenes HTML (`href`, `src`, `srcset`) de la
+  cabecera de un README.
+
 - `check-comments.mjs` revisa también los nombres de los tests (node:test, Jest, Vitest, Pester,
   bats) e imprime sus exenciones también cuando falla.
 

@@ -1,13 +1,35 @@
 [English](README.md) | **Español**
 
-# dotfiles-windows
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/dotfiles-windows-lockup-white.svg">
+    <img src="assets/dotfiles-windows-lockup-dark.svg" alt="Dotfiles Windows" width="360">
+  </picture>
+</p>
 
-Entorno de desarrollo de Windows 11 en un comando: PowerShell 7 con oh-my-posh,
-Windows Terminal, VS Code, WSL, el toolchain de desarrollo y una capa global de
-Claude Code. Idempotente y con descargas verificadas.
+<p align="center">
+  Entorno de desarrollo de Windows 11 en un comando.<br>
+  PowerShell 7 con oh-my-posh, Windows Terminal, VS Code, WSL, el toolchain y una capa global de
+  Claude Code, idempotente y con descargas verificadas.
+</p>
 
-[![CI](https://github.com/M1gu3l4ngel/dotfiles-windows/actions/workflows/ci.yml/badge.svg)](https://github.com/M1gu3l4ngel/dotfiles-windows/actions/workflows/ci.yml)
-[![Licencia: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<p align="center">
+  <a href="#reproducir-en-un-comando">Instalar</a> ·
+  <a href="#qué-hay-en-el-repo">Estructura</a> ·
+  <a href="#cómo-funciona">Cómo funciona</a> ·
+  <a href="docs/README.es.md">Documentación</a> ·
+  <a href="CONTRIBUTING.es.md">Contribuir</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/M1gu3l4ngel/dotfiles-windows/actions/workflows/ci.yml"><img src="https://github.com/M1gu3l4ngel/dotfiles-windows/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/Windows-11-0078D4?logo=windows11&logoColor=white" alt="Windows 11">
+  <img src="https://img.shields.io/badge/PowerShell-7-5391FE?logo=powershell&logoColor=white" alt="PowerShell 7">
+  <img src="https://img.shields.io/badge/Node.js-24-5FA04E?logo=nodedotjs&logoColor=white" alt="Node.js 24">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="Licencia: MIT"></a>
+</p>
+
+---
 
 ![Escritorio](assets/preview.png)
 

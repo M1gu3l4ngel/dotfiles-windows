@@ -8,6 +8,9 @@ Todo repo mío (personal, de una organización propia o de un empleador) tiene:
   privado, si el código es de un empleador o cliente.
 - README y CHANGELOG en pareja, CONTRIBUTING si es compartido, y diagrama Mermaid
   en el README si hay más de dos piezas que se relacionan.
+- Cabecera del README con la receta del skill `new-repo` (logo claro y oscuro en
+  `<picture>`, descripción centrada, fila de enlaces, badges), igual que la de
+  los otros repos del mismo dueño: se compara con una de ellas, no de memoria.
 - `.editorconfig`, `.prettierrc.json` y `.gitattributes` propios.
 - `CLAUDE.md` del repo: qué es, stack, comandos, convenciones y enlace a sus docs.
 - CI mínimo: lint, formato, tests y el check de docs bilingües.

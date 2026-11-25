@@ -37,6 +37,12 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- The README header follows the `new-repo` recipe, like the owner's other repos: logo with its
+  light and dark versions, centered description, a row of links and badges. The global
+  `repo-conventions` rule now asks for that header, compared with another repo of the same owner.
+- `check-docs.mjs` also checks the HTML links and images (`href`, `src`, `srcset`) of a README
+  header.
+
 - `check-comments.mjs` also checks test names (node:test, Jest, Vitest, Pester, bats), and prints
   its exemptions when it fails too.
 

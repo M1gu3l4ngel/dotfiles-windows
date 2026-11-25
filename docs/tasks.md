@@ -82,6 +82,13 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] Tras el push, el CI pasa con `Shared tools` y `Bilingual docs` en verde
 - [ ] En Parrot, `install.sh` enlaza la capa desde `links.json` y llama a `install-settings.mjs`
 
+## Cabecera del README con logo
+
+**Plataforma:** Repositorio.
+
+- [ ] Tras el push, el README en GitHub muestra el logo oscuro con el tema claro y el blanco con el tema oscuro, en inglés y en español
+- [ ] Los enlaces de la cabecera (Install, Structure, How it works, Documentation, Contributing) llevan a su sección en los dos idiomas
+
 ## Código en inglés
 
 **Plataforma:** Repositorio.
