@@ -73,6 +73,8 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `20-terminal/`: la configuración de Windows Terminal pasa de
+  `windows-terminal/` a una carpeta numerada con su README.
 - `10-shell/`: los perfiles de PowerShell y Git Bash y el tema del prompt pasan
   de `powershell/`, `bash/` y `oh-my-posh/` a una carpeta numerada con su
   README. `install.ps1` reemplaza solo los enlaces viejos.

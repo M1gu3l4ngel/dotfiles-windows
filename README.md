@@ -98,7 +98,7 @@ It does not uninstall apps or touch environment variables or WSL.
 | `lib/` | Shared code (the symlink mapping) |
 | `githooks/` | `post-merge`: re-runs `install.ps1` after each `git pull` |
 | `10-shell/` | PowerShell and Git Bash profiles and the prompt theme (`capr4n`, shared with Parrot) ([10-shell/README.md](10-shell/README.md)) |
-| `windows-terminal/` | Windows Terminal settings |
+| `20-terminal/` | Windows Terminal settings ([20-terminal/README.md](20-terminal/README.md)) |
 | `vscode/` | Settings, keybindings and the extension list |
 | `format/` | Global Prettier and EditorConfig style for projects without their own ([docs/formatting.md](docs/formatting.md)) |
 | `apps/` | Reference snapshot of applications |

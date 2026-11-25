@@ -26,6 +26,7 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 **Plataforma:** Shell.
 
 - [ ] [Esta PC] Tras un `git pull` en otra PC, el `post-merge` rehace los enlaces y el prompt sigue igual
+- [ ] [Esta PC] Windows Terminal abre con PowerShell 7, Monokai Soda y la fuente de siempre
 
 ## Panel de tareas
 
@@ -53,7 +54,6 @@ Cada movimiento lleva su README en pareja, actualiza `lib/links.ps1`,
 `.prettierignore`, `tools/check.ps1` y la documentación, y se verifica con
 `.\install.ps1 -Check`.
 
-- [ ] `20-terminal`: `windows-terminal/`
 - [ ] `30-vscode`: `vscode/`
 - [ ] `40-format`: `format/`
 - [ ] `50-claude`: `claude/`, con `entorno.template.md` y sin la afirmación de que es idéntico byte a byte al de Parrot

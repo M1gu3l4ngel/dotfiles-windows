@@ -71,7 +71,7 @@ function Get-DotfilesLink {
 		# El tema de oh-my-posh no se enlaza: el perfil de PowerShell y .bashrc lo leen
 		# directamente del repo.
 		@{
-			Source = "$DotfilesRoot\windows-terminal\settings.json"
+			Source = "$DotfilesRoot\20-terminal\windows-terminal\settings.json"
 			Target = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
 			Label  = 'Windows Terminal settings'
 		},
