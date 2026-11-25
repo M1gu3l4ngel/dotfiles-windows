@@ -31,6 +31,11 @@
   `D:`: `~` existe en cualquier PC, también en una de un solo disco, y es la ruta
   que dan el README y la guía de PC nueva. El perfil y `.bashrc` sacan la ruta
   real de su enlace, así que clonarlo en otra carpeta también funciona.
+- El clon de [dotfiles-parrot](https://github.com/M1gu3l4ngel/dotfiles-parrot)
+  en esta PC vive al lado, en `~\dotfiles-parrot`, por la misma razón: sirve
+  para editar las copias compartidas (`40-format/`, el prompt) en el mismo paso.
+  Esta PC tiene `core.autocrlf=true` y Parrot no fija LF, así que su copia de
+  trabajo sale en CRLF; en el repo sigue en LF.
 
 ## Prompt compartido con Parrot
 
