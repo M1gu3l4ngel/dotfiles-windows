@@ -52,7 +52,9 @@ function Uninstall-Symlink {
 
 	if ($isOurs) {
 		if ($DryRun) { Would "quitaria el symlink: $Target" }
-		else { Remove-Item $Target -Force; Write-Host "  Symlink quitado" -ForegroundColor Green }
+		# Delete() del enlace quita solo el enlace: Remove-Item sobre un enlace de carpeta
+		# puede atravesarlo y borrar lo que hay en el repo.
+		else { $item.Delete(); Write-Host "  Symlink quitado" -ForegroundColor Green }
 
 		if ($hasBackup) {
 			if ($DryRun) { Would "restauraria el original: $backup -> $Target" }

@@ -38,11 +38,11 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 - Saber algo y no decirlo es el fallo: un hueco de verificación o una limitación conocida se avisa la primera vez que aparece, y al cerrar se repite lo que quedó sin resolver.
 
 ## Artefacto de tareas
-- Si el repo trae `pnpm generate:panel` (el «Panel <proyecto>»), el panel es una vista de `docs/tasks.md` y `docs/backlog.md`: «En curso» y «Por probar» se escriben en `tasks.md` y se regenera y republica; la página nunca se edita a mano, y lo de abajo se cumple en el `.md`.
-- Si no, un trabajo de varios bloques empieza creando (o reutilizando) su artefacto de tareas desde `~/dotfiles/claude/tasks-artifact.template.html`, antes de tocar código. Se rellena el contenido y **no se rediseña**.
-- Se republica al cerrar cada bloque o al cambiar las tareas del repo, que siguen siendo la fuente de verdad. Lo que le toca probar al usuario no se quita hasta que diga que lo probó.
-- **«En curso» marca solo lo que se está haciendo ahora.** Al empezar una tarea se marca su grupo y se desmarca el anterior, en la misma publicación; nunca queda la marca en un grupo que no se está tocando ni un trabajo en marcha sin ella.
-- **«Por probar» se llena al cerrar cada tarea** con lo que el usuario debe ver en el navegador, un ítem por comprobación; no va en notas sueltas de otros grupos.
+- El panel de tareas («Panel <proyecto>», `~/.claude/panel/`) es una vista de `docs/tasks.md` y `docs/backlog.md`: el estado se escribe en `tasks.md`, se genera (`node ~/.claude/panel/generate.mjs`, o el `pnpm generate:panel` del repo si lo trae) y se republica; la página nunca se edita a mano. Formato: el README de esa carpeta.
+- Un trabajo de varios bloques en un repo sin `.claude/panel.json` empieza con `node ~/.claude/panel/init.mjs`, antes de tocar código.
+- Se republica al cerrar cada bloque o al cambiar las tareas. Lo que le toca probar al usuario no se quita hasta que diga que lo probó.
+- **`**Estado:** en curso` marca solo lo que se está haciendo ahora**, en un solo bloque: al empezar otro se mueve, en la misma publicación.
+- **«Por probar» se llena al cerrar cada tarea** con lo que el usuario debe comprobar, una casilla por comprobación y su dispositivo delante si no vale en todos.
 
 ## Formato
 - El estilo de un proyecto es su `.prettierrc` y su `.editorconfig`; los globales (dotfiles, `format/`, enlazados en `~` y en `D:\Dev`) solo cubren proyectos sin configuración propia. Al crear un proyecto compartido o con CI, dale la suya.

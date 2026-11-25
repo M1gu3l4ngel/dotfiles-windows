@@ -75,7 +75,10 @@ function Install-Symlink {
 	}
 	if ($state -eq 'stale') {
 		# Enlace a una ruta vieja del repo (se movio una carpeta): no guarda nada propio.
+		# Se quita el enlace con su Delete(), que nunca entra en la carpeta a la que apunta;
+		# Remove-Item sobre un enlace de carpeta puede atravesarlo.
 		Write-Host "  Enlace a una ruta vieja del repo: se actualiza" -ForegroundColor Cyan
+		(Get-Item -LiteralPath $Target -Force).Delete()
 	}
 	elseif ($state -eq 'foreign') {
 		# Backup del archivo existente. Si ya hay un .bak de una corrida anterior,

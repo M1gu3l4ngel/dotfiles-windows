@@ -31,6 +31,26 @@
         "hooks": [
           { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/hooks/reply-in-spanish.mjs\"", "timeout": 10 }
         ]
+      },
+      {
+        "matcher": "Artifact",
+        "hooks": [
+          { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/panel/hooks/panel-record-publish.mjs\"", "timeout": 10 }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/panel/hooks/panel-remind-refresh.mjs\"", "timeout": 10 }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|clear",
+        "hooks": [
+          { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/panel/hooks/panel-session-start.mjs\"", "timeout": 10 }
+        ]
       }
     ],
     "Stop": [

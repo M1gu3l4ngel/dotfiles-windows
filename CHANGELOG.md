@@ -10,6 +10,12 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- Global task panel (`claude/panel/`, linked to `~/.claude/panel`): an
+  artifact generated from `docs/tasks.md` and `docs/backlog.md` of any repo
+  that turns it on with `.claude/panel.json`, with its parser and tests, the
+  `init`, `check` and `generate` commands and three hooks that warn when the
+  published panel goes stale. It replaces `claude/tasks-artifact.template.html`.
+  `tools/check.ps1` runs its tests.
 - `apps/winget-dev.json`: Pandoc and MiKTeX (documents to PDF); Python moves to
   3.14 and SQL Server Management Studio is removed, no longer installed.
 - `install.ps1` creates `~/.claude/settings.json` from the template when the

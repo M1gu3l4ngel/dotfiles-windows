@@ -110,6 +110,13 @@ function Get-DotfilesLink {
 			Target = "$env:USERPROFILE\.claude\hooks\reply-in-spanish.mjs"
 			Label  = 'Claude hook reply-in-spanish'
 		},
+		# Panel de tareas: la carpeta entera (pagina, tema, generador y sus hooks), porque los
+		# modulos se importan entre si por ruta relativa.
+		@{
+			Source = "$DotfilesRoot\claude\panel"
+			Target = "$env:USERPROFILE\.claude\panel"
+			Label  = 'Claude panel de tareas'
+		},
 		# Estilo global (copia de dotfiles-parrot, no un enlace a el): solo cubre
 		# proyectos sin .prettierrc ni .editorconfig propios.
 		@{

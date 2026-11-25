@@ -18,7 +18,7 @@ máquina se queda local (no se versiona).
 | `hooks/reply-in-spanish.mjs` | `~/.claude/hooks/reply-in-spanish.mjs` | Hook `PostToolUse` y `Stop` que mantiene las respuestas en español: tras cada herramienta avisa a Claude si lo último que escribió está en inglés, y bloquea un turno que termina en inglés. Juzga el final del turno e ignora código, rutas e identificadores. Portable Windows/Linux |
 | `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos, registro de los hooks y de la barra de estado, `skillOverrides` y las preferencias que valen en cualquier PC (`theme`, `tui`, `autoUpdatesChannel`) |
 | `check-budget.mjs` | — (script) | Guarda de presupuesto: cuenta líneas de `CLAUDE.md`/`statusline`/`hook` y falla si exceden. Lo corren `tools/check.ps1` y el CI; suelto: `node claude/check-budget.mjs`. Portable |
-| `tasks-artifact.template.html` | — (plantilla) | Diseño fijo del artefacto de tareas que `CLAUDE.md` pide en los trabajos de varios bloques: Claude lo copia, rellena el contenido y no lo rediseña |
+| `panel/` | `~/.claude/panel` | Panel de tareas: un artefacto generado desde `docs/tasks.md` y `docs/backlog.md` de un repo, con sus hooks. Cada repo lo activa con `.claude/panel.json`. Ver [panel/README.es.md](panel/README.es.md) |
 
 ## Qué NO se versiona (queda local, por máquina)
 

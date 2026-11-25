@@ -11,7 +11,8 @@
   5. Finales de linea LF (sin CRLF)
   6. Documentacion bilingue sincronizada (tools/check-docs.ps1)
   7. Presupuesto de lineas de la capa de Claude Code (claude/check-budget.mjs)
-  8. Secretos con gitleaks (si esta instalado)
+  8. Tests del panel de tareas (claude/panel) y formato de las tareas del repo
+  9. Secretos con gitleaks (si esta instalado)
 
   Sale con codigo distinto de 0 si alguna comprobacion falla.
 
@@ -140,7 +141,28 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
 }
 else { Skip 'node no instalado: sin comprobar el presupuesto de claude/' }
 
-# ----- 8. SECRETOS (gitleaks, si esta disponible) -----
+# ----- 8. PANEL DE TAREAS -----
+# El parser del panel global y, si este repo usa el panel (.claude/panel.json), que
+# docs/tasks.md y docs/backlog.md sigan su formato: un panel que no se puede generar
+# dejaria de decir lo mismo que el repo.
+if (Get-Command node -ErrorAction SilentlyContinue) {
+	# Salida TAP: solo ASCII y con 'not ok' en cada fallo, facil de filtrar aqui.
+	$panelTests = node --test --test-reporter=tap (Join-Path $repo 'claude\panel\board.test.mjs') 2>&1
+	if ($LASTEXITCODE -eq 0) { Pass "Panel de tareas: $((($panelTests | Select-String '^# pass ') -replace '^# pass ', '')) tests" }
+	else {
+		Fail 'Panel de tareas: tests fallidos'
+		$panelTests | Select-String 'not ok' | ForEach-Object { Write-Host "       $_" }
+	}
+	$panelCheck = node (Join-Path $repo 'claude\panel\check.mjs') $repo 2>&1
+	if ($LASTEXITCODE -eq 0) { Pass "Panel de tareas: $($panelCheck -join ' ')" }
+	else {
+		Fail 'Panel de tareas: formato de docs/tasks.md o docs/backlog.md'
+		$panelCheck | ForEach-Object { Write-Host "       $_" }
+	}
+}
+else { Skip 'node no instalado: sin probar el panel de tareas' }
+
+# ----- 9. SECRETOS (gitleaks, si esta disponible) -----
 if (Get-Command gitleaks -ErrorAction SilentlyContinue) {
 	gitleaks git --no-banner --redact $repo 2>&1 | Out-Null
 	if ($LASTEXITCODE -eq 0) { Pass 'gitleaks: sin secretos en el historial' }

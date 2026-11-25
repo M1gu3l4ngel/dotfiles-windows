@@ -1,0 +1,589 @@
+<title>Panel</title>
+<!--
+  Página del artefacto «Panel <proyecto>»: las tareas de `docs/tasks.md` y `docs/backlog.md` del
+  repo. `node ~/.claude/panel/generate.mjs` la copia a `.claude/artifacts/` con el nombre del
+  proyecto en el <title>, y se publica con `tasks.json` y `panel-theme.css` al lado. Ni las tareas,
+  ni las plataformas, ni los dispositivos se escriben aquí: salen de `tasks.json`, que se genera de
+  los `.md` y del `.claude/panel.json` del repo. Así el panel no puede decir otra cosa que el repo,
+  y la misma página sirve a cualquier proyecto. No se edita en el repo que la usa: se edita aquí.
+-->
+<script>
+// El tema se aplica antes de pintar, para que no parpadee. Sin elección guardada, el del sistema.
+(() => {
+  let t = null;
+  try { t = localStorage.getItem("panel-theme"); } catch (e) {}
+  if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  document.documentElement.dataset.theme = t;
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="panel-theme.css">
+<style>
+/* Los colores, radios, alto de campo y letra salen de `panel-theme.css`: aquí solo se componen
+   (menú lateral, barra superior, tarjetas, badges, campos y botones). */
+:root{--shadow-xs:0 1px 2px rgb(0 0 0 / 6%); --side-w:256px; --top-h:56px}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--background); color:var(--foreground); font:14px/1.5 var(--font-sans); -webkit-font-smoothing:antialiased}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--background)}
+button,input,select{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--ring); outline-offset:2px}
+code,pre,kbd{font-family:var(--font-mono)}
+code{font-size:12px; background:var(--muted); padding:1px 5px; border-radius:var(--radius-sm); overflow-wrap:anywhere}
+svg.i{width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+h1,h2,h3{text-wrap:balance}
+.muted{color:var(--muted-foreground)}
+[hidden]{display:none !important}
+
+/* Marco: menú lateral y contenido a todo el ancho. */
+.shell{display:grid; grid-template-columns:var(--side-w) minmax(0,1fr); min-height:100vh}
+.side{
+  background:var(--sidebar); color:var(--sidebar-foreground); border-right:1px solid var(--sidebar-border);
+  display:flex; flex-direction:column; position:sticky; top:env(safe-area-inset-top,0px); height:100vh;
+}
+.org{display:flex; align-items:center; gap:10px; padding:10px 12px; margin:6px 8px 8px; border-radius:var(--radius-md)}
+.logo{width:32px; height:32px; flex:none; border-radius:var(--radius-lg); display:grid; place-items:center; font-weight:700; font-size:12px;
+  background:color-mix(in oklab, var(--primary) 10%, transparent); color:var(--primary)}
+.org-txt{min-width:0; line-height:1.25}
+.org-txt b{display:block; font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.org-txt span{display:block; font-size:12px; color:var(--muted-foreground)}
+.nav{display:flex; flex-direction:column; gap:2px; padding:0 8px; overflow-y:auto}
+.nav-label{font-size:12px; font-weight:500; color:var(--muted-foreground); padding:12px 8px 4px}
+.nav button{
+  display:flex; align-items:center; gap:8px; width:100%; height:32px; padding:0 8px; border:0; background:none; cursor:pointer;
+  border-radius:var(--radius-md); text-align:left; font-size:14px; color:var(--sidebar-foreground); transition:background-color .15s ease-in-out;
+}
+.nav button:hover{background:var(--sidebar-accent)}
+.nav button[aria-selected="true"]{background:var(--sidebar-accent); color:var(--sidebar-accent-foreground); font-weight:500}
+.nav button[aria-selected="true"] svg{color:var(--sidebar-primary)}
+.side-foot{margin-top:auto; padding:12px; border-top:1px solid var(--sidebar-border); display:flex; flex-direction:column; gap:8px}
+
+/* Selector segmentado (tema). */
+.seg{display:inline-flex; padding:2px; gap:2px; background:var(--muted); border-radius:var(--radius-md); max-width:100%; overflow-x:auto; scrollbar-width:none}
+.seg button{
+  height:calc(var(--field-height) - 4px); padding:0 10px; border:0; background:none; border-radius:calc(var(--radius-md) - 2px); cursor:pointer;
+  display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500; color:var(--muted-foreground); white-space:nowrap;
+  transition:background-color .15s ease-in-out, color .15s ease-in-out;
+}
+.seg button:hover{color:var(--foreground)}
+.seg button[aria-pressed="true"]{background:var(--background); color:var(--foreground); box-shadow:var(--shadow-xs)}
+.seg.full{display:flex}
+.seg.full button{flex:1; justify-content:center; padding:0 6px}
+
+/* Barra superior y contenido. */
+.content{min-width:0; display:flex; flex-direction:column}
+.topbar{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:5; height:var(--top-h); display:flex; align-items:center; gap:12px; padding-inline:24px;
+  border-bottom:1px solid var(--border); background:color-mix(in oklab, var(--background) 80%, transparent); backdrop-filter:blur(12px);
+}
+.crumbs{display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted-foreground); min-width:0}
+.crumbs b{color:var(--foreground); font-weight:500}
+.page{padding-block:24px 56px; padding-left:max(24px, env(safe-area-inset-left,0px)); padding-right:max(24px, env(safe-area-inset-right,0px)); display:flex; flex-direction:column; gap:20px; min-width:0}
+.view{display:flex; flex-direction:column; gap:20px; min-width:0}
+.view-head{display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap}
+.view-head h1{font-size:22px; line-height:1.25; margin:0; font-weight:700; letter-spacing:-.01em}
+.view-head p{margin:4px 0 0; font-size:13px; color:var(--muted-foreground); max-width:78ch}
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:sticky; z-index:6; height:auto; flex-direction:row; align-items:center; border-right:0; border-bottom:1px solid var(--sidebar-border);
+    padding-left:max(8px, env(safe-area-inset-left,0px)); padding-right:max(8px, env(safe-area-inset-right,0px))}
+  .org{margin:0; padding:8px 4px} .org-txt,.nav-label{display:none}
+  .nav{flex-direction:row; overflow-x:auto; padding:0; scrollbar-width:none; flex:1}
+  .nav button{width:auto; white-space:nowrap}
+  .side-foot{margin:0; border:0; padding:0 0 0 4px}
+  .side-foot .seg button span{display:none}
+  .topbar{display:none}
+  .page{padding-block:16px 40px; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px))}
+}
+
+/* Card y bloque con cabecera. */
+.card{background:var(--card); color:var(--card-foreground); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); min-width:0}
+.block-head{padding:14px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
+.block-head h2{font-size:15px; margin:0; font-weight:600}
+.block-head p{margin:2px 0 0; font-size:13px; color:var(--muted-foreground); max-width:78ch}
+
+/* Controles con el alto de un campo. */
+.field{height:var(--field-height); padding:0 10px; font-size:13px; background:var(--background); border:1px solid var(--input); border-radius:var(--radius-md); color:var(--foreground); min-width:0}
+.field::placeholder{color:var(--muted-foreground)}
+.search{position:relative; flex:1 1 260px; max-width:420px; min-width:0}
+.search svg{position:absolute; left:9px; top:50%; transform:translateY(-50%); color:var(--muted-foreground)}
+.search input{width:100%; padding-left:30px}
+.btn{
+  height:var(--field-height); padding:0 12px; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:13px; font-weight:500;
+  border:1px solid var(--border); background:var(--background); border-radius:var(--radius-md); cursor:pointer; white-space:nowrap; box-shadow:var(--shadow-xs);
+  transition:background-color .15s ease-in-out;
+}
+.btn:hover{background:var(--accent)}
+.btn:disabled{opacity:.5; cursor:not-allowed}
+.btn.ghost{border-color:transparent; box-shadow:none; background:none}
+.btn.ghost:hover{background:var(--accent)}
+.btn.danger{color:var(--danger)}
+.toolbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.toolbar .grow{flex:1}
+.switch{display:inline-flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; user-select:none; white-space:nowrap}
+.switch input{position:absolute; opacity:0; pointer-events:none}
+.switch .knob{width:32px; height:18px; border-radius:999px; background:var(--input); position:relative; transition:background-color .15s ease-in-out; flex:none}
+.switch .knob::after{content:""; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:var(--background); box-shadow:0 1px 2px rgb(0 0 0 / 20%); transition:transform .15s ease-in-out}
+.switch input:checked + .knob{background:var(--primary)}
+.switch input:checked + .knob::after{transform:translateX(14px)}
+.switch input:focus-visible + .knob{outline:2px solid var(--ring); outline-offset:2px}
+
+/* Tarjetas que filtran. */
+.stats{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px}
+.stats.products{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.stats[hidden]{display:none}
+.devices{display:inline-flex; gap:4px; margin-right:6px; vertical-align:1px}
+@media (max-width:720px){.stats{grid-template-columns:minmax(0,1fr)}}
+.stat{
+  height:64px; display:flex; align-items:center; gap:12px; padding:0 14px; text-align:left; cursor:pointer; min-width:0;
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); transition:background-color .15s ease-in-out, border-color .15s ease-in-out;
+}
+.stat:hover{background:var(--highlight)}
+.stat[aria-pressed="true"]{border-color:var(--primary); background:color-mix(in oklab, var(--primary) 6%, var(--card))}
+.icon-box{width:32px; height:32px; flex:none; display:grid; place-items:center; border-radius:var(--radius-md); border:1px solid var(--border); background:var(--background); color:var(--primary)}
+.stat b{font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; min-width:2ch}
+.stat .lbl{min-width:0; display:flex; flex-direction:column; line-height:1.3}
+.stat .lbl span{font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.stat .lbl small{font-size:12px; color:var(--muted-foreground); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+@media (max-width:480px){.stat .icon-box{display:none}}
+
+/* Recorrido de fases. */
+.track{display:flex; gap:8px; overflow-x:auto; padding:16px 20px}
+.step{flex:1 0 150px; border:1px solid var(--border); border-radius:var(--radius-lg); padding:8px 12px; min-width:0}
+.step b{display:block; font-size:12px; font-weight:500; color:var(--muted-foreground)}
+.step span{display:block; font-size:13px; font-weight:500; overflow-wrap:anywhere}
+.step.done{opacity:.6}
+.step.now{border-color:var(--info-line); background:var(--info-subtle)}
+.step.now b{color:var(--info-strong)}
+
+/* Badges. */
+.badge{display:inline-flex; align-items:center; gap:4px; height:20px; padding:0 8px; border-radius:999px; font-size:11px; font-weight:500; white-space:nowrap; border:1px solid transparent}
+.badge.info{background:var(--info-tint); color:var(--info-strong)}
+.badge.warning{background:var(--warning-tint); color:var(--warning-strong)}
+.badge.success{background:var(--success-tint); color:var(--success-strong)}
+.badge.danger{background:var(--danger-tint); color:var(--danger-strong)}
+.badge.neutral{background:var(--muted); color:var(--muted-foreground)}
+.badge.outline{border-color:var(--border); color:var(--muted-foreground)}
+.badge svg.i{width:12px; height:12px}
+
+/* Bloques de tareas. */
+.phase{margin:8px 0 -6px; font-size:12px; font-weight:600; color:var(--muted-foreground); text-transform:uppercase; letter-spacing:.04em}
+.groups{display:flex; flex-direction:column; gap:8px}
+details.group{background:var(--card); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs)}
+details.group.working{border-color:var(--info-line)}
+details.group > summary{
+  list-style:none; cursor:pointer; padding:10px 16px; display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center;
+  border-radius:var(--radius-xl); transition:background-color .15s ease-in-out;
+}
+details.group > summary::-webkit-details-marker{display:none}
+details.group > summary:hover{background:var(--row-highlight, var(--muted))}
+.chev{transition:transform .15s ease-in-out; color:var(--muted-foreground)}
+details.group[open] .chev{transform:rotate(90deg)}
+.gt{flex:1 1 280px; min-width:0; font-weight:600; font-size:14px}
+.gc{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted-foreground); font-variant-numeric:tabular-nums}
+.meter{width:56px; height:4px; border-radius:999px; background:var(--muted); overflow:hidden}
+.meter i{display:block; height:100%; background:var(--success-solid)}
+.gbody{padding:4px 16px 14px 42px; display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--border)}
+@media (max-width:560px){.gbody{padding-left:16px}}
+.req{font-size:12px; color:var(--muted-foreground); margin:8px 0 0}
+.req b{color:var(--foreground); font-weight:500}
+.note{font-size:13px; color:var(--muted-foreground); margin:0; overflow-wrap:anywhere; max-width:90ch}
+ul.items{list-style:none; margin:0; padding:0}
+label.item{display:flex; gap:10px; align-items:flex-start; padding:6px 8px; margin:0 -8px; border-radius:var(--radius-md); cursor:pointer}
+label.item:hover{background:var(--row-highlight, var(--muted))}
+label.item input{position:absolute; opacity:0; pointer-events:none}
+.box{flex:none; width:16px; height:16px; margin-top:2px; border:1px solid var(--input); border-radius:var(--radius-sm); display:grid; place-items:center; background:var(--background)}
+.txt{flex:1; min-width:0; overflow-wrap:anywhere; font-size:13px}
+input:checked ~ .box{background:var(--primary); border-color:var(--primary)}
+input:checked ~ .box::after{content:""; width:8px; height:4px; border-left:2px solid var(--primary-foreground); border-bottom:2px solid var(--primary-foreground); transform:translateY(-1px) rotate(-45deg)}
+input:checked ~ .txt{color:var(--muted-foreground); text-decoration:line-through}
+input:focus-visible ~ .box{outline:2px solid var(--ring); outline-offset:2px}
+mark{background:var(--warning-tint); color:inherit; border-radius:2px}
+.empty{padding:40px 16px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:6px}
+.empty .icon-box{width:40px; height:40px}
+.empty b{font-size:14px}
+.empty p{margin:0; font-size:13px; color:var(--muted-foreground)}
+.empty.error b{color:var(--danger)}
+.progress{display:flex; align-items:center; gap:10px; font-size:12px; color:var(--muted-foreground); font-variant-numeric:tabular-nums; white-space:nowrap}
+.progress .meter{width:120px}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+
+<div class="shell">
+  <aside class="side">
+    <div class="org">
+      <span class="logo" id="logo" aria-hidden="true">P</span>
+      <div class="org-txt"><b id="project">Panel</b><span>Panel del proyecto</span></div>
+    </div>
+    <nav class="nav" role="tablist" aria-label="Secciones del panel">
+      <span class="nav-label">Proyecto</span>
+      <button type="button" role="tab" id="tab-tasks" aria-selected="true"><svg class="i" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>Tareas</button>
+    </nav>
+    <div class="side-foot">
+      <div class="seg full" id="theme" role="group" aria-label="Tema">
+        <button type="button" data-theme-choice="light" title="Claro"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span>Claro</span></button>
+        <button type="button" data-theme-choice="dark" title="Oscuro"><svg class="i" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span>Oscuro</span></button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="content">
+  <header class="topbar"><div class="crumbs"><span id="crumb-project">Panel</span><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg><b>Tareas</b></div></header>
+  <main class="page">
+
+  <section id="p-tasks" class="view" role="tabpanel" aria-labelledby="tab-tasks">
+    <header class="view-head">
+      <div>
+        <h1>Tareas</h1>
+        <p>Vista de <code>docs/tasks.md</code> y <code>docs/backlog.md</code>: lo que se cambia, se cambia allí. Las marcas son una ayuda y se guardan en este navegador; «Por probar» sale cuando le dices a Claude que ya lo probaste.</p>
+      </div>
+    </header>
+
+    <div class="stats" id="views" role="group" aria-label="Qué ver"></div>
+
+    <div class="stats products" id="products" role="group" aria-label="Por plataforma" hidden></div>
+
+    <section class="card">
+      <div class="block-head"><div><h2>Dónde vamos</h2><p>Las fases de <code>docs/tasks.md</code>, en el orden en que se trabajan.</p></div></div>
+      <div class="track" id="track"></div>
+    </section>
+
+    <div class="toolbar">
+      <label class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input class="field" id="q" type="search" placeholder="Buscar en las tareas" aria-label="Buscar en las tareas"></label>
+      <select class="field" id="phase" aria-label="Fase"></select>
+      <select class="field" id="platform" aria-label="Plataforma"></select>
+      <select class="field" id="priority" aria-label="Prioridad"></select>
+      <select class="field" id="device" aria-label="Dispositivo" hidden></select>
+      <label class="switch"><input type="checkbox" id="onlyOpen"><span class="knob"></span>Ocultar marcadas</label>
+      <span class="grow"></span>
+      <span class="progress"><span id="count">0/0 marcadas</span><span class="meter"><i id="bar" style="width:0"></i></span></span>
+      <button type="button" class="btn" id="toggle-all"></button>
+      <button type="button" class="btn ghost danger" id="reset">Quitar marcas</button>
+    </div>
+
+    <div id="list" class="groups"></div>
+  </section>
+  </main>
+  </div>
+</div>
+
+<script>
+// Tareas: todo sale de `tasks.json` (`node ~/.claude/panel/generate.mjs`), publicado junto a la página:
+// { project, sourceHash, platforms: [[id, label]], devices: [[id, label]], priorities: [[id, label]],
+//   phases: [{id, label}], track: [{label, name, status}],
+//   groups: [{id, phase, title, platforms, priority, requires, note, working, blockedBy, items: [{id, text, devices}]}] }.
+// Plataformas y dispositivos los pone cada repo en su `.claude/panel.json`. Una casilla sin
+// dispositivos vale en todos.
+let PLATFORMS = [];
+let DEVICES = [];
+// El tono de la pastilla de cada prioridad; sus nombres llegan en `tasks.json`.
+const PRIORITY_TONES = { p0: "danger", p1: "warning", p2: "neutral", improvement: "outline" };
+let PRIORITIES = [];
+const ICONS = {
+  working: '<svg class="i" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg>',
+  test: '<svg class="i" viewBox="0 0 24 24"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/></svg>',
+  pending: '<svg class="i" viewBox="0 0 24 24"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg>',
+  lock: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+  chevron: '<svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>',
+  search: '<svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+  expand: '<svg class="i" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>',
+  collapse: '<svg class="i" viewBox="0 0 24 24"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>',
+};
+// Las tres vistas: qué se está haciendo, qué falta probar y lo pendiente. «Pendientes» deja
+// fuera lo de «Por probar»: eso ya está hecho y solo espera comprobarse. Lo que no se puede
+// empezar aún lo dice cada bloque con su «Espera a N».
+const VIEWS = [
+  { id: "working", label: "En curso", hint: "lo que se hace ahora", match: (g) => g.working },
+  { id: "test", label: "Por probar", hint: "te toca comprobarlo", match: (g) => g.phase === "test" },
+  { id: "pending", label: "Pendientes", hint: "tareas y backlog", match: (g) => g.phase !== "test" },
+];
+
+let PHASES = [];
+let TRACK = [];
+let GROUPS = [];
+let KEY = null;
+let state = { done: {}, view: "pending", phase: "all", platform: "all", priority: "all", device: "all", onlyOpen: false };
+function save() { if (KEY) try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+// El marcado que usan los `.md` en el texto de una tarea: negrita y código.
+function fmt(text, q) {
+  let html = esc(text);
+  if (q) {
+    const at = html.toLowerCase().indexOf(esc(q));
+    if (at >= 0) html = html.slice(0, at) + "<mark>" + html.slice(at, at + esc(q).length) + "</mark>" + html.slice(at + esc(q).length);
+  }
+  return html.replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+}
+// Qué bloques están abiertos. Vive aparte del filtro: cambiar de vista, fase, plataforma o el
+// interruptor los cierra todos, y buscar abre solo los que tienen resultados.
+let openState = {};
+let visibleIds = [];
+const list = document.getElementById("list");
+const qInput = document.getElementById("q");
+const phaseSelect = document.getElementById("phase");
+const platformSelect = document.getElementById("platform");
+const prioritySelect = document.getElementById("priority");
+const deviceSelect = document.getElementById("device");
+const productCards = document.getElementById("products");
+const toggleAll = document.getElementById("toggle-all");
+const view = () => VIEWS.find((v) => v.id === state.view) || VIEWS[2];
+// «En curso» cruza las plataformas, igual que un bloque sin plataformas (Aplazado, Bloqueado): se
+// ve con cualquier filtro. «Por probar» sí declara la suya: es lo que deja probar plataforma a plataforma.
+const inPlatformOnly = (g) => state.platform === "all" || g.working || !g.platforms.length || g.platforms.includes(state.platform);
+// El dispositivo se filtra por casilla, no por bloque: una casilla sin dispositivos vale en todos.
+const inDevice = (item) => state.device === "all" || !(item.devices || []).length || item.devices.includes(state.device);
+// La prioridad solo la llevan los bloques de una fase numerada: con un filtro puesto, el resto
+// (Por probar, Cierre, Aplazado…) se oculta, salvo lo que está en curso.
+const inPriority = (g) => state.priority === "all" || state.view === "test" || g.working || g.priority === state.priority;
+const inPlatform = (g) => inPlatformOnly(g) && inPriority(g);
+const inPhase = (g) => state.phase === "all" || g.phase === state.phase;
+const countItems = (groups) => groups.reduce((a, g) => a + g.items.filter(inDevice).length, 0);
+const query = () => qInput.value.trim().toLowerCase();
+const matchesQuery = (g, item, q) => !q || item.text.toLowerCase().includes(q) || g.title.toLowerCase().includes(q);
+function closeAll() { openState = {}; }
+
+function renderTrack() {
+  document.getElementById("track").innerHTML = TRACK.length
+    ? TRACK.map((s) => '<div class="step ' + s.status + '"><b>' + esc(s.label) + (s.status === "now" ? " · en curso" : "") + "</b><span>" + esc(s.name) + "</span></div>").join("")
+    : '<p class="muted" style="margin:0">Sin fases todavía: salen de los títulos <code># Fase N — nombre</code> de <code>docs/tasks.md</code>.</p>';
+}
+
+function renderViews() {
+  document.getElementById("views").innerHTML = VIEWS.map((v) => {
+    const groups = GROUPS.filter((g) => v.match(g) && inPlatform(g));
+    const byGroup = v.id === "working";
+    const value = byGroup ? groups.length : countItems(groups);
+    const sub = byGroup ? (groups.length === 1 ? "bloque" : "bloques") + " · " + countItems(groups) + " tareas" : "tareas · " + v.hint;
+    return '<button type="button" class="stat" data-view="' + v.id + '" aria-pressed="' + (state.view === v.id) + '">' +
+      '<span class="icon-box">' + ICONS[v.id] + "</span><b>" + value + '</b><span class="lbl"><span>' + esc(v.label) + "</span><small>" + esc(sub) + "</small></span></button>";
+  }).join("");
+}
+
+function renderSelects() {
+  const visible = GROUPS.filter((g) => view().match(g) && inPlatform(g));
+  phaseSelect.innerHTML = '<option value="all">Todas las fases</option>' + PHASES
+    .map((p) => [p, countItems(visible.filter((g) => g.phase === p.id))])
+    .filter(([p, n]) => n > 0 || p.id === state.phase)
+    .map(([p, n]) => '<option value="' + p.id + '"' + (state.phase === p.id ? " selected" : "") + ">" + esc(p.label) + " (" + n + ")</option>").join("");
+  // Sin plataformas configuradas el filtro no filtra nada: no sale.
+  platformSelect.hidden = !PLATFORMS.length;
+  platformSelect.innerHTML = [["all", "Todas las plataformas"]].concat(PLATFORMS).map(([id, label]) => {
+    const n = id === "all" ? "" : " (" + countItems(GROUPS.filter((g) => view().match(g) && inPriority(g) && (!g.platforms.length || g.platforms.includes(id)))) + ")";
+    return '<option value="' + id + '"' + (state.platform === id ? " selected" : "") + ">" + esc(label) + n + "</option>";
+  }).join("");
+  prioritySelect.innerHTML = [["all", "Todas las prioridades"]].concat(PRIORITIES).map(([id, label]) => {
+    const n = id === "all" ? "" : " (" + countItems(GROUPS.filter((g) => view().match(g) && inPlatformOnly(g) && g.priority === id)) + ")";
+    return '<option value="' + id + '"' + (state.priority === id ? " selected" : "") + ">" + esc(label) + n + "</option>";
+  }).join("");
+  // La prioridad solo la llevan las fases y el dispositivo solo las casillas de «Por probar»: cada
+  // filtro sale en la vista donde filtra algo.
+  const testing = state.view === "test";
+  prioritySelect.hidden = testing;
+  deviceSelect.hidden = !testing || !DEVICES.length;
+  const testGroups = GROUPS.filter((g) => g.phase === "test" && inPlatformOnly(g));
+  deviceSelect.innerHTML = [["all", "Todos los dispositivos"]].concat(DEVICES).map(([id, label]) => {
+    const n = id === "all" ? "" : " (" + testGroups.reduce((a, g) => a + g.items.filter((item) => !(item.devices || []).length || item.devices.includes(id)).length, 0) + ")";
+    return '<option value="' + id + '"' + (state.device === id ? " selected" : "") + ">" + esc(label) + n + "</option>";
+  }).join("");
+}
+
+// En «Por probar», una tarjeta por plataforma con lo que queda por probar en ella: se ve de un
+// vistazo dónde se acumula, y pulsarla filtra por esa plataforma (otra vez, lo quita).
+function renderProducts() {
+  const testing = state.view === "test";
+  productCards.hidden = !testing || !PLATFORMS.length;
+  if (productCards.hidden) return;
+  productCards.innerHTML = PLATFORMS.map(([id, label]) => {
+    const groups = GROUPS.filter((g) => g.phase === "test" && g.platforms.includes(id));
+    const items = countItems(groups);
+    const pending = groups.reduce((a, g) => a + g.items.filter((item) => inDevice(item) && !state.done[item.id]).length, 0);
+    return '<button type="button" class="stat" data-platform="' + id + '" aria-pressed="' + (state.platform === id) + '"' + (items ? "" : " disabled") + ">" +
+      '<span class="icon-box">' + ICONS.test + "</span><b>" + pending + '</b><span class="lbl"><span>' + esc(label) + "</span><small>" +
+      (items === pending ? "por probar" : "de " + items + " por probar") + "</small></span></button>";
+  }).join("");
+}
+
+const deviceTags = (item) => (item.devices || []).length
+  ? '<span class="devices">' + item.devices.map((id) => '<span class="badge info">' + esc((DEVICES.find((d) => d[0] === id) || [id, id])[1]) + "</span>").join("") + "</span>"
+  : "";
+
+const platformTags = (g) => g.platforms.map((id) => '<span class="badge outline">' + esc((PLATFORMS.find((p) => p[0] === id) || [id, id])[1]) + "</span>").join("");
+const priorityTag = (g) => {
+  const priority = PRIORITIES.find((p) => p[0] === g.priority);
+  return priority ? '<span class="badge ' + (PRIORITY_TONES[priority[0]] || "neutral") + '">' + esc(priority[1]) + "</span>" : "";
+};
+const renderNote = (note) => note.split("\n\n").map((p) => '<p class="note">' + fmt(p, "") + "</p>").join("");
+
+function renderGroup(g, q) {
+  const rows = g.items.map((item) => ({ item, checked: !!state.done[item.id] }))
+    .filter((r) => inDevice(r.item) && matchesQuery(g, r.item, q) && !(state.onlyOpen && r.checked));
+  if (!rows.length) return "";
+  visibleIds.push(g.id);
+  const gDone = g.items.filter((item) => state.done[item.id]).length;
+  const blocked = g.blockedBy.length
+    ? '<span class="badge warning" title="Espera a: ' + esc(g.blockedBy.join(", ")) + '">' + ICONS.lock + "Espera a " + g.blockedBy.length + "</span>"
+    : "";
+  const hits = q && rows.length < g.items.length ? '<span class="badge neutral">' + rows.length + " de " + g.items.length + "</span>" : "";
+  return '<details class="group' + (g.working ? " working" : "") + '" data-g="' + g.id + '"' + (openState[g.id] ? " open" : "") + ">" +
+    "<summary>" + ICONS.chevron + '<span class="gt">' + fmt(g.title, q) + "</span>" +
+    (g.working ? '<span class="badge info">En curso</span>' : "") + priorityTag(g) + blocked + hits + platformTags(g) +
+    '<span class="gc">' + gDone + "/" + g.items.length + '<span class="meter"><i style="width:' + (gDone / g.items.length) * 100 + '%"></i></span></span></summary>' +
+    '<div class="gbody">' + (g.requires ? '<p class="req"><b>Requiere:</b> ' + fmt(g.requires, "") + "</p>" : "") + (g.note ? renderNote(g.note) : "") + '<ul class="items">' +
+    rows.map((r) => '<li><label class="item"><input type="checkbox" data-k="' + r.item.id + '"' + (r.checked ? " checked" : "") +
+      '><span class="box"></span><span class="txt">' + deviceTags(r.item) + fmt(r.item.text, q) + "</span></label></li>").join("") +
+    "</ul></div></details>";
+}
+
+function emptyState(title, message) {
+  return '<div class="card empty"><span class="icon-box">' + ICONS.search + "</span><b>" + title + "</b><p>" + message + "</p></div>";
+}
+
+function renderToggle() {
+  const anyOpen = visibleIds.some((id) => openState[id]);
+  toggleAll.innerHTML = anyOpen ? ICONS.collapse + "Cerrar todo" : ICONS.expand + "Abrir todo";
+  toggleAll.dataset.action = anyOpen ? "close" : "open";
+  toggleAll.disabled = !visibleIds.length;
+}
+
+function render() {
+  const q = query();
+  let html = "";
+  let total = 0, done = 0;
+  visibleIds = [];
+  GROUPS.forEach((g) => g.items.forEach((item) => { total++; if (state.done[item.id]) done++; }));
+
+  PHASES.forEach((phase) => {
+    const phaseHtml = GROUPS.filter((g) => g.phase === phase.id && view().match(g) && inPlatform(g) && inPhase(g)).map((g) => renderGroup(g, q)).join("");
+    if (phaseHtml) html += '<p class="phase">' + esc(phase.label) + "</p>" + phaseHtml;
+  });
+
+  list.innerHTML = html || (GROUPS.length
+    ? emptyState("Sin resultados", state.view === "working" ? "Ningún bloque está en curso: marca uno con <code>**Estado:** en curso</code> en <code>docs/tasks.md</code>." : "Prueba con otra vista, otra fase u otra búsqueda.")
+    : emptyState("Sin tareas", "<code>docs/tasks.md</code> y <code>docs/backlog.md</code> están vacíos."));
+  document.getElementById("count").textContent = done + "/" + total + " marcadas";
+  document.getElementById("bar").style.width = (total ? (done / total) * 100 : 0) + "%";
+  document.getElementById("onlyOpen").checked = state.onlyOpen;
+  renderToggle();
+}
+
+function renderAll() { renderViews(); renderProducts(); renderSelects(); render(); }
+// Un filtro nuevo empieza con todo cerrado: se ven los títulos y se abre lo que interesa.
+function onFilterChange() { closeAll(); save(); renderAll(); }
+
+list.addEventListener("change", (e) => {
+  const k = e.target.dataset && e.target.dataset.k;
+  if (!k) return;
+  if (e.target.checked) state.done[k] = true; else delete state.done[k];
+  save(); renderProducts(); render();
+});
+list.addEventListener("toggle", (e) => {
+  const g = e.target.dataset && e.target.dataset.g;
+  if (!g) return;
+  openState[g] = e.target.open;
+  renderToggle();
+}, true);
+document.getElementById("views").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-view]");
+  if (!b) return;
+  state.view = b.dataset.view; state.phase = "all"; state.device = "all"; onFilterChange();
+});
+productCards.addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-platform]");
+  if (!b) return;
+  state.platform = state.platform === b.dataset.platform ? "all" : b.dataset.platform;
+  onFilterChange();
+});
+deviceSelect.addEventListener("change", () => { state.device = deviceSelect.value; onFilterChange(); });
+phaseSelect.addEventListener("change", () => { state.phase = phaseSelect.value; onFilterChange(); });
+platformSelect.addEventListener("change", () => { state.platform = platformSelect.value; onFilterChange(); });
+prioritySelect.addEventListener("change", () => { state.priority = prioritySelect.value; onFilterChange(); });
+document.getElementById("onlyOpen").addEventListener("change", (e) => { state.onlyOpen = e.target.checked; onFilterChange(); });
+// Buscar abre los bloques con resultados, que son lo que se busca; vaciar la búsqueda los cierra.
+qInput.addEventListener("input", () => {
+  closeAll();
+  const q = query();
+  if (q) GROUPS.forEach((g) => { if (g.items.some((item) => matchesQuery(g, item, q))) openState[g.id] = true; });
+  render();
+});
+toggleAll.addEventListener("click", () => {
+  const open = toggleAll.dataset.action === "open";
+  visibleIds.forEach((id) => { openState[id] = open; });
+  render();
+});
+document.getElementById("reset").addEventListener("click", () => { state.done = {}; save(); render(); });
+
+// Las marcas viejas apuntan a tareas que ya no existen: se quitan para que el contador no mienta.
+function pruneMarks() {
+  const live = new Set();
+  GROUPS.forEach((g) => g.items.forEach((item) => live.add(item.id)));
+  Object.keys(state.done).forEach((k) => { if (!live.has(k)) delete state.done[k]; });
+}
+
+// Sin logo: las iniciales del nombre, en el color primario.
+function toInitials(name) {
+  const words = String(name).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  return (words.length > 1 ? words[0][0] + words[1][0] : String(name).slice(0, 2)).toUpperCase();
+}
+
+async function fetchJson(name) {
+  const response = await fetch(name, { cache: "no-store" });
+  if (!response.ok) throw new Error(name + ": HTTP " + response.status);
+  return response.json();
+}
+
+async function loadBoard() {
+  let data;
+  try {
+    data = await fetchJson("tasks.json");
+  } catch (e) {
+    list.innerHTML = '<div class="card empty error"><b>No se pudo leer tasks.json</b><p>' + esc(String(e.message || e)) + ". Se genera con <code>node ~/.claude/panel/generate.mjs</code> y se publica junto a esta página.</p></div>";
+    return;
+  }
+  PLATFORMS = data.platforms || [];
+  DEVICES = data.devices || [];
+  PRIORITIES = data.priorities || [];
+  PHASES = data.phases || [];
+  TRACK = data.track || [];
+  GROUPS = (data.groups || []).map((g) => Object.assign({ blockedBy: [] }, g));
+  KEY = "panel-tasks-" + data.project;
+  try { state = Object.assign(state, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
+  if (!VIEWS.some((v) => v.id === state.view)) state.view = "pending";
+  if (state.phase !== "all" && !PHASES.some((p) => p.id === state.phase)) state.phase = "all";
+  if (state.platform !== "all" && !PLATFORMS.some((p) => p[0] === state.platform)) state.platform = "all";
+  if (state.priority !== "all" && !PRIORITIES.some((p) => p[0] === state.priority)) state.priority = "all";
+  if (state.device !== "all" && !DEVICES.some((d) => d[0] === state.device)) state.device = "all";
+  if (state.view === "working" && !GROUPS.some((g) => g.working)) state.view = "pending";
+  pruneMarks();
+  save();
+  // Al abrir, lo que está en curso se ve desplegado; lo demás, cerrado.
+  GROUPS.forEach((g) => { if (g.working) openState[g.id] = true; });
+  document.getElementById("project").textContent = data.project;
+  document.getElementById("crumb-project").textContent = "Panel " + data.project;
+  document.getElementById("logo").textContent = toInitials(data.project);
+  document.title = "Panel " + data.project;
+  renderTrack();
+  renderAll();
+}
+
+loadBoard();
+</script>
+<script>
+// Tema: claro u oscuro. El script del principio ya puso uno; aquí solo se marca y se cambia.
+(() => {
+  const write = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  function applyTheme(choice) {
+    document.documentElement.dataset.theme = choice;
+    document.querySelectorAll("[data-theme-choice]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.themeChoice === choice)));
+  }
+  applyTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+  document.getElementById("theme").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-theme-choice]");
+    if (!b) return;
+    write("panel-theme", b.dataset.themeChoice);
+    applyTheme(b.dataset.themeChoice);
+  });
+})();
+</script>
