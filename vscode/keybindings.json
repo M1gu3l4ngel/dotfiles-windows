@@ -1,4 +1,4 @@
-// Coloque sus atajos de teclado en este archivo para sobreescribir los valores predeterminadosauto[]
+// Atajos propios: sobrescriben los predeterminados de VS Code.
 [
 	{
 		"key": "ctrl+numpad_divide",

@@ -67,6 +67,8 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `vscode/settings.json` quita ajustes sin nada instalado detrás (la ruta de
+  PHP, `gitCommitter.*`, `aiCommit.language`) e `importCost.debug`.
 - `bootstrap.ps1` instala las extensiones de VS Code que falten de
   `vscode/extensions.txt`; era un paso manual. `install.ps1` ya no termina con
   pasos manuales que `bootstrap.ps1` ya cubre.

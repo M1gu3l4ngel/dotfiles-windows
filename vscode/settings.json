@@ -76,10 +76,8 @@
 			"path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
 		},
 	},
-	"importCost.debug": true,
 	"html.format.wrapLineLength": 130,
 	"git.enableSmartCommit": true,
-	"php.validate.executablePath": "C:\\PHP\\php.exe",
 	"symbols.hidesExplorerArrows": false,
 	"editor.stickyScroll.enabled": false,
 	// El estilo no vive aquí sino en archivos que también lee el CLI de Prettier:
@@ -109,7 +107,6 @@
 		},
 	],
 	"terminal.integrated.initialHint": false,
-	"aiCommit.language": "es",
 	"claudeCode.preferredLocation": "panel",
 	"sqltools.highlightQuery": false,
 	"json.schemaDownload.trustedDomains": {
@@ -125,9 +122,6 @@
 	"mssql.connections": [],
 	"sqltools.results.limit": 100,
 	"mssql.openQueryResultsInTabByDefaultDoNotShowPrompt": true,
-	"gitCommitter.language": "es",
-	"gitCommitter.apiKey": "",
-	"gitCommitter.apiUrl": "http://localhost:3000",
 	"git.autofetch": true,
 	"js/ts.updateImportsOnFileMove.enabled": "always",
 	"editor.unicodeHighlight.nonBasicASCII": false,
