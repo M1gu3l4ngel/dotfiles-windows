@@ -13,6 +13,8 @@ Cambios relevantes del proyecto. El formato sigue
 - `block-forbidden-commands.mjs` deja a Claude crear la etiqueta firmada de una versión
   (`git tag -s`) y sigue bloqueando borrar, mover o crear sin firma una etiqueta. Sus reglas
   tienen tests, que corre `tools/check.ps1`.
+- `install.ps1` también añade a un `~/.claude/settings.json` existente las reglas `deny`/`ask`
+  de la plantilla que le faltan, y `-Check` las avisa; la plantilla niega leer `.gnupg`.
 
 - `50-claude/skills/new-repo`: skill global que crea un repo bien armado, o
   completa uno existente (descripción y topics en GitHub, licencia, README

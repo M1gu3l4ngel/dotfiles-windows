@@ -3,6 +3,7 @@
     "allow": [],
     "deny": [
       "Read(**/.ssh/**)",
+      "Read(**/.gnupg/**)",
       "Read(**/.credentials.json)",
       "Read(**/security-keys/**)",
       "Read(**/id_rsa)",

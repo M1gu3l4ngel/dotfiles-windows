@@ -140,6 +140,23 @@ function Add-MissingHook {
 	$added
 }
 
+# Anade a $Settings las reglas `deny` y `ask` de $Template que no tiene. Nunca quita: las
+# reglas propias de cada maquina se quedan. Sin esto, una regla de seguridad nueva en la
+# plantilla no llegaba nunca a una maquina ya instalada. Devuelve lo que anadio.
+function Add-MissingPermission {
+	param($Settings, $Template)
+	$added = @()
+	if (-not $Settings.permissions) { $Settings | Add-Member -NotePropertyName permissions -NotePropertyValue ([pscustomobject]@{}) }
+	foreach ($kind in 'deny', 'ask') {
+		$current = @($Settings.permissions.$kind | Where-Object { $_ })
+		$missing = @($Template.permissions.$kind | Where-Object { $_ -and $current -notcontains $_ })
+		if ($missing.Count -eq 0) { continue }
+		$Settings.permissions | Add-Member -NotePropertyName $kind -NotePropertyValue (@($current) + $missing) -Force
+		$added += $missing | ForEach-Object { "${kind}: $_" }
+	}
+	$added
+}
+
 # Claude Code solo ejecuta un hook si esta registrado en ~/.claude/settings.json.
 # Ese archivo es local (lleva la ruta del usuario y lo que Claude Code escribe en
 # cada maquina), asi que no se enlaza: si no existe, se crea desde la plantilla
@@ -168,15 +185,18 @@ function Install-ClaudeSetting {
 	}
 
 	$settings = [IO.File]::ReadAllText($SettingsPath, [Text.Encoding]::UTF8) | ConvertFrom-Json
-	$added = @(Add-MissingHook -Settings $settings -Template ($template | ConvertFrom-Json))
-	if ($added.Count -eq 0) {
-		Write-Host "  Ya existe, con los hooks de la plantilla registrados - skip" -ForegroundColor Green
+	$templateObject = $template | ConvertFrom-Json
+	$addedHooks = @(Add-MissingHook -Settings $settings -Template $templateObject)
+	$addedRules = @(Add-MissingPermission -Settings $settings -Template $templateObject)
+	if ($addedHooks.Count + $addedRules.Count -eq 0) {
+		Write-Host "  Ya existe, con los hooks y las reglas de la plantilla - skip" -ForegroundColor Green
 		return
 	}
 	$backup = "$SettingsPath$BackupSuffix." + (Get-Date -Format 'yyyyMMddHHmmss')
 	Copy-Item -LiteralPath $SettingsPath -Destination $backup
 	[IO.File]::WriteAllText($SettingsPath, ($settings | ConvertTo-Json -Depth 32), $utf8)
-	Write-Host "  Hooks registrados: $($added -join ', ')" -ForegroundColor Green
+	if ($addedHooks.Count -gt 0) { Write-Host "  Hooks registrados: $($addedHooks -join ', ')" -ForegroundColor Green }
+	if ($addedRules.Count -gt 0) { Write-Host "  Reglas anadidas: $($addedRules -join ', ')" -ForegroundColor Green }
 	Write-Host "  Backup del anterior: $backup" -ForegroundColor Yellow
 }
 
@@ -214,6 +234,9 @@ function Test-Installation {
 		$missingHooks = @(Add-MissingHook -Settings $settings -Template $template)
 		if ($missingHooks.Count -eq 0) { Write-Host '  ok          hooks de Claude Code registrados' -ForegroundColor Green }
 		else { $bad++; Write-Host "  FALTA       hooks sin registrar: $($missingHooks -join ', ')" -ForegroundColor Red }
+		$missingRules = @(Add-MissingPermission -Settings $settings -Template $template)
+		if ($missingRules.Count -eq 0) { Write-Host '  ok          reglas deny/ask de la plantilla' -ForegroundColor Green }
+		else { $bad++; Write-Host "  FALTA       reglas de la plantilla: $($missingRules -join ', ')" -ForegroundColor Red }
 	}
 	else { $bad++; Write-Host "  FALTA       $SettingsPath" -ForegroundColor Red }
 	if ((git -C $DotfilesRoot config --get core.hooksPath) -eq 'githooks') { Write-Host '  ok          git post-merge activo' -ForegroundColor Green }

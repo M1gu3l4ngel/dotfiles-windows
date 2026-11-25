@@ -13,6 +13,8 @@ Notable changes to the project. The format follows
 - `block-forbidden-commands.mjs` lets Claude create a signed release tag (`git tag -s`) and still
   blocks deleting, moving or creating an unsigned tag. Its rules have tests, run by
   `tools/check.ps1`.
+- `install.ps1` also adds the template's missing `deny`/`ask` rules to an existing
+  `~/.claude/settings.json`, and `-Check` reports them; the template denies reading `.gnupg`.
 
 - `50-claude/skills/new-repo`: global skill that creates a well-built repo, or
   completes an existing one (GitHub description and topics, license, bilingual

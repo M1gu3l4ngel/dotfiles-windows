@@ -42,8 +42,9 @@ specific to a machine stays local (it is not versioned).
     - On Windows `install.ps1` creates it if the machine does not have one, with
       `REEMPLAZA_RUTA_HOME` replaced by the real home (`C:/Users/<user>`). The hook
       paths are quoted, so a home with spaces works.
-    - If it already exists, the installer only adds the template hooks it is missing
-      (a linked hook does not run until it is registered here), with a dated
+    - If it already exists, the installer only adds the template hooks and `deny`/`ask`
+      rules it is missing (a linked hook does not run until it is registered here, and a
+      new security rule has to reach every machine), with a dated
       `.pre-dotfiles.bak` backup first; everything else in the file stays as it was.
       It runs again after each `git pull`, so a new hook reaches every machine.
     - Optional (more reliable on Windows): also add **absolute** paths to your
