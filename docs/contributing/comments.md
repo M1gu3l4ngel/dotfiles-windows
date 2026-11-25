@@ -132,3 +132,44 @@ goes stale the first time the code changes.
 - Personal or machine data (users, paths, hosts): the repo is public.
 - Anything the comment cannot keep true: a comment that contradicts the code is
   worse than none, so a change updates its comments in the same commit.
+
+## Lessons from the migration
+
+This repo moved its code text from Spanish to English one folder at a time,
+with one commit per folder, as the pilot for other repos.
+
+### The six decisions
+
+1. Script output and CI step names are English: one text both documentation
+   languages quote as is, and the ASCII `.ps1` files cannot carry Spanish
+   accents.
+2. Hook messages (`reason`) are English, short and ending in the action to
+   take: Claude reads them and still answers the user in Spanish.
+3. Test names are English: they are code, and CI prints them.
+4. Config files with comments are included (`.gitignore`, `.editorconfig`,
+   `.psd1`, VS Code `settings.json`, Dependabot): a reader of the repo meets
+   them like any script.
+5. The task panel's visible text and the headings it reads from
+   `docs/tasks.md` stay Spanish, because `docs/tasks.md` is written in Spanish;
+   only the panel's comments changed.
+6. `40-format/` changed in dotfiles-parrot in the same step, so the two copies
+   stay byte for byte identical.
+
+### What we learned
+
+- Write the language rule into the repo's `CLAUDE.md` before migrating. A
+  global rule that still says "comments in Spanish" would make the next session
+  write them in Spanish again.
+- Look for what reads a text before translating it. Here nothing parsed the
+  script output (callers use exit codes), and no ruleset required the CI check
+  by its old name.
+- Scan every tracked file, not a list of folders: `15-git/` was missing from
+  the plan and only showed up in that scan.
+- A file shared with another repo changes in both in the same step, following
+  that repo's rules: dotfiles-parrot's commits are signed by its owner.
+- English did not grow the files: the hooks under the line budget
+  (`50-claude/check-budget.mjs`) changed by at most one line.
+- `tools/check-comments.mjs` keeps the result. On the code before the migration
+  it flags 249 comments and none on the code after it. It misses one- or
+  two-word labels with no function words and no accents, such as
+  `Selector segmentado (tema)`, so those still need a look in review.

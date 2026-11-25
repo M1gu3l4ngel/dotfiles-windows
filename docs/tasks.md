@@ -51,6 +51,15 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] En un repo de una organización con cerebro, lo registra en su catálogo
 - [ ] En un repo existente al que le falta algo, Claude lo avisa como hallazgo
 
+## Código en inglés
+
+**Plataforma:** Repositorio.
+
+- [ ] [Esta PC] `.\install.ps1 -Check` sale en inglés y con todo en `ok`
+- [ ] [Esta PC] `.\tools\check.ps1` muestra el check de comentarios con sus tres exenciones
+- [ ] Tras el push, el CI de GitHub pasa con el job `Checks`
+- [ ] En una sesión nueva en este repo, Claude escribe en inglés los comentarios nuevos
+
 ## Panel de tareas
 
 **Plataforma:** Claude Code.
@@ -63,27 +72,10 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 ---
 
-# Fase 5 — Comentarios profesionales en inglés
-
-## Comentarios del código en inglés, según la guía
-
-**Plataforma:** Repositorio.
-
-**Prioridad:** Mejora.
-
-**Requiere:** nada.
-
-**Estado:** en curso.
-
-`docs/contributing/comments.md` fija la forma: cabecera de qué es, por qué y dónde
-encaja; JSDoc o ayuda basada en comentarios; dentro del cuerpo solo el porqué.
-Sin cambiar comportamiento, un commit por carpeta.
-
-- [ ] Nota de lo aprendido en `docs/contributing/comments.md`
-
 # Lo hace el dueño
 
-- [ ] Firmar en dotfiles-parrot el commit de `format/editorconfig` en inglés, ya editado en el clon de `D:\Dev\projects\dotfiles-parrot` e idéntico a `40-format/editorconfig`, y hacer push
+- [ ] Firmar en dotfiles-parrot el commit de `format/editorconfig` en inglés, ya editado en `~\dotfiles-parrot` e idéntico a `40-format/editorconfig`, y hacer push
+- [ ] Copiar `50-claude/hooks/command-rules.mjs` (commit `becc393`) al proyecto que guarda su copia idéntica, para que su check `hook-rules-copy` siga pasando
 
 # Aplazado — cada uno con el evento que lo dispara
 

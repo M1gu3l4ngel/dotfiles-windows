@@ -134,3 +134,46 @@ lo repite queda desfasado la primera vez que el código cambia.
 - Lo que el comentario no puede mantener cierto: un comentario que contradice el
   código es peor que ninguno, así que un cambio actualiza sus comentarios en el
   mismo commit.
+
+## Lo aprendido en la migración
+
+Este repo pasó el texto de su código del español al inglés carpeta por carpeta,
+con un commit por carpeta, como piloto para los demás repos.
+
+### Las seis decisiones
+
+1. La salida de los scripts y los nombres de los pasos del CI van en inglés: un
+   solo texto que los dos idiomas de la documentación citan tal cual, y los
+   `.ps1` son ASCII y no pueden llevar las tildes del español.
+2. Los mensajes de los hooks (`reason`) van en inglés, cortos y terminando en la
+   acción a tomar: los lee Claude, que igualmente responde al usuario en español.
+3. Los nombres de los tests van en inglés: son código, y el CI los imprime.
+4. Entran los archivos de configuración con comentarios (`.gitignore`,
+   `.editorconfig`, `.psd1`, el `settings.json` de VS Code, Dependabot): quien
+   lee el repo se los encuentra como a cualquier script.
+5. El texto visible del panel de tareas y los títulos que lee de
+   `docs/tasks.md` siguen en español, porque `docs/tasks.md` se escribe en
+   español; del panel solo cambiaron los comentarios.
+6. `40-format/` cambió en dotfiles-parrot en el mismo paso, para que las dos
+   copias sigan idénticas byte a byte.
+
+### Lo que aprendimos
+
+- Escribir la regla de idioma en el `CLAUDE.md` del repo antes de migrar. Una
+  regla global que siga diciendo «comentarios en español» haría que la próxima
+  sesión los volviera a escribir en español.
+- Buscar qué lee un texto antes de traducirlo. Aquí nada analizaba la salida de
+  los scripts (quien los llama usa el código de salida), y ningún ruleset exigía
+  el check del CI por su nombre viejo.
+- Recorrer todos los archivos versionados, no una lista de carpetas: `15-git/`
+  faltaba en el plan y solo apareció en ese recorrido.
+- Un archivo compartido con otro repo cambia en los dos en el mismo paso,
+  siguiendo las reglas de ese repo: los commits de dotfiles-parrot los firma su
+  dueño.
+- El inglés no hizo crecer los archivos: los hooks con tope de líneas
+  (`50-claude/check-budget.mjs`) cambiaron como mucho una línea.
+- `tools/check-comments.mjs` conserva el resultado. Sobre el código de antes de
+  la migración marca 249 comentarios, y ninguno sobre el de después. Se le
+  escapan las etiquetas de una o dos palabras sin palabras funcionales ni
+  tildes, como `Selector segmentado (tema)`, así que esas hay que mirarlas en la
+  revisión.
