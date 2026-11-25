@@ -12,7 +12,7 @@
 # Identicos byte a byte en los dos repos (la capa de Claude Code entera, el
 # tema del prompt y el estilo global): reformatearlos aqui los separaria.
 claude/
-oh-my-posh/capr4n.omp.json
+10-shell/oh-my-posh/capr4n.omp.json
 format/
 
 # ----- GENERADOS -----

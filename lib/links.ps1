@@ -44,12 +44,12 @@ function Get-DotfilesLink {
 
 	@(
 		@{
-			Source = "$DotfilesRoot\powershell\Microsoft.PowerShell_profile.ps1"
+			Source = "$DotfilesRoot\10-shell\powershell\Microsoft.PowerShell_profile.ps1"
 			Target = "$DocumentsPath\PowerShell\Microsoft.PowerShell_profile.ps1"
 			Label  = 'PowerShell 7 profile'
 		},
 		@{
-			Source = "$DotfilesRoot\powershell\Microsoft.PowerShell_profile.ps1"
+			Source = "$DotfilesRoot\10-shell\powershell\Microsoft.PowerShell_profile.ps1"
 			Target = "$DocumentsPath\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
 			Label  = 'Windows PowerShell (legacy) profile'
 		},
@@ -59,12 +59,12 @@ function Get-DotfilesLink {
 		# terminal de VS Code se queda sin oh-my-posh a proposito; la consola normal
 		# si lo tiene. Git Bash abre como login shell, que lee .bash_profile.
 		@{
-			Source = "$DotfilesRoot\bash\.bashrc"
+			Source = "$DotfilesRoot\10-shell\bash\.bashrc"
 			Target = "$env:USERPROFILE\.bashrc"
 			Label  = 'Git Bash rc'
 		},
 		@{
-			Source = "$DotfilesRoot\bash\.bash_profile"
+			Source = "$DotfilesRoot\10-shell\bash\.bash_profile"
 			Target = "$env:USERPROFILE\.bash_profile"
 			Label  = 'Git Bash profile (carga .bashrc)'
 		},

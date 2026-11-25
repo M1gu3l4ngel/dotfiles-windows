@@ -21,6 +21,12 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] [Esta PC] `git push` a `main` en el repo de solo `main` pregunta en vez de denegar
 - [ ] [Esta PC] `git push` a `main` en cualquier otro repo se deniega
 
+## Shells tras pasar a 10-shell
+
+**Plataforma:** Shell.
+
+- [ ] [Esta PC] Tras un `git pull` en otra PC, el `post-merge` rehace los enlaces y el prompt sigue igual
+
 ## Panel de tareas
 
 **Plataforma:** Claude Code.
@@ -47,8 +53,7 @@ Cada movimiento lleva su README en pareja, actualiza `lib/links.ps1`,
 `.prettierignore`, `tools/check.ps1` y la documentación, y se verifica con
 `.\install.ps1 -Check`.
 
-- [ ] `10-shell`: `powershell/` y `bash/`
-- [ ] `20-terminal`: `windows-terminal/` y el tema de oh-my-posh
+- [ ] `20-terminal`: `windows-terminal/`
 - [ ] `30-vscode`: `vscode/`
 - [ ] `40-format`: `format/`
 - [ ] `50-claude`: `claude/`, con `entorno.template.md` y sin la afirmación de que es idéntico byte a byte al de Parrot

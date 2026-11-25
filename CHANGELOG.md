@@ -72,6 +72,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `10-shell/`: the PowerShell and Git Bash profiles and the prompt theme move
+  from `powershell/`, `bash/` and `oh-my-posh/` into one numbered folder with its
+  README. `install.ps1` replaces the old links on its own.
 - `docs/tasks.md` and `docs/backlog.md` are Spanish only, like `CLAUDE.md`: they
   are the agent's work list and the task panel reads their Spanish headings.
   `tools/check-docs.ps1` leaves them out of the pair check.

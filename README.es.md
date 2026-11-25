@@ -96,9 +96,7 @@ No desinstala apps ni toca variables de entorno o WSL.
 | `uninstall.ps1` | Revertir los symlinks y restaurar los backups (`-DryRun` para simular) |
 | `lib/` | Código compartido (el mapeo de symlinks) |
 | `githooks/` | `post-merge`: vuelve a correr `install.ps1` tras cada `git pull` |
-| `powershell/` | Perfil de PowerShell (PS 7 y legacy, mismo archivo) |
-| `bash/` | Perfil de Git Bash (mismo prompt que PowerShell) |
-| `oh-my-posh/` | Tema del prompt (`capr4n`, compartido con Parrot) |
+| `10-shell/` | Perfiles de PowerShell y Git Bash y el tema del prompt (`capr4n`, compartido con Parrot) ([10-shell/README.es.md](10-shell/README.es.md)) |
 | `windows-terminal/` | Settings de Windows Terminal |
 | `vscode/` | Settings, keybindings y lista de extensiones |
 | `format/` | Estilo global de Prettier y EditorConfig para proyectos sin el suyo ([docs/formatting.es.md](docs/formatting.es.md)) |

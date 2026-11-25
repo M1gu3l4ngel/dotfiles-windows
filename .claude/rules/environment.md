@@ -32,7 +32,7 @@
 
 ## Prompt compartido con Parrot
 
-El tema `oh-my-posh/capr4n.omp.json` y la paleta de colores son **compartidos con
+El tema `10-shell/oh-my-posh/capr4n.omp.json` y la paleta de colores son **compartidos con
 [dotfiles-parrot](https://github.com/M1gu3l4ngel/dotfiles-parrot)**. Si cambias la
 paleta o el prompt en un repo, actualiza el otro para mantenerlos en sintonía.
 
