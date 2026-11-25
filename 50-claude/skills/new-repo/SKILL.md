@@ -41,7 +41,7 @@ Si no está claro de quién es el código, se pregunta: no se adivina.
 
 | Archivo | Qué lleva |
 |---|---|
-| `README.md` + `README.es.md` | Cabecera: selector en la línea 1; si hay marca, el logo en `<picture>` con su versión clara y oscura (una sola desaparece en uno de los temas), sin título `#` que repita el nombre debajo; descripción centrada en dos líneas; fila de enlaces a las secciones en su orden; badges de tecnologías y licencia, y de CI solo si es público. Después: cómo empezar (requisitos y comandos copiables, probados); estructura (tabla de carpetas); diagrama si hay más de dos piezas que se relacionan; licencia. Si la organización tiene receta propia, manda la suya, y la cabecera se compara con la de otro de sus repos antes de cerrar |
+| `README.md` + `README.es.md` | Cabecera: selector en la línea 1; si hay marca, el logo en `<picture>` con su versión clara y oscura (una sola desaparece en uno de los temas), sin título `#` que repita el nombre debajo; descripción centrada en dos líneas; fila de enlaces a las secciones en su orden; badges de tecnologías y licencia, y de CI solo si es público. Después: cómo empezar, con la instalación de cada requisito en Windows (winget), macOS (Homebrew) y Linux (instalador oficial o enlace a su guía), versiones mínimas (`>=`, nunca exactas) y comandos copiables y probados; si es una herramienta o plantilla, primeros pasos tras instalarla; estructura (tabla de carpetas); diagrama si hay más de dos piezas que se relacionan; licencia. Si la organización tiene receta propia, manda la suya, y la cabecera se compara con la de otro de sus repos antes de cerrar |
 | `CHANGELOG.md` + `.es.md` | Keep a Changelog con `## [Unreleased]` / `## [Sin publicar]` |
 | `CONTRIBUTING.md` + `.es.md` | Solo si es compartido (público o más de una persona): flujo, checks, commits |
 | `.editorconfig`, `.prettierrc.json`, `.prettierignore` | Propios del repo, aunque copien el estilo global: con CI no se depende de `~` |
@@ -59,7 +59,9 @@ código: idéntico en las dos versiones, con etiquetas en inglés.
 - `.github/workflows/ci.yml`: lint, formato (`prettier --check`), tests y el
   check de docs bilingües. Acciones fijadas por SHA de commit,
   `permissions: contents: read`, `concurrency` con `cancel-in-progress` y
-  filtros de `paths` para no gastar minutos en lo que no los necesita.
+  filtros de `paths` para no gastar minutos en lo que no los necesita. Si otros
+  lo instalan o lo corren en su máquina, matriz con `windows-latest` y
+  `macos-latest` además de Linux, en `bash`.
 - Check bilingüe: el de la organización si su cerebro o su plantilla lo trae;
   si no, copia `tools/check-docs.ps1` de dotfiles-windows (el repo al que apunta
   el enlace `~/.claude/CLAUDE.md`) y córrelo con `pwsh` en el CI.
