@@ -26,7 +26,7 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 - Un paso a la vez al depurar; intervención mínima (si dice "déjalo así", para). Sin saludos ni despedidas: termina en lo sustantivo.
 - Sin menús de opciones: recomienda una con su porqué. Si dice "te aviso", espera sin consultar por tu cuenta.
 - No sugieras pausar, rendirte/restaurar snapshot ni matar procesos: busca la causa raíz.
-- Comandos cortos y atómicos (no cadenas `&&` largas); di siempre en qué carpeta ejecutar.
+- Comandos cortos y atómicos (no cadenas `&&` largas); di siempre en qué carpeta ejecutar. Lo que hace el usuario (una consola web, instalar, un secreto) va en pasos numerados, una acción por paso: la URL exacta, qué pulsar, qué escribir en cada campo, el comando listo para copiar y cómo comprobar que salió bien; lo que no consta en la documentación oficial se dice como tal.
 - Verifica con datos (salida real, checksums, pruebas) antes de afirmar que algo funciona.
 
 ## Contexto y delegación
