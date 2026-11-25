@@ -1,47 +1,46 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  Comprueba que la documentacion bilingue este sincronizada.
+  Checks that the bilingual documentation is in sync.
 
 .DESCRIPTION
-  Cada documento X.md (ingles) tiene su pareja X.es.md (espanol). El texto
-  traducido no se puede comparar, asi que se compara todo lo que no cambia
-  entre idiomas:
-    1. Que exista la pareja y que cada uno lleve el selector de idioma en la linea 1
-    2. Mismo numero de titulos, filas de tabla y elementos de lista
-    3. Bloques de codigo identicos (sin contar la sangria)
-    4. Mismos enlaces relativos, en el mismo orden, cada uno a su idioma
-    5. Enlaces que existen y anclas (#seccion) que existen en su destino
+  Each X.md document (English) has its X.es.md pair (Spanish). Translated text cannot be
+  compared, so the check compares everything that does not change between languages:
+    1. The pair exists and each one has the language selector on line 1
+    2. Same number of headings, table rows and list items
+    3. Identical code blocks (ignoring indentation)
+    4. Same relative links, in the same order, each one to its own language
+    5. Links that exist and anchors (#section) that exist in their target
 
-  Lo ejecuta tools/check.ps1 (y por tanto el CI). Sin dependencias: solo
-  PowerShell y git. Sale con 1 si algo falla, con la lista de problemas.
+  tools/check.ps1 runs it, and so does CI. No dependencies beyond PowerShell and git. Exits with 1
+  and the list of problems if anything fails.
+
+.PARAMETER Root
+  Root of the repo to check. Defaults to this script's repo.
 
 .EXAMPLE
   .\tools\check-docs.ps1
 #>
 
 param(
-	# Raiz del repo a comprobar. Por defecto, el repo de este script.
 	[string]$Root = (Split-Path $PSScriptRoot -Parent)
 )
 
 $ErrorActionPreference = 'Stop'
 
-# ----- ALCANCE -----
-# Instrucciones para Claude Code (no documentacion para el lector): solo en espanol.
-# Las listas del panel de tareas tambien: son el trabajo del agente, y el panel lee
-# sus titulos en espanol.
+# Instructions for Claude Code (not documentation for the reader) are Spanish only. So are the
+# task panel lists: they are the agent's work, and the panel reads their Spanish headings.
 $excludedPrefixes = @('.claude/', '50-claude/rules/', '50-claude/skills/')
 $excludedFiles = @('CLAUDE.md', '50-claude/CLAUDE.md', '50-claude/entorno.template.md', 'docs/tasks.md', 'docs/backlog.md')
 
 $esSuffix = '.es.md'
-# Los .ps1 del repo son ASCII puro (PowerShell 5.1): la enie se construye.
+# The repo's .ps1 files are pure ASCII (PowerShell 5.1), so the n with tilde is built.
 $espanol = 'Espa' + [char]0x00F1 + 'ol'
 
 function Get-DocFile {
 	param([string]$RepoRoot)
-	# --others incluye los documentos nuevos aun sin `git add`: el check debe
-	# verlos antes del commit, no despues.
+	# --others includes new documents not yet added: the check must see them before the commit,
+	# not after.
 	$listed = git -C $RepoRoot ls-files --cached --others --exclude-standard -- '*.md'
 	$result = @()
 	foreach ($file in ($listed | Sort-Object -Unique)) {
@@ -57,8 +56,8 @@ function Get-DocFile {
 }
 
 function Get-Slug {
-	# Mismo algoritmo que GitHub: minusculas, sin puntuacion (las letras con
-	# tilde se conservan), espacios a guiones y sufijo -1, -2... si se repite.
+	# The same algorithm as GitHub: lowercase, no punctuation (accented letters stay), spaces to
+	# hyphens and a -1, -2... suffix when repeated.
 	param([string]$Heading, [hashtable]$Seen)
 	$base = ($Heading.Trim().ToLowerInvariant() -replace '[^\w\- ]', '') -replace ' ', '-'
 	$n = 0
@@ -82,7 +81,7 @@ function Read-Doc {
 	if ($lines.Count -gt 0) { $doc.First = $lines[0] }
 	$seen = @{}
 	$inside = $false
-	# La linea 1 es el selector de idioma: se valida aparte.
+	# Line 1 is the language selector: it is validated separately.
 	for ($i = 1; $i -lt $lines.Count; $i++) {
 		$line = $lines[$i]
 		$stripped = $line.Trim()
@@ -92,7 +91,7 @@ function Read-Doc {
 			continue
 		}
 		if ($inside) {
-			# Sin la sangria: un bloque dentro de una lista la lleva.
+			# Without indentation: a block inside a list carries it.
 			$doc.Code.Add($stripped)
 			continue
 		}
@@ -111,7 +110,7 @@ function Read-Doc {
 }
 
 function Resolve-DocPath {
-	# Ruta relativa al repo (con /) del destino de un enlace escrito en $From.
+	# Repo-relative path (with /) of the target of a link written in $From.
 	param([string]$From, [string]$Target)
 	$parts = New-Object System.Collections.Generic.List[string]
 	$dirs = $From -split '/'
@@ -128,7 +127,7 @@ function Resolve-DocPath {
 }
 
 function Split-Anchor {
-	# 'x.md#ancla' -> @('x.md', 'ancla')
+	# 'x.md#anchor' -> @('x.md', 'anchor')
 	param([string]$Target)
 	$hash = $Target.IndexOf('#')
 	if ($hash -lt 0) { return @($Target, '') }
@@ -140,18 +139,17 @@ $docs = @{}
 foreach ($f in $files) { $docs[$f] = Read-Doc -Path (Join-Path $Root $f) }
 $problems = New-Object System.Collections.Generic.List[string]
 
-# ----- PAREJAS: selector, estructura, codigo y enlaces -----
 $pairs = 0
 foreach ($en in $files) {
 	if ($en.EndsWith($esSuffix)) {
 		if (-not $docs.ContainsKey($en.Substring(0, $en.Length - $esSuffix.Length) + '.md')) {
-			$problems.Add("${en}: falta su version en ingles")
+			$problems.Add("${en}: missing its English version")
 		}
 		continue
 	}
 	$es = $en.Substring(0, $en.Length - 3) + $esSuffix
 	if (-not $docs.ContainsKey($es)) {
-		$problems.Add("${en}: falta su version en espanol ($es)")
+		$problems.Add("${en}: missing its Spanish version ($es)")
 		continue
 	}
 	$pairs += 1
@@ -160,50 +158,49 @@ foreach ($en in $files) {
 	$name = Split-Path $en -Leaf
 	$base = $name.Substring(0, $name.Length - 3)
 	if ($a.First -cne "**English** | [$espanol]($base$esSuffix)") {
-		$problems.Add("${en}: la linea 1 debe ser el selector de idioma")
+		$problems.Add("${en}: line 1 must be the language selector")
 	}
 	if ($b.First -cne "[English]($name) | **$espanol**") {
-		$problems.Add("${es}: la linea 1 debe ser el selector de idioma")
+		$problems.Add("${es}: line 1 must be the language selector")
 	}
-	foreach ($pair in @(@('Headings', 'titulos'), @('Rows', 'filas de tabla'), @('Items', 'elementos de lista'))) {
+	foreach ($pair in @(@('Headings', 'headings'), @('Rows', 'table rows'), @('Items', 'list items'))) {
 		$key = $pair[0]
 		if ($a[$key] -ne $b[$key]) {
 			$problems.Add("$en / ${es}: $($pair[1]) $($a[$key]) / $($b[$key])")
 		}
 	}
 	if (($a.Code -join "`n") -cne ($b.Code -join "`n")) {
-		$problems.Add("$en / ${es}: los bloques de codigo difieren")
+		$problems.Add("$en / ${es}: code blocks differ")
 	}
-	# Mismo destino quitando el idioma y el ancla (las anclas se traducen con
-	# el titulo).
+	# Same target once the language and the anchor are removed (anchors are translated with
+	# their heading).
 	$linksEn = @($a.Links | ForEach-Object { (Split-Anchor $_)[0] })
 	$linksEs = @($b.Links | ForEach-Object { (Split-Anchor $_)[0] -replace '\.es\.md$', '.md' })
 	if (($linksEn -join "`n") -cne ($linksEs -join "`n")) {
-		$problems.Add("$en / ${es}: los enlaces no coinciden")
+		$problems.Add("$en / ${es}: links do not match")
 	}
 }
 
-# ----- ENLACES: existen, apuntan a su idioma y sus anclas existen -----
 foreach ($path in $files) {
 	$spanish = $path.EndsWith($esSuffix)
 	foreach ($target in $docs[$path].Links) {
 		$filePart, $anchor = Split-Anchor $target
 		$dest = if ($filePart) { Resolve-DocPath -From $path -Target $filePart } else { $path }
 		if (-not (Test-Path -LiteralPath (Join-Path $Root $dest))) {
-			$problems.Add("${path}: enlace roto a $target")
+			$problems.Add("${path}: broken link to $target")
 			continue
 		}
 		if ($dest.EndsWith('.md')) {
 			$isEs = $dest.EndsWith($esSuffix)
 			if ($spanish -and -not $isEs -and $docs.ContainsKey($dest.Substring(0, $dest.Length - 3) + $esSuffix)) {
-				$problems.Add("${path}: $target apunta a la version en ingles")
+				$problems.Add("${path}: $target points to the English version")
 			}
 			if (-not $spanish -and $isEs) {
-				$problems.Add("${path}: $target apunta a la version en espanol")
+				$problems.Add("${path}: $target points to the Spanish version")
 			}
 		}
 		if ($anchor -and $docs.ContainsKey($dest) -and -not $docs[$dest].Anchors.Contains($anchor)) {
-			$problems.Add("${path}: el ancla #$anchor no existe en $dest")
+			$problems.Add("${path}: anchor #$anchor does not exist in $dest")
 		}
 	}
 }
@@ -212,5 +209,5 @@ if ($problems.Count -gt 0) {
 	$problems | ForEach-Object { Write-Output $_ }
 	exit 1
 }
-Write-Output "Documentacion bilingue: $pairs parejas sincronizadas"
+Write-Output "Bilingual docs: $pairs pairs in sync"
 exit 0
