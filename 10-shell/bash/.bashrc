@@ -1,21 +1,21 @@
-# ~/.bashrc — Git Bash
-# Configuración de shell interactiva. Versionar en dotfiles-windows.
+# Git Bash interactive shell config, linked to ~/.bashrc by install.ps1 and loaded by
+# .bash_profile, since Git Bash opens as a login shell.
 
-# Solo para shells interactivos: evita que oh-my-posh interfiera en scripts.
+# Interactive shells only: keeps oh-my-posh out of scripts.
 case $- in
     *i*) ;;
     *) return ;;
 esac
 
-# fnm: al entrar en un repo usa la versión de Node que pide (.node-version, .nvmrc o
-# engines.node de package.json, buscando hacia arriba), solo en esta terminal.
+# fnm: entering a repo switches to the Node version it asks for (.node-version, .nvmrc or
+# package.json engines.node, searching upwards), in this terminal only.
 if command -v fnm >/dev/null 2>&1; then
     eval "$(fnm env --use-on-cd --version-file-strategy recursive --shell bash)"
 fi
 
-# oh-my-posh — mismo tema que PowerShell y WSL. La carpeta del tema se deriva
-# del symlink de este archivo (~/.bashrc -> repo/10-shell/bash/.bashrc), así
-# funciona aunque el repo no esté clonado en ~/dotfiles.
+# oh-my-posh, with the same theme as PowerShell and WSL. The theme folder comes from this file's
+# symlink (~/.bashrc -> repo/10-shell/bash/.bashrc), so it works even when the repo is not cloned
+# in ~/dotfiles.
 if command -v oh-my-posh >/dev/null 2>&1; then
     _shell_dir="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]:-$HOME/.bashrc}")")/.." 2>/dev/null && pwd)"
     _omp_theme="$_shell_dir/oh-my-posh/capr4n.omp.json"

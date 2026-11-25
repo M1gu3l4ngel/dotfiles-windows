@@ -1,4 +1,4 @@
-// Atajos propios: sobrescriben los predeterminados de VS Code.
+// Custom shortcuts: they override VS Code's defaults.
 [
 	{
 		"key": "ctrl+numpad_divide",

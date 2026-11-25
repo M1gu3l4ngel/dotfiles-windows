@@ -1,28 +1,27 @@
-# ~\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
-# Perfil de PowerShell (versionado desde dotfiles-windows).
-# Se ejecuta al iniciar cada sesion de PowerShell. Recargar: . $PROFILE
+# PowerShell profile for PowerShell 7 and Windows PowerShell, linked from Documents by
+# install.ps1. It runs at the start of every session; reload it with . $PROFILE
 
-# Prompt oh-my-posh (git, exit code, tiempo...). Se necesita de inmediato, no se
-# puede diferir. El tema se lee del repo, no de $env:POSH_THEMES_PATH (que se borra
-# al reinstalar oh-my-posh). La carpeta del repo sale del enlace de este perfil
-# (Documentos -> repo), como en .bashrc: asi funciona clonado en cualquier ruta.
+# oh-my-posh prompt (git, exit code, timing...). It is needed right away and cannot be deferred.
+# The theme is read from the repo, not from $env:POSH_THEMES_PATH (which a reinstall of
+# oh-my-posh wipes). The repo folder comes from this profile's link (Documents -> repo), as in
+# .bashrc, so it works wherever the repo is cloned.
 $profileFile = Get-Item -LiteralPath $PSCommandPath -Force
 $profileDir = if ($profileFile.LinkType -eq 'SymbolicLink') { Split-Path @($profileFile.Target)[0] -Parent } else { $PSScriptRoot }
 oh-my-posh init pwsh --config (Join-Path $profileDir '..\oh-my-posh\capr4n.omp.json') | Invoke-Expression
 Remove-Variable profileFile, profileDir
 
-# fnm: al entrar en un repo usa la version de Node que pide (.node-version, .nvmrc o
-# engines.node de package.json, buscando hacia arriba), solo en esta terminal.
+# fnm: entering a repo switches to the Node version it asks for (.node-version, .nvmrc or
+# package.json engines.node, searching upwards), in this terminal only.
 if (Get-Command fnm -ErrorAction SilentlyContinue) {
 	fnm env --use-on-cd --version-file-strategy recursive --shell powershell | Out-String | Invoke-Expression
 }
 
-# Terminal-Icons (iconos por tipo de archivo en ls/dir) cuesta ~0.5 s al importar.
-# Se difiere al primer idle -justo despues de que aparece el prompt- para que la
-# terminal abra al instante; los iconos quedan listos para el primer 'ls'.
+# Importing Terminal-Icons (file-type icons in ls/dir) costs about 0.5 s. It is deferred to the
+# first idle, right after the prompt appears, so the terminal opens instantly; the icons are
+# ready for the first 'ls'.
 $null = Register-EngineEvent -SourceIdentifier PowerShell.OnIdle -MaxTriggerCount 1 -Action {
 	Import-Module -Name Terminal-Icons -ErrorAction SilentlyContinue
 }
 
-# Locale en espanol (git y programas con gettext muestran mensajes traducidos).
+# Spanish locale: git and gettext programs show translated messages.
 $env:LANG = "es_ES.UTF-8"

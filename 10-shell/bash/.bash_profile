@@ -1,3 +1,2 @@
-# ~/.bash_profile — Git Bash abre como login shell, que no lee ~/.bashrc
-# automáticamente. Esta línea lo carga.
+# Git Bash opens as a login shell, which does not read ~/.bashrc on its own: this line loads it.
 [ -f ~/.bashrc ] && . ~/.bashrc

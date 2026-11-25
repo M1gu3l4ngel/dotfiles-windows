@@ -24,14 +24,13 @@
 	"editor.insertSpaces": false,
 	"editor.tokenColorCustomizations": {
 		"comments": "#9a9c9a",
-		// "comments": "#097409",
 	},
 	"terminal.integrated.fontFamily": "CaskaydiaCove Nerd Font",
 	"terminal.integrated.defaultProfile.windows": "PowerShell",
 	"explorer.confirmDelete": false,
 	"security.workspace.trust.banner": "never",
-	// Guardar al cambiar de pestaña o de ventana, no por tiempo: el formateo al
-	// guardar no se ejecuta en los guardados automáticos por retardo ("afterDelay").
+	// Save on tab or window change, not on a timer: format on save does not run on delayed
+	// auto-saves ("afterDelay").
 	"files.autoSave": "onFocusChange",
 	"files.eol": "\n",
 	"css.enabledLanguages": ["html"],
@@ -80,9 +79,9 @@
 	"git.enableSmartCommit": true,
 	"symbols.hidesExplorerArrows": false,
 	"editor.stickyScroll.enabled": false,
-	// El estilo no vive aquí sino en archivos que también lee el CLI de Prettier:
-	// el .prettierrc de cada proyecto o, si no tiene, el global (40-format/, enlazado
-	// en ~ y en <disco>\Dev). Así el editor, la terminal y el CI formatean igual.
+	// The style does not live here but in files the Prettier CLI also reads: each project's
+	// .prettierrc or, without one, the global one (40-format/, linked in ~ and in <drive>\Dev).
+	// That way the editor, the terminal and CI format the same.
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.formatOnPaste": true,
 	"mssql.connectionGroups": [
@@ -91,8 +90,8 @@
 			"id": "ROOT",
 		},
 	],
-	// Lo que Prettier no formatea, con su herramienta nativa. shfmt sin flags lee
-	// el .editorconfig del proyecto (sangría y switch_case_indent).
+	// What Prettier does not format, with its native tool. shfmt without flags reads the
+	// project's .editorconfig (indentation and switch_case_indent).
 	"[shellscript]": {
 		"editor.defaultFormatter": "mkhl.shfmt",
 	},
