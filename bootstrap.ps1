@@ -36,6 +36,10 @@ $DotfilesRoot = $PSScriptRoot
 # --- Toolchain ---
 $NodeMajor = '24'
 
+# --- WSL ---
+# Nombre tal como lo lista `wsl --list --online`. La 20.04 ya no esta en el catalogo.
+$WslDistro = 'Ubuntu-26.04'
+
 # --- Set esencial de winget ---
 # Solo el entorno: shell, terminal, editor, prompt, firma, toolchain y CLI tools
 # (estas para andar sincronizado con Parrot). NADA de apps personales.
@@ -268,13 +272,13 @@ function Invoke-Step4Node($drive) {
 }
 
 function Invoke-Step5Wsl {
-	Step 'WSL (Ubuntu)'
+	Step "WSL ($WslDistro)"
 	$raw = (& wsl.exe -l -q) 2>$null
 	$list = (($raw -join "`n") -replace "`0", '')
 	if ($list -match 'Ubuntu') { Ok 'WSL/Ubuntu ya presente'; return }
-	if ($DryRun) { Would 'wsl --install -d Ubuntu-20.04 (requiere reinicio)'; return }
-	Warn 'Instalando WSL + Ubuntu - REQUIERE REINICIO al terminar.'
-	wsl --install -d Ubuntu-20.04
+	if ($DryRun) { Would "wsl --install -d $WslDistro (requiere reinicio)"; return }
+	Warn "Instalando WSL + $WslDistro - REQUIERE REINICIO al terminar."
+	wsl --install -d $WslDistro
 }
 
 function Invoke-Step6Git {

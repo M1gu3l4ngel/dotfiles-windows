@@ -45,7 +45,7 @@ sin romper nada (por ejemplo tras un reinicio).
 | 2 | Set esencial de winget: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, WSL y CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt) |
 | 3 | CaskaydiaCove Nerd Font (descarga verificada por SHA-256) |
 | 4 | Node (nvm-windows) + pnpm + Claude Code en `<disk>\Dev\npm-global` |
-| 5 | WSL Ubuntu (requiere reinicio) |
+| 5 | WSL Ubuntu 26.04 (requiere reinicio) |
 | 6 | git: nombre, email noreply y defaults |
 | 7 | Symlinks de configuración, y el `settings.json` de Claude Code si la máquina no tiene uno (`install.ps1`) |
 | 8 | Muestra los pasos manuales que implican secretos (GPG/SSH) |

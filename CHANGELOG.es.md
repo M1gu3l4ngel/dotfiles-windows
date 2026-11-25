@@ -67,6 +67,8 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `bootstrap.ps1` instala WSL con Ubuntu 26.04 (`$WslDistro`); la 20.04 ya no
+  está en el catálogo de `wsl --install` y el paso fallaba en una PC nueva.
 - `install.ps1 -Check` informa del estado de cada enlace, de los hooks de
   Claude Code y de `post-merge` sin cambiar nada. Un enlace a una ruta vieja
   dentro del repo (una carpeta movida) se reemplaza sin backup; antes se movía a
