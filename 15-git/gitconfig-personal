@@ -1,4 +1,4 @@
-# Repos de la cuenta personal de GitHub y de sus organizaciones: Git Credential Manager la usa
-# sin preguntar.
+# Repos of the personal GitHub account and its organizations: Git Credential Manager uses it
+# without asking.
 [credential "https://github.com"]
 	username = M1gu3l4ngel
