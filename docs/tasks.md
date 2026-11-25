@@ -27,10 +27,20 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 - [ ] [Esta PC] Tras un `git pull` en otra PC, el `post-merge` rehace los enlaces y el prompt sigue igual
 - [ ] [Esta PC] Windows Terminal abre con PowerShell 7, Monokai Soda y la fuente de siempre
+
+## Instalación en una PC nueva
+
+**Plataforma:** Instalación.
+
+- [ ] [PC nueva] `docs/getting-started` funciona de principio a fin en un Windows 11 limpio, sin pasos que falten
 - [ ] [PC nueva] `bootstrap.ps1` instala las 18 apps de `60-apps/essential.json`
 - [ ] [PC nueva] `bootstrap.ps1` instala las 39 extensiones de VS Code y los `.ps1` se formatean al guardar
-- [ ] En GitHub, los diagramas del README y de `docs/getting-started` se dibujan en tema claro y oscuro
-- [ ] [PC nueva] `docs/getting-started` funciona de principio a fin en un Windows 11 limpio, sin pasos que falten
+
+## Documentación en GitHub
+
+**Plataforma:** Repositorio.
+
+- [ ] Los diagramas del README y de `docs/getting-started` se dibujan en tema claro y oscuro
 
 ## Panel de tareas
 
@@ -41,19 +51,3 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] [Esta PC] «Por probar» muestra una tarjeta por plataforma y el filtro de dispositivo
 - [ ] [Esta PC] Buscar abre los bloques con resultados y resalta el texto
 - [ ] [Esta PC] Al abrir una sesión nueva en este repo, Claude dice si el panel está al día
-
-# Fase 4 — Documentación y 1.0.0
-
-## Publicar la 1.0.0 (lo hace el dueño)
-
-**Plataforma:** Repositorio.
-
-**Prioridad:** Mejora.
-
-**Requiere:** nada.
-
-**Estado:** en curso.
-
-- [ ] Push de `main` a GitHub y CI en verde
-- [ ] Tag firmado `v1.0.0` y su push
-- [ ] Release `v1.0.0` en GitHub con la sección 1.0.0 del CHANGELOG
