@@ -16,7 +16,8 @@ const BUDGETS = [
   { file: 'CLAUDE.md', maxLines: 60 },
   { file: 'statusline.mjs', maxLines: 120 },
   { file: 'hooks/block-shell-edits.mjs', maxLines: 160 },
-  { file: 'hooks/block-forbidden-commands.mjs', maxLines: 220 },
+  { file: 'hooks/block-forbidden-commands.mjs', maxLines: 100 },
+  { file: 'hooks/command-rules.mjs', maxLines: 220 },
   { file: 'hooks/reply-in-spanish.mjs', maxLines: 200 },
   // La regla se carga en todas las sesiones, como CLAUDE.md: corta. El skill solo al usarse.
   { file: 'rules/repo-conventions.md', maxLines: 30 },

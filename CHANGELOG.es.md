@@ -15,7 +15,8 @@ Cambios relevantes del proyecto. El formato sigue
   tienen tests, que corre `tools/check.ps1`.
 - `install.ps1` también añade a un `~/.claude/settings.json` existente las reglas `deny`/`ask`
   de la plantilla que le faltan, y `-Check` las avisa; la plantilla niega leer `.gnupg`.
-
+- `50-claude/hooks/command-rules.mjs`: fuente única de las reglas universales de comandos,
+  enlazada en `~/.claude/hooks/`. Los proyectos llevan una copia idéntica que se compara con esta.
 - `50-claude/skills/new-repo`: skill global que crea un repo bien armado, o
   completa uno existente (descripción y topics en GitHub, licencia, README
   bilingüe con diagrama, CHANGELOG, `CLAUDE.md`, formato, CI y el catálogo del

@@ -118,6 +118,13 @@ function Get-DotfilesLink {
 			Label  = 'Claude hook block-forbidden-commands'
 		},
 		@{
+			# Las reglas que importa el hook anterior. Enlazadas para que cada proyecto compare su
+			# copia con esta, la fuente unica (`hook-rules-copy`).
+			Source = "$DotfilesRoot\50-claude\hooks\command-rules.mjs"
+			Target = "$env:USERPROFILE\.claude\hooks\command-rules.mjs"
+			Label  = 'Claude reglas de comandos'
+		},
+		@{
 			Source = "$DotfilesRoot\50-claude\hooks\reply-in-spanish.mjs"
 			Target = "$env:USERPROFILE\.claude\hooks\reply-in-spanish.mjs"
 			Label  = 'Claude hook reply-in-spanish'
