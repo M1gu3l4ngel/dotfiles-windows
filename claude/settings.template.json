@@ -41,6 +41,13 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "node \"REEMPLAZA_RUTA_HOME/.claude/statusline.mjs\""
+  },
+  "theme": "dark",
+  "tui": "fullscreen",
+  "autoUpdatesChannel": "stable",
   "autoCompactWindow": 400000,
   "env": {
     "BASH_MAX_OUTPUT_LENGTH": "12000",

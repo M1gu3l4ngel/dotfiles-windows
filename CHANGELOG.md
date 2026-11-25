@@ -66,6 +66,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `claude/settings.template.json` registers the status line (on a new PC
+  `statusline.mjs` was linked but off) and brings `theme`, `tui` and
+  `autoUpdatesChannel`.
 - `tools/check.ps1` (and therefore CI) runs `claude/check-budget.mjs`, which
   until now only ran by hand. The `block-forbidden-commands.mjs` cap goes up to
   220 lines.
