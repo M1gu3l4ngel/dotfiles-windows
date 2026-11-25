@@ -37,6 +37,13 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- El `CLAUDE.md` global vale en Windows y en Linux: habla de «la carpeta de trabajo» de
+  `entorno.md` en vez de `D:`, pide decir con qué privilegios corre un comando y pasa las
+  trampas de cada sistema (junctions, robocopy, borrados sin papelera) a `entorno.md`, cuya
+  plantilla cubre ahora los dos sistemas. Su regla de idioma coincide con la guía de
+  comentarios: comentarios, salida de los scripts, mensajes de los hooks y nombres de los
+  tests en inglés.
+
 - Los comentarios del código, la salida de los scripts, los mensajes de los hooks
   y los nombres de los tests se escriben en inglés, según la guía nueva
   `docs/contributing/comments.md`.

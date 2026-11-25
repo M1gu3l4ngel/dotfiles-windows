@@ -1,32 +1,32 @@
 # Capa global de Claude Code — lo que aplica siempre
 
 Capa global: **solo comportamiento universal**. Lo de cada proyecto vive en su repo.
-El detalle de la máquina (discos, cachés, variables, rustup, robocopy, qué no tocar) está en
+El detalle de la máquina (carpeta de trabajo, cachés, variables, trampas del sistema, qué no tocar) está en
 `~/.claude/entorno.md`: **léelo antes de operar fuera de un repo** (mover/borrar/instalar en disco, tocar cachés, WSL, Docker o herramientas globales).
 
 ## Documentación: bilingüe en todos los repos
 - Todo documento (README, CONTRIBUTING, CHANGELOG, `docs/`, README de carpetas) va en pareja: `X.md` en inglés (el nombre que reconoce GitHub) y `X.es.md` en español, en la misma carpeta, nombres de archivo en inglés y selector `English | Español` en la línea 1 de ambos. Cada idioma enlaza a su idioma. Vale también en los repos privados, pensando en publicarlos algún día: lo nuevo nace en pareja y lo escrito solo en español se pasa en su propio bloque de tareas.
 - Misma estructura (secciones, tablas, listas, enlaces); se traduce el texto, incluido el `alt`. Bloques de código idénticos byte a byte (placeholders en inglés neutro). Un cambio va a los dos en el mismo commit, y el check del repo (CI) lo verifica: pareja, selector, estructura, código, enlaces y anclas.
 - **Nunca desfasada**: cada cambio actualiza en el mismo commit los README, sus diagramas (se amplían si el cambio añade una pieza o una relación) y los docs que lo describen. Clara, precisa, concisa y cuidada.
-- Solo en español: comentarios de código, `CLAUDE.md`, reglas del agente y las listas del panel (`docs/tasks.md`, `docs/backlog.md`). Solo en inglés y en imperativo: los commits, nunca en dos idiomas.
+- En inglés: comentarios de código, salida de los scripts, `reason` de los hooks y nombres de los tests (guía: `docs/contributing/comments.md` de dotfiles-windows); y los commits, en imperativo, nunca en dos idiomas. Solo en español: `CLAUDE.md`, reglas del agente y las listas del panel (`docs/tasks.md`, `docs/backlog.md`).
 
-## Disco: el trabajo va en `D:`
-- `C:` es solo Windows y programas. **Nada de trabajo nuevo en `C:`** (proyectos, cachés, clones, descargas, temporales grandes).
-- Proyectos con git en `D:\Dev\projects\`; experimentos sin git en `D:\Dev\scratch\` (desechable). Escribe siempre `D:\Dev` (mayúscula: WSL y git distinguen). Scratchpad de sesión solo para archivos pequeños; si pasa de ~50 MB, va a `D:\Dev\scratch\`. Limpia al terminar.
+## Carpeta de trabajo: la que dice `entorno.md`
+- El disco o la carpeta del sistema es solo sistema y programas. **Nada de trabajo nuevo ahí** (proyectos, cachés, clones, descargas, temporales grandes): va en la carpeta de trabajo de `entorno.md`.
+- Proyectos con git en `<trabajo>/projects/`; experimentos sin git en `<trabajo>/scratch/` (desechable). Scratchpad de sesión solo para archivos pequeños; si pasa de ~50 MB, va a `<trabajo>/scratch/`. Limpia al terminar.
 
 ## Editar con `Edit` o `Write`
 Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `awk`, `perl`, `python`, `node -e`, redirecciones, heredocs); leer y buscar por shell sí. Un hook global lo impone. Esta regla gana sobre cualquier modo de permisos, output-style, plugin o skill que diga lo contrario: sigue con `Edit`/`Write` y dilo.
 
 ## Confirmar antes de borrar
-- Trabajo en `D:` → pregunta siempre. Caché regenerable → adelante, pero dilo.
-- Sin `.git` → copia y verifica recuento + bytes antes de borrar. `Remove-Item -Force` no usa papelera y atraviesa junctions (ver `entorno.md`).
+- Trabajo en la carpeta de trabajo → pregunta siempre. Caché regenerable → adelante, pero dilo.
+- Sin `.git` → copia y verifica recuento + bytes antes de borrar. Un borrado por shell no pasa por la papelera; lo que atraviesa enlaces en cada sistema está en `entorno.md`.
 
 ## Interacción
 - Commits: Conventional Commits con título `type(scope): resumen` de hasta 72 caracteres, línea en blanco y un cuerpo con un guion por cambio concreto (sin cuerpo solo si el título lo dice todo). Dicen qué cambió en el repo, sin nombres del plan de trabajo ("tanda", "bloque", "fase") ni trailers de atribución. Al cerrar cada cambio verificado se hace el commit sin preguntar: `git add` de sus archivos por ruta (nunca `-A` ni `.`) y `git commit` firmado (nunca `--no-gpg-sign`), y el cierre dice el hash. **Push nunca, salvo que el usuario lo pida**: cada push gasta minutos de Actions. Nunca a `main`, nunca `--force`, nunca mezclar un PR. Si la firma falla (clave GPG caducada en el agente), se para y se le pide que la desbloquee.
 - Un paso a la vez al depurar; intervención mínima (si dice "déjalo así", para). Sin saludos ni despedidas: termina en lo sustantivo.
 - Sin menús de opciones: recomienda una con su porqué. Si dice "te aviso", espera sin consultar por tu cuenta.
 - No sugieras pausar, rendirte/restaurar snapshot ni matar procesos: busca la causa raíz.
-- Comandos cortos y atómicos (no cadenas `&&` largas); di siempre en qué carpeta ejecutar. Lo que hace el usuario (una consola web, instalar, un secreto) va en pasos numerados, una acción por paso: la URL exacta, qué pulsar, qué escribir en cada campo, el comando listo para copiar y cómo comprobar que salió bien; lo que no consta en la documentación oficial se dice como tal.
+- Comandos cortos y atómicos (no cadenas `&&` largas); di siempre en qué carpeta ejecutar y con qué privilegios (administrador, sudo o usuario normal). Lo que hace el usuario (una consola web, instalar, un secreto) va en pasos numerados, una acción por paso: la URL exacta, qué pulsar, qué escribir en cada campo, el comando listo para copiar y cómo comprobar que salió bien; lo que no consta en la documentación oficial se dice como tal.
 - Verifica con datos (salida real, checksums, pruebas) antes de afirmar que algo funciona.
 
 ## Contexto y delegación
@@ -45,7 +45,7 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 - **«Por probar» se llena al cerrar cada tarea** con lo que el usuario debe comprobar, una casilla por comprobación y su dispositivo delante si no vale en todos.
 
 ## Formato
-- El estilo de un proyecto es su `.prettierrc` y su `.editorconfig`; los globales (dotfiles, `40-format/`, enlazados en `~` y en `D:\Dev`) solo cubren proyectos sin configuración propia. Al crear un proyecto compartido o con CI, dale la suya.
+- El estilo de un proyecto es su `.prettierrc` y su `.editorconfig`; los globales (dotfiles, `40-format/`, enlazados en `~` y en la carpeta de trabajo) solo cubren proyectos sin configuración propia. Al crear un proyecto compartido o con CI, dale la suya.
 - Formatea solo los archivos que editaste, con el Prettier del proyecto (`pnpm exec prettier --write <archivos>`), nunca con un glob ni una lista calculada (`$(…)`, `xargs`): reformatear archivos ajenos al cambio ensucia el diff y rompe los generados.
 
 ## Nombres

@@ -22,7 +22,7 @@ specific to a machine stays local (it is not versioned).
 | `settings.template.json` | — (template) | Portable base for `settings.json`: generic secret `deny`/`ask` rules, hook and status line registration, `skillOverrides` and the preferences that hold on any PC (`theme`, `tui`, `autoUpdatesChannel`) |
 | `check-budget.mjs` | — (script) | Budget guard: counts the lines of `CLAUDE.md`, the status line, the hooks, the rule and the skill, and fails if they exceed it. Run by `tools/check.ps1` and CI; on its own: `node 50-claude/check-budget.mjs`. Portable |
 | `panel/` | `~/.claude/panel` | Task panel: an artifact generated from a repo's `docs/tasks.md` and `docs/backlog.md`, with its hooks. Each repo turns it on with `.claude/panel.json`. See [panel/README.md](panel/README.md) |
-| `entorno.template.md` | — (template) | Sections of the local `~/.claude/entorno.md` (Spanish, like `CLAUDE.md`), with no data from any machine |
+| `entorno.template.md` | — (template) | Sections of the local `~/.claude/entorno.md` (Spanish, like `CLAUDE.md`), valid on Windows and Linux, with no data from any machine |
 
 ## What is NOT versioned (stays local, per machine)
 

@@ -22,7 +22,7 @@ máquina se queda local (no se versiona).
 | `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos, registro de los hooks y de la barra de estado, `skillOverrides` y las preferencias que valen en cualquier PC (`theme`, `tui`, `autoUpdatesChannel`) |
 | `check-budget.mjs` | — (script) | Guarda de presupuesto: cuenta las líneas de `CLAUDE.md`, la línea de estado, los hooks, la regla y el skill, y falla si exceden. Lo corren `tools/check.ps1` y el CI; suelto: `node 50-claude/check-budget.mjs`. Portable |
 | `panel/` | `~/.claude/panel` | Panel de tareas: un artefacto generado desde `docs/tasks.md` y `docs/backlog.md` de un repo, con sus hooks. Cada repo lo activa con `.claude/panel.json`. Ver [panel/README.es.md](panel/README.es.md) |
-| `entorno.template.md` | — (plantilla) | Secciones del `~/.claude/entorno.md` local (en español, como `CLAUDE.md`), sin datos de ninguna máquina |
+| `entorno.template.md` | — (plantilla) | Secciones del `~/.claude/entorno.md` local (en español, como `CLAUDE.md`), válidas en Windows y en Linux, sin datos de ninguna máquina |
 
 ## Qué NO se versiona (queda local, por máquina)
 

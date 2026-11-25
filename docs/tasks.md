@@ -58,6 +58,13 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] [Esta PC] `.\install.ps1 -Check` dice `ok template deny/ask rules`
 - [ ] En Parrot, tras enlazar la capa, Claude no puede leer `~/.password-store` ni `~/.local/share/keyrings`
 
+## CLAUDE.md global en Windows y Linux
+
+**Plataforma:** Claude Code.
+
+- [ ] En una sesión nueva, Claude pone el trabajo en la carpeta de trabajo de `entorno.md` y dice con qué privilegios corre cada comando que te pide
+- [ ] En Parrot, `~/.claude/entorno.md` se rellena con la plantilla nueva sin secciones que solo valgan en Windows
+
 ## Código en inglés
 
 **Plataforma:** Repositorio.
@@ -81,22 +88,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 # Fase 6 — Capa de Claude universal (Windows y Linux)
 
-## CLAUDE.md global válido en Windows y Linux
-
-**Plataforma:** Claude Code.
-
-**Prioridad:** P1.
-
-**Requiere:** nada.
-
-**Estado:** en curso.
-
-- [ ] La línea de idioma de `50-claude/CLAUDE.md` dice comentarios, salidas, `reason` y tests en inglés según la guía
-- [ ] La regla de disco habla de «la carpeta de trabajo» y lo de cada sistema (`D:\Dev`, `Remove-Item`, robocopy, junctions) pasa a `entorno.md`
-- [ ] «Di en qué carpeta ejecutar» dice también con qué privilegios (administrador o sudo)
-- [ ] `50-claude/entorno.template.md` con secciones que valen en Windows y en Linux, sin datos de una máquina
-- [ ] El presupuesto de 60 líneas sigue en verde
-
 ## Hook de comandos: pull con fast-forward pregunta
 
 **Plataforma:** Claude Code.
@@ -104,6 +95,8 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 **Prioridad:** P2.
 
 **Requiere:** nada.
+
+**Estado:** en curso.
 
 - [ ] `git pull --ff-only` pasa de `deny` a `ask` en `command-rules.mjs`
 - [ ] Tests con rutas de Linux: `git tag -l` pasa, `git push` pregunta, `rm -rf ~/Dev/projects/x` pregunta, `rm -rf /tmp/x` pasa, `git add -A` se deniega
@@ -135,7 +128,7 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 **Prioridad:** Mejora.
 
-**Requiere:** «CLAUDE.md global válido en Windows y Linux».
+**Requiere:** nada.
 
 - [ ] Diseño aprobado: rutas, argumentos y formato de `links.json`
 - [ ] `install-settings.mjs` (con `--check`) fusiona `~/.claude/settings.json` y `install.ps1` lo llama

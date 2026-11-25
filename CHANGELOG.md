@@ -36,6 +36,12 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- The global `CLAUDE.md` works on Windows and Linux: it names "the work folder" from
+  `entorno.md` instead of `D:`, asks to say which privileges a command needs, and moves the
+  system traps (junctions, robocopy, deletes without a recycle bin) to `entorno.md`, whose
+  template now covers both systems. Its language rule matches the comment guide: code
+  comments, script output, hook messages and test names are English.
+
 - Code comments, script output, hook messages and test names are written in
   English, following the new guide `docs/contributing/comments.md`.
 - Node comes from fnm instead of nvm-windows: each terminal switches to the
