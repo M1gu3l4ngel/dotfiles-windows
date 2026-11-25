@@ -18,6 +18,13 @@ Cambios relevantes del proyecto. El formato sigue
 - `check-docs.mjs --community personal|shared|public` falla si a un repo le falta un archivo de
   los que lleva su tipo (NOTICE incluido con Apache-2.0), y deja fuera `.github/`, cuyas
   plantillas van solo en inglés. `tools/check.ps1` lo corre como repo público.
+- `50-claude/skills/new-repo/docs-standard.md`: el estándar de documentación de todos los repos,
+  con plantillas bilingües en `templates/` (README, CHANGELOG, CONTRIBUTING, SECURITY,
+  CODE_OF_CONDUCT, NOTICE y las plantillas de GitHub). Fija qué archivos lleva un repo personal,
+  compartido o público, la licencia, el orden y los nombres de las secciones de cada archivo y el
+  estilo de escritura; `new-repo`, `repo-conventions`, el `CLAUDE.md` global y la regla de
+  documentación de este repo apuntan a él. El README lo sigue: Estructura, Cómo funciona, Cómo
+  empezar, Uso, Solución de problemas y el final fijo.
 - `tools/check.ps1` falla ante un comentario de código en español
   (`50-claude/tools/check-comments.mjs`, compartido con cualquier repo por `~/.claude/tools` y
   configurado con su `.claude/comments.json`, con tests) e imprime lo que exime: Markdown,

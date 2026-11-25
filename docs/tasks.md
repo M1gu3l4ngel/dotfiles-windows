@@ -3,22 +3,6 @@
 Solo lo que falta: lo hecho se borra. Formato y reglas en
 `.claude/rules/task-tracking.md`; el panel de tareas es una vista de este archivo.
 
-# Fase 7 — Documentación estándar en todos los repos
-
-## Guía global de documentación
-
-**Plataforma:** Claude Code.
-
-**Prioridad:** P1.
-
-**Requiere:** nada.
-
-**Estado:** en curso.
-
-- [ ] `skills/new-repo/docs-standard.md`: qué archivos lleva un repo según su visibilidad y el orden de secciones de cada uno
-- [ ] `skills/new-repo/templates/` con cada archivo en inglés y español, listo para rellenar
-- [ ] `repo-conventions`, `SKILL.md`, el `CLAUDE.md` global y `.claude/rules/documentation.md` apuntan a la guía, sin repetirla
-
 # Por probar
 
 ## Prompt tras los arreglos del perfil
@@ -113,6 +97,14 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] Tras el push, «New issue» ofrece los formularios de error y de mejora y el enlace de vulnerabilidad, sin issue en blanco
 - [ ] Tras activar el reporte privado, Security → «Report a vulnerability» abre el formulario
 - [ ] La fila de enlaces del README (Documentation, Contributing, Security, License) lleva a su sección en los dos idiomas
+
+## Estándar de documentación global
+
+**Plataforma:** Claude Code.
+
+- [ ] Al pedir un repo nuevo, Claude lee `docs-standard.md` y copia de `templates/` los archivos de su tipo, sin `<placeholder>` sin rellenar
+- [ ] En un repo existente, Claude avisa como hallazgo cada archivo de comunidad o sección fuera de orden
+- [ ] El README en GitHub se lee en el orden nuevo (Structure, How it works, Getting started, Usage, Troubleshooting) y la fila de enlaces lleva a cada sección, en los dos idiomas
 
 ## Código en inglés
 

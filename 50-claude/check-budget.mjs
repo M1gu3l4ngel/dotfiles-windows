@@ -23,6 +23,7 @@ const BUDGETS = [
   // The rule loads in every session, like CLAUDE.md: keep it short. The skill loads only when used.
   { file: 'rules/repo-conventions.md', maxLines: 30 },
   { file: 'skills/new-repo/SKILL.md', maxLines: 150 },
+  { file: 'skills/new-repo/docs-standard.md', maxLines: 170 },
 ];
 
 let failed = false;

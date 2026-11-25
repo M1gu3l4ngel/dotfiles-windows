@@ -5,7 +5,13 @@ paths:
 
 # Documentación
 
-Aplica a los `README`, `CONTRIBUTING`, `CHANGELOG` y `docs/`. No a `CLAUDE.md`,
+Qué documentos lleva el repo, el orden de sus secciones y cómo se escriben los sigue de
+`50-claude/skills/new-repo/docs-standard.md`, la guía de todos los repos; este repo es
+público y `tools/check.ps1` lo comprueba con `--community public`. Lo de aquí lo
+completa para este repo.
+
+Aplica a los `README`, `CONTRIBUTING`, `CHANGELOG`, `SECURITY`, `CODE_OF_CONDUCT` y
+`docs/`. No a `CLAUDE.md`,
 `.claude/rules/` ni a `docs/tasks.md` y `docs/backlog.md` (instrucciones y lista
 de trabajo del agente, solo en español; el panel de tareas lee sus títulos en
 español).

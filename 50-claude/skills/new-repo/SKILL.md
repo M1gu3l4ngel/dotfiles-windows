@@ -28,28 +28,25 @@ commits y push, carpeta de trabajo y formato (`~/.claude/CLAUDE.md`).
 - **Publicar es confirmar**: crear el repo remoto lo publica. Confirma nombre,
   dueño y visibilidad antes de `gh repo create`.
 
-## 2. Licencia, elegida a propósito
+## 2. Licencia y documentos: `docs-standard.md`
 
-| Caso | Licencia | Visibilidad |
-|---|---|---|
-| Personal u organización propia, público | MIT (lo simple) o Apache-2.0 (si importan las patentes o proteger el nombre y el logo; con `NOTICE` para el copyright) | Público |
-| De un empleador o cliente | Ninguna: el código es suyo | Privado |
-| Privado propio que podría publicarse | La que tendría al publicarse | Privado |
-
-Si no está claro de quién es el código, se pregunta: no se adivina.
+La licencia, qué documentos lleva el repo según sea personal, compartido o público
+(README, CHANGELOG, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, NOTICE y las plantillas
+de `.github/`), el orden de sus secciones y cómo se escriben están en
+[`docs-standard.md`](docs-standard.md), con sus plantillas en `templates/`. Se sigue
+al pie de la letra; si no está claro de quién es el código, se pregunta.
 
 ## 3. Archivos base (cada uno solo si falta)
 
 | Archivo | Qué lleva |
 |---|---|
-| `README.md` + `README.es.md` | Cabecera: selector en la línea 1; si hay marca, el logo en `<picture>` con su versión clara y oscura (una sola desaparece en uno de los temas), sin título `#` que repita el nombre debajo; descripción centrada en dos líneas; fila de enlaces a las secciones en su orden; badges de tecnologías y licencia, y de CI solo si es público. Después: cómo empezar, con la instalación de cada requisito en Windows (winget), macOS (Homebrew) y Linux (instalador oficial o enlace a su guía), versión de Node en `engines.node` como fuente única (exacta si se despliega, `>=` si lo instalan otros; regla `repo-conventions`) y comandos copiables y probados; si es una herramienta o plantilla, primeros pasos tras instalarla; estructura (tabla de carpetas); diagrama si hay más de dos piezas que se relacionan; licencia. Si la organización tiene receta propia, manda la suya, y la cabecera se compara con la de otro de sus repos antes de cerrar |
-| `CHANGELOG.md` + `.es.md` | Keep a Changelog con `## [Unreleased]` / `## [Sin publicar]` |
-| `CONTRIBUTING.md` + `.es.md` | Solo si es compartido (público o más de una persona): flujo, checks, commits |
+| `README.md` + `README.es.md` | Cabecera: selector en la línea 1; si hay marca, el logo en `<picture>` con su versión clara y oscura (una sola desaparece en uno de los temas), sin título `#` que repita el nombre debajo; descripción centrada en dos líneas; fila de enlaces a las secciones en su orden; badges de tecnologías y licencia, y de CI solo si es público. Cuerpo en el orden de `docs-standard.md`, con la versión de Node en `engines.node` como fuente única (regla `repo-conventions`) y comandos copiables y probados. Si la organización tiene receta propia, manda la suya, y la cabecera se compara con la de otro de sus repos antes de cerrar |
+| Documentos de comunidad | Los de su tipo en `docs-standard.md`, desde `templates/` |
 | `.editorconfig`, `.prettierrc.json`, `.prettierignore` | Propios del repo, aunque copien el estilo global: con CI no se depende de `~` |
 | `.gitattributes` | `* text=auto eol=lf` y los binarios marcados |
 | `.gitignore` | El del stack, más `.env`, claves y `*.local.*` |
 | `CLAUDE.md` (español) | Qué es, stack, tabla de comandos, convenciones y enlace a `docs/` |
-| `LICENSE` | La de la tabla de arriba, si lleva |
+| `LICENSE` | La de `docs-standard.md`, si lleva |
 
 Diagramas: Mermaid `flowchart`, etiquetas entre comillas, `<br/>` y `·` para
 separar, sin colores propios (se ve en tema claro y oscuro). Es un bloque de
@@ -64,7 +61,7 @@ código: idéntico en las dos versiones, con etiquetas en inglés.
   lo instalan o lo corren en su máquina, matriz con `windows-latest` y
   `macos-latest` además de Linux, en `bash`.
 - Check bilingüe: el de la organización si su cerebro o su plantilla lo trae;
-  si no, `node ~/.claude/tools/check-docs.mjs .` (de dotfiles-windows, con
+  si no, `node ~/.claude/tools/check-docs.mjs . --community <tipo>` (de dotfiles-windows, con
   `--exclude` para lo que el repo tenga solo en español). En el CI, un segundo
   `actions/checkout` de dotfiles-windows fijado por SHA y el mismo comando con su
   ruta; con él, `check-comments.mjs`.
@@ -80,11 +77,13 @@ minúsculas con guiones, de tecnología y de propósito. La web, si la tiene.
 ```bash
 gh repo create <owner>/<repo> --private --source .
 gh repo edit <owner>/<repo> --description "<one sentence>" --homepage "<url>" --add-topic <topic>,<topic>
+gh api -X PUT repos/<owner>/<repo>/private-vulnerability-reporting
 gh repo view <owner>/<repo> --json description,repositoryTopics,homepageUrl
 ```
 
-`--public` en lugar de `--private` según la tabla de licencia. El primer push lo
-hace el usuario o lo pide.
+`--public` en lugar de `--private` según `docs-standard.md`. El reporte privado de
+vulnerabilidades (la última línea) solo en un repo público: es lo que promete su
+`SECURITY.md`. El primer push lo hace el usuario o lo pide.
 
 Protección de `main`, en el mismo paso: nadie la borra ni la reescribe con un push
 forzado. Un repo de solo `main` lleva esta y nada más (pedir PR le cortaría su

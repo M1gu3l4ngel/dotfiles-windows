@@ -14,9 +14,10 @@
 </p>
 
 <p align="center">
-  <a href="#reproducir-en-un-comando">Instalar</a> ·
-  <a href="#qué-hay-en-el-repo">Estructura</a> ·
+  <a href="#estructura">Estructura</a> ·
   <a href="#cómo-funciona">Cómo funciona</a> ·
+  <a href="#cómo-empezar">Cómo empezar</a> ·
+  <a href="#uso">Uso</a> ·
   <a href="#documentación">Documentación</a> ·
   <a href="#contribuir">Contribuir</a> ·
   <a href="#seguridad">Seguridad</a> ·
@@ -35,7 +36,7 @@
 
 ![Escritorio](assets/preview.png)
 
-## Qué hay en el repo
+## Estructura
 
 Cada carpeta numerada es un área del entorno, con su propio README.
 
@@ -86,23 +87,12 @@ flowchart LR
     G["git pull"] -- "githooks/post-merge" --> I
 ```
 
-## Reproducir en un comando
+## Cómo empezar
 
 Paso a paso desde un Windows recién instalado, con cada ventana y cada reinicio:
-[docs/getting-started.es.md](docs/getting-started.es.md). La versión corta, desde
-PowerShell como administrador (pedirá UAC para WSL, Docker y algunas apps):
+[docs/getting-started.es.md](docs/getting-started.es.md). La versión corta, a continuación.
 
-```powershell
-git clone https://github.com/M1gu3l4ngel/dotfiles-windows.git $env:USERPROFILE\dotfiles
-cd $env:USERPROFILE\dotfiles
-.\bootstrap.ps1
-```
-
-Para ver qué haría sin cambiar nada: `.\bootstrap.ps1 -DryRun`.
-
-Después, completa los pasos manuales (claves GPG/SSH) que el propio script lista.
-
-## Requisitos previos
+### Requisitos previos
 
 - Windows 10/11 con `winget` (App Installer, de la Microsoft Store).
 - **git** para clonar el repo. Si la PC no lo trae (recién formateada), instálalo
@@ -117,7 +107,21 @@ Después, completa los pasos manuales (claves GPG/SSH) que el propio script list
   `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 - Recomendado: ejecutar `bootstrap.ps1` como administrador (WSL y Docker lo piden).
 
-## Qué hace bootstrap.ps1
+### Instalar en un comando
+
+Desde PowerShell como administrador (pedirá UAC para WSL, Docker y algunas apps):
+
+```powershell
+git clone https://github.com/M1gu3l4ngel/dotfiles-windows.git $env:USERPROFILE\dotfiles
+cd $env:USERPROFILE\dotfiles
+.\bootstrap.ps1
+```
+
+Para ver qué haría sin cambiar nada: `.\bootstrap.ps1 -DryRun`.
+
+Después, completa los pasos manuales (claves GPG/SSH) que el propio script lista.
+
+### Qué hace bootstrap.ps1
 
 Es idempotente: cada paso comprueba si ya está hecho, así que se puede re-ejecutar
 sin romper nada (por ejemplo tras un reinicio).
@@ -136,7 +140,7 @@ sin romper nada (por ejemplo tras un reinicio).
 
 Solo instala el **entorno**. Las apps personales no se tocan (ver `60-apps/`).
 
-## Instalar solo las configuraciones
+### Instalar solo las configuraciones
 
 Si ya tienes el stack instalado y solo quieres estas configs:
 
@@ -154,30 +158,20 @@ Para ver el estado de cada enlace, de los hooks de Claude Code y del hook
 .\install.ps1 -Check
 ```
 
-## Desinstalar
-
-Revierte los symlinks y restaura tus archivos originales (los `.pre-dotfiles.bak`).
-Con `-DryRun` solo muestra qué haría, sin tocar nada; sin él, revierte de verdad:
-
-```powershell
-.\uninstall.ps1 -DryRun
-.\uninstall.ps1
-```
-
-No desinstala apps ni toca variables de entorno o WSL.
-
-## Pasos manuales (implican secretos, no se automatizan)
+### Pasos manuales (implican secretos, no se automatizan)
 
 1. Claves SSH y GPG, y firma de commits: [docs/gpg-signing.es.md](docs/gpg-signing.es.md).
 
-## Reproducibilidad entre máquinas
+### Reproducibilidad entre máquinas
 
 El repo detecta el disco de trabajo (`D:` o `C:`) y no depende de rutas fijas de
 usuario, así que clonarlo y correr `bootstrap.ps1` deja otra PC con el mismo
 entorno. Las apps personales y los secretos se restauran aparte (imagen del
 sistema y claves nuevas).
 
-## Mantener otra PC al día
+## Uso
+
+### Mantener otra PC al día
 
 Con una PC ya montada, llevarle un cambio hecho en otra es un `git pull`. En la
 PC donde hiciste el cambio, haz commit y push. En la otra:
@@ -202,7 +196,7 @@ activa la primera vez), y eso cubre el resto:
 Lo que no se versiona no viaja: las claves, `~/.claude/entorno.md` y
 `POSH_NAME`. Las extensiones nuevas de VS Code se instalan volviendo a correr `.\bootstrap.ps1`.
 
-## Nombre visual del prompt (opcional)
+### Nombre visual del prompt (opcional)
 
 Por defecto el prompt muestra tu usuario de Windows. Si prefieres mostrar otro
 nombre (solo en pantalla, sin tocar el sistema), usa el ayudante:
@@ -226,6 +220,18 @@ $env:POSH_NAME = 'demo-user'
 En Git Bash: `export POSH_NAME=demo-user`. Para volver a tu usuario en la misma
 terminal: `Remove-Item Env:POSH_NAME` (PowerShell) o `unset POSH_NAME`
 (Git Bash).
+
+### Desinstalar
+
+Revierte los symlinks y restaura tus archivos originales (los `.pre-dotfiles.bak`).
+Con `-DryRun` solo muestra qué haría, sin tocar nada; sin él, revierte de verdad:
+
+```powershell
+.\uninstall.ps1 -DryRun
+.\uninstall.ps1
+```
+
+No desinstala apps ni toca variables de entorno o WSL.
 
 ## Solución de problemas
 
