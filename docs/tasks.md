@@ -30,6 +30,7 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] [PC nueva] `bootstrap.ps1` instala las 18 apps de `60-apps/essential.json`
 - [ ] [PC nueva] `bootstrap.ps1` instala las 39 extensiones de VS Code y los `.ps1` se formatean al guardar
 - [ ] En GitHub, los diagramas del README y de `docs/getting-started` se dibujan en tema claro y oscuro
+- [ ] [PC nueva] `docs/getting-started` funciona de principio a fin en un Windows 11 limpio, sin pasos que falten
 
 ## Panel de tareas
 
@@ -43,9 +44,9 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 # Fase 4 — Documentación y 1.0.0
 
-## Documentación de proyecto abierto
+## Publicar la 1.0.0 (lo hace el dueño)
 
-**Plataforma:** Repositorio, Instalación.
+**Plataforma:** Repositorio.
 
 **Prioridad:** Mejora.
 
@@ -53,6 +54,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 **Estado:** en curso.
 
-- [ ] Corregir las entradas desfasadas del CHANGELOG
-- [ ] Probar `bootstrap.ps1` y la guía en Windows Sandbox
-- [ ] Cortar el CHANGELOG como 1.0.0 (el tag lo crea el dueño)
+- [ ] Push de `main` a GitHub y CI en verde
+- [ ] Tag firmado `v1.0.0` y su push
+- [ ] Release `v1.0.0` en GitHub con la sección 1.0.0 del CHANGELOG

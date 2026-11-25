@@ -8,188 +8,70 @@ Cambios relevantes del proyecto. El formato sigue
 
 ## [Sin publicar]
 
+## [1.0.0] - 2026-11-24
+
+Primera versión: el entorno completo de Windows 11, reproducible en una PC nueva
+con un comando.
+
 ### Añadido
 
-- `docs/getting-started`: una PC nueva desde cero, paso a paso, con un diagrama
-  de las repeticiones. El README pasa a ser un índice de las carpetas numeradas,
-  con un diagrama de «Cómo funciona», y ahora dice que un Windows nuevo bloquea
-  los scripts (`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`): sin eso,
-  la instalación en un comando fallaba en su primer comando.
-- Panel de tareas global (`claude/panel/`, enlazado en `~/.claude/panel`): un
-  artefacto generado desde `docs/tasks.md` y `docs/backlog.md` de cualquier
-  repo que lo active con `.claude/panel.json`, con su parser y tests, los
-  comandos `init`, `check` y `generate` y tres hooks que avisan cuando el panel
-  publicado queda desfasado. Reemplaza a `claude/tasks-artifact.template.html`.
-  `tools/check.ps1` corre sus tests.
-- `apps/winget-dev.json`: Pandoc y MiKTeX (documentos a PDF); Python pasa a
-  3.14 y se quita SQL Server Management Studio, que ya no se instala.
-- `install.ps1` crea `~/.claude/settings.json` desde la plantilla cuando la
-  máquina no tiene uno, con la ruta real del home, así que los hooks corren en
-  una PC nueva sin editar nada. Si el archivo existe no se toca y el instalador
-  avisa de los hooks que faltan por registrar.
-- Estilo global de formato: los `.jsonc` se formatean sin coma final.
-- Hook global `claude/hooks/block-forbidden-commands.mjs`: bloquea el git de
-  escritura, `prettier --write` con un glob y `robocopy /MIR` sin `/XJ`, y
-  pregunta antes de un borrado recursivo fuera de un temporal. Lo enlaza
-  `install.ps1` y se registra en `settings.template.json`.
-- `CLAUDE.md` global: reglas de higiene de contexto, delegación y hallazgos
-  (presupuesto subido a 60 líneas); `settings.template.json` limita la salida
-  de Bash y de MCP.
-- `.github/dependabot.yml`: un pull request mensual con las subidas de las
-  acciones del CI, que van fijadas por SHA de commit.
-- Artefacto de tareas: `claude/tasks-artifact.template.html` (diseño fijo) y la
-  regla de `CLAUDE.md` que lo pide en los trabajos de varios bloques.
-- README: sección "Mantener otra PC al día" (`git pull`, y cuándo volver a
-  correr `install.ps1` o `bootstrap.ps1`).
-- Documentación completa en inglés y español: cada documento `X.md` (inglés, el
-  que muestra GitHub) tiene su pareja `X.es.md`, con selector de idioma. Incluye
-  el README, `CONTRIBUTING`, este changelog, `docs/` y los README de `apps/` y
-  `claude/`. `tools/check.ps1` (`tools/check-docs.ps1`) falla si falta una
-  pareja o si difieren en estructura, enlaces o bloques de código, y si hay
-  enlaces o anclas rotos.
-- Estilo global de formato (`format/`, copia del de dotfiles-parrot):
-  `.prettierrc.json` y `.editorconfig` enlazados en el perfil y en
-  `<disk>\Dev`, para los proyectos sin configuración propia (tabuladores,
-  comillas dobles, 100 columnas). Un proyecto con la suya nunca usa la global.
-  El repo tiene su propio `.prettierrc.json` y `.prettierignore`.
-- VS Code formatea el shell con shfmt (lo instala `bootstrap.ps1`) y el SQL con
-  SQLTools, lee el `.editorconfig` (extensión EditorConfig) y guarda al cambiar
-  el foco para que el formateo al guardar se ejecute siempre.
-- Capa global de Claude Code (`claude/`): `CLAUDE.md` universal, barra de
-  estado, hook que impone editar con Edit/Write, plantilla de `settings.json`
-  (secretos en `deny`/`ask`) y `check-budget.mjs`, enlazados por `install.ps1`.
-- `uninstall.ps1` + `lib/links.ps1`: desinstalador que revierte los symlinks y
-  restaura los backups (con `-DryRun`); el mapeo de symlinks se comparte entre
-  `install.ps1` y `uninstall.ps1` para que no se desincronicen.
-- `tools/check.ps1` + `PSScriptAnalyzerSettings.psd1`: comprobaciones locales de
-  calidad (sintaxis, PSScriptAnalyzer, JSON, higiene del repo público, LF).
-- CI en GitHub Actions (windows-latest): corre `tools/check.ps1` en cada push y
-  pull request, con las acciones fijadas por SHA de commit y permisos mínimos.
-- `bootstrap.ps1`: instalación del entorno en un comando, idempotente, con modo
-  `-DryRun`. Instala el set esencial de winget, fuentes Nerd verificadas por
-  SHA-256, toolchain de Node, variables de entorno, WSL y los symlinks.
-- `.gitattributes` (finales de línea LF en todo el repo) y `.editorconfig`.
-- `apps/`: snapshot de referencia de aplicaciones: `winget-dev.json` (público,
-  solo entorno/dev) y `winget-full.local.json` (completo, gitignored).
-- `.claude/rules/`: reglas modulares (security, git, file-edits, powershell,
-  documentation, environment), que Claude Code carga solas.
-- `CONTRIBUTING.md` y `CHANGELOG.md`.
-- `bash/`: perfil de Git Bash con el mismo prompt (oh-my-posh).
-
-### Cambiado
-
-- `30-vscode/vscode/extensions.txt` coincide con las extensiones instaladas:
-  añade `ms-vscode.powershell` (el formateador de `.ps1` en `settings.json`),
-  ESLint, REST Client, Containers y Comment Translator, y quita
-  `github.copilot-chat` (viene con VS Code) y Comment Anchors.
-- `60-apps/`: `apps/winget-dev.json` se parte en `essential.json`, que
-  `bootstrap.ps1` lee ahora en lugar de su propia lista, y `optional.json`, los
-  dos en el formato de `winget export`. `tools/check.ps1` falla si una app está
-  en los dos.
-- `50-claude/`: la capa global de Claude Code pasa de `claude/` a una carpeta
-  numerada, con `entorno.template.md` (las secciones del `~/.claude/entorno.md`
-  local) y una fila en el README. `.prettierignore` ya no afirma que la capa es
-  idéntica a la de Parrot.
-- `40-format/`: el estilo global de Prettier y EditorConfig pasa de `format/` a
-  una carpeta numerada con su README; los archivos no cambian.
-- `30-vscode/`: los ajustes, atajos y la lista de extensiones de VS Code pasan
-  de `vscode/` a una carpeta numerada con su README; `bootstrap.ps1` lee la
-  lista desde allí.
-- `20-terminal/`: la configuración de Windows Terminal pasa de
-  `windows-terminal/` a una carpeta numerada con su README.
-- `10-shell/`: los perfiles de PowerShell y Git Bash y el tema del prompt pasan
-  de `powershell/`, `bash/` y `oh-my-posh/` a una carpeta numerada con su
-  README. `install.ps1` reemplaza solo los enlaces viejos.
-- `docs/tasks.md` y `docs/backlog.md` van solo en español, como `CLAUDE.md`: son
-  la lista de trabajo del agente y el panel de tareas lee sus títulos en
-  español. `tools/check-docs.ps1` los deja fuera de la comprobación de parejas.
-- `apps/winget-dev.json` quita `GnuPG.GnuPG`: Gpg4win ya incluye GnuPG.
-- `install.ps1` ya no enlaza el tema del prompt en
-  `%LOCALAPPDATA%\Programs\oh-my-posh\themes`: nada lo leía ahí; el perfil de
-  PowerShell y `.bashrc` lo leen del repo.
-- `vscode/settings.json` quita ajustes sin nada instalado detrás (la ruta de
-  PHP, `gitCommitter.*`, `aiCommit.language`) e `importCost.debug`.
-- `bootstrap.ps1` instala las extensiones de VS Code que falten de
-  `vscode/extensions.txt`; era un paso manual. `install.ps1` ya no termina con
-  pasos manuales que `bootstrap.ps1` ya cubre.
-- `bootstrap.ps1` instala WSL con Ubuntu 26.04 (`$WslDistro`); la 20.04 ya no
-  está en el catálogo de `wsl --install` y el paso fallaba en una PC nueva.
-- `install.ps1 -Check` informa del estado de cada enlace, de los hooks de
-  Claude Code y de `post-merge` sin cambiar nada. Un enlace a una ruta vieja
-  dentro del repo (una carpeta movida) se reemplaza sin backup; antes se movía a
-  `.pre-dotfiles.bak` y `uninstall.ps1` lo habría restaurado después.
-- El perfil de PowerShell encuentra el tema del prompt a través de su propio
-  enlace, como `.bashrc`, en vez de suponer que el repo está en `~\dotfiles`.
-- `claude/settings.template.json` registra la barra de estado (en una PC nueva
-  `statusline.mjs` quedaba enlazado pero apagado) y trae `theme`, `tui` y
-  `autoUpdatesChannel`.
-- `tools/check.ps1` (y con él el CI) corre `claude/check-budget.mjs`, que hasta
-  ahora solo se corría a mano. El tope de `block-forbidden-commands.mjs` sube a
-  220 líneas.
-- `block-forbidden-commands.mjs` deja pasar las formas de solo lectura
-  (`git tag`, `git tag -l`, `git stash list`, `git stash show`); una escritura
-  encadenada detrás sigue bloqueada.
-- `bootstrap.ps1` fija las variables de entorno antes de instalar con winget
-  (rustup acababa en el perfil de `C:`), añade `PNPM_HOME` y los `bin` de Cargo
-  y pnpm al PATH, e instala el proveedor NuGet sin preguntar antes de
-  `Terminal-Icons`.
-- `bootstrap.ps1` exige `Terminal-Icons` 0.11.0 o posterior (nombres de Nerd
-  Fonts v3; las anteriores muestran iconos vacíos) y, si corre elevado, le
-  devuelve al usuario la carpeta de VS Code para que su actualizador no falle
-  con «acceso denegado». También fija el `cache-dir` de pnpm en el disco de
-  trabajo (quedaba en `C:`).
-- `bootstrap.ps1` instala VS Code con «Abrir con Code» en el menú contextual y
-  en el PATH, que la instalación silenciosa de winget deja fuera.
-- `bootstrap.ps1` instala Python 3.14 en vez de 3.13 y Node 24 (la LTS
-  actual) en vez de 22.
-- `CLAUDE.md` global: en un repo con `pnpm generate:panel`, el panel de tareas
-  se lleva desde `docs/tasks.md` y se regenera, en vez de usar la plantilla.
-- `githooks/post-merge` corre `install.ps1` con `pwsh` si está instalado:
-  PowerShell 5.1 pide permisos de administrador para crear symlinks aunque esté
-  activo el modo de desarrollador, así que un enlace nuevo fallaba tras el pull.
-- Windows Terminal: copiar al seleccionar, ventana centrada al abrir y 100
-  columnas. Su `settings.json` queda fuera de Prettier, porque la propia
-  terminal lo reescribe entero al cambiar un ajuste.
-- `reply-in-spanish.mjs` juzga el final del turno en vez del turno entero (uno
-  que pasaba al inglés a mitad seguía pasando), corre también tras cada
-  herramienta para avisar a Claude en cuanto cambia, y lee solo la cola del
-  transcript.
-- `install.ps1` registra en un `~/.claude/settings.json` existente los hooks de
-  la plantilla que le faltan (por evento, con backup antes), y activa
-  `githooks/post-merge`, que lo vuelve a correr tras cada `git pull`: un enlace o
-  un hook nuevo llega a las otras PCs solo con el pull.
-- `bootstrap.ps1` instala pnpm como `@pnpm/exe` (ejecutable propio, que no
-  depende de la versión de Node activa) en vez del paquete `pnpm`.
-- Perfil de PowerShell ~48% más rápido: Terminal-Icons se carga diferido (OnIdle).
-- Prompt (oh-my-posh): texto oscuro uniforme, consistente en VS Code, Windows
-  Terminal y Parrot.
-- Tema del prompt sincronizado con dotfiles-parrot: el título de la pestaña usa
-  `POSH_NAME` como el prompt y muestra `~` en la carpeta de inicio en vez de su
-  nombre (las capturas ya no enseñan el usuario real) y el
-  icono de cambios de git se escribe como escape Unicode en vez de un glifo literal. El
-  README explica cómo cambiar el nombre en una sola terminal (`$env:POSH_NAME`),
-  como en Parrot.
-- Scripts `.ps1` en ASCII puro (sin BOM) para compatibilidad con PowerShell 5.1.
-- `install.ps1`: backup con fecha si ya existe uno, validación de capacidad de
-  symlink antes de tocar nada, y comparación de rutas robusta.
-- `bash/.bashrc`: la ubicación del repo se deriva del symlink (funciona aunque no
-  se clone en `~/dotfiles`).
-- Fuente actualizada a **CaskaydiaCove Nerd Font** (Nerd Fonts v3.5.1); antes se
-  documentaba Hack.
-- Documentación reescrita en estilo sobrio, sin emojis.
-- `CLAUDE.md` dividido en reglas modulares bajo `.claude/rules/`.
+- **Instalación.**
+    - `bootstrap.ps1`: instalación idempotente con modo `-DryRun`. Fija las
+      variables de entorno en el disco de trabajo (`D:`, o `C:` en una PC de un
+      solo disco), instala las apps esenciales, la fuente Nerd, Node con pnpm y
+      Claude Code, WSL con Ubuntu 26.04, la identidad de git, los enlaces y las
+      extensiones de VS Code.
+    - `install.ps1`: los symlinks de configuración de `lib/links.ps1`, con un
+      backup `.pre-dotfiles.bak` de cada archivo existente; `-Check` informa de
+      su estado sin cambiar nada. Reemplaza los enlaces a rutas viejas del repo,
+      crea `~/.claude/settings.json` desde la plantilla si falta y registra los
+      hooks nuevos en uno existente.
+    - `uninstall.ps1`: revierte los enlaces y restaura los backups (`-DryRun`).
+    - `githooks/post-merge`: vuelve a correr `install.ps1` tras cada `git pull`,
+      así que un enlace o hook nuevo llega a las otras PCs solo con el pull.
+- **`10-shell/`**: perfiles de PowerShell 7 y Git Bash con el prompt `capr4n` de
+  oh-my-posh, compartido con dotfiles-parrot. Terminal-Icons se carga en
+  diferido, y `tools/set-prompt-name.ps1` cambia el nombre que se muestra
+  (`POSH_NAME`).
+- **`20-terminal/`**: Windows Terminal con PowerShell 7 por defecto, Monokai,
+  CaskaydiaCove Nerd Font (Nerd Fonts v3.5.1, verificada por SHA-256) y copiar
+  al seleccionar.
+- **`30-vscode/`**: settings, atajos y 39 extensiones; formateo al guardar con
+  Prettier, PowerShell, shfmt y SQLTools, leyendo `.editorconfig`.
+- **`40-format/`**: estilo global de Prettier y EditorConfig para proyectos sin
+  el suyo, idéntico al de dotfiles-parrot.
+- **`50-claude/`**: capa global de Claude Code. Un `CLAUDE.md` universal con
+  presupuesto de líneas, una línea de estado, hooks que obligan a editar con
+  Edit/Write, bloquean el git de escritura y los comandos de riesgo y mantienen
+  las respuestas en español, una plantilla de `settings.json`, la plantilla del
+  `entorno.md` local y un panel de tareas que cualquier repo activa con
+  `.claude/panel.json`.
+- **`60-apps/`**: `essential.json`, que instala `bootstrap.ps1`, y
+  `optional.json`, que se elige en cada PC, los dos en el formato de
+  `winget export`.
+- **Calidad.** `tools/check.ps1` corre las mismas comprobaciones que el CI:
+  sintaxis de PowerShell y PSScriptAnalyzer, JSON, listas de apps sin solaparse,
+  higiene del repo público, finales LF, documentación bilingüe, presupuesto de
+  la capa de Claude Code, tests del panel y gitleaks. CI en GitHub Actions con
+  las acciones fijadas por SHA de commit, y Dependabot para actualizarlas cada
+  mes.
+- **Documentación** en inglés y español, con selector de idioma: README como
+  índice con un diagrama, guía de PC nueva (`docs/getting-started`), firma de
+  commits, formato, `CONTRIBUTING` y el README de cada carpeta.
 
 ### Seguridad
 
-- `block-forbidden-commands.mjs` ya no nombra ningún repo: los repos en los
-  que se permite subir a `main` salen de `~/.claude/hooks.local.json`, que no
-  se versiona (forma en `claude/hooks.local.example.json`).
-- `tools/check.ps1` ya no escribe en el repo los literales sensibles que busca:
-  los lee de `tools/hygiene-patterns.local` (ignorado por git) o de la variable
-  `DOTFILES_HYGIENE_PATTERNS`. Se purgaron del historial, también de la autoría
-  de los commits.
-- Purga del historial con `git-filter-repo`: se eliminaron de **todos** los
-  commits una API key filtrada y datos de conexión de la empresa (servidor de
-  Fabric, correo corporativo, IDs de Azure) que estaban públicos desde el commit
-  inicial.
-- `vscode/settings.json` saneado; `*.local.json` añadido a `.gitignore`.
+- Historial purgado con `git-filter-repo`: una API key filtrada y datos de
+  conexión de la empresa (servidor de Fabric, correo corporativo, IDs de Azure)
+  que estaban públicos desde el commit inicial se eliminaron de **todos** los
+  commits, autoría incluida. Se saneó `30-vscode/vscode/settings.json` y se
+  añadió `*.local.json` a `.gitignore`.
+- `tools/check.ps1` no guarda en el repo los literales sensibles que busca: los
+  lee de `tools/hygiene-patterns.local` (ignorado por git) o de la variable
+  `DOTFILES_HYGIENE_PATTERNS`.
+- `block-forbidden-commands.mjs` no nombra ningún repo: los repos donde se
+  permite el push a `main` salen de `~/.claude/hooks.local.json`, que no se
+  versiona (forma en `50-claude/hooks.local.example.json`).
+
+[Sin publicar]: https://github.com/M1gu3l4ngel/dotfiles-windows/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/M1gu3l4ngel/dotfiles-windows/releases/tag/v1.0.0
