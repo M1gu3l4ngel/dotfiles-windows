@@ -64,8 +64,10 @@ código: idéntico en las dos versiones, con etiquetas en inglés.
   lo instalan o lo corren en su máquina, matriz con `windows-latest` y
   `macos-latest` además de Linux, en `bash`.
 - Check bilingüe: el de la organización si su cerebro o su plantilla lo trae;
-  si no, copia `tools/check-docs.ps1` de dotfiles-windows (el repo al que apunta
-  el enlace `~/.claude/CLAUDE.md`) y córrelo con `pwsh` en el CI.
+  si no, `node ~/.claude/tools/check-docs.mjs .` (de dotfiles-windows, con
+  `--exclude` para lo que el repo tenga solo en español). En el CI, un segundo
+  `actions/checkout` de dotfiles-windows fijado por SHA y el mismo comando con su
+  ruta; con él, `check-comments.mjs`.
 - `.github/dependabot.yml` mensual para `github-actions`.
 - Ramas: `main` por defecto y el trabajo en la rama que diga el proyecto (su
   cerebro o su `CLAUDE.md`). Push nunca a `main`, salvo en un repo de solo `main`.

@@ -52,7 +52,7 @@ noreply** de GitHub y **firma los commits con GPG**. Cómo configurarlo:
 Toda la documentación existe en inglés (`X.md`) y en español (`X.es.md`), con
 el selector de idioma en la primera línea. Al cambiar un documento, cambia
 también su pareja en el mismo commit. `.\tools\check.ps1`
-(`tools\check-docs.ps1`) falla si no tienen la misma estructura (secciones,
+(`50-claude/tools/check-docs.mjs`) falla si no tienen la misma estructura (secciones,
 tablas, listas, enlaces), si sus bloques de código difieren (los comandos no se
 traducen) o si hay enlaces o anclas rotos.
 

@@ -26,7 +26,7 @@ español).
   `<your-noreply>`), explicados en el texto de cada idioma. Los textos que
   muestra el programa (mensajes, salidas) se citan tal cual.
 - Un cambio en uno va también al otro, en el mismo commit.
-  `tools/check.ps1` (`tools/check-docs.ps1`) falla si falta una pareja o un
+  `tools/check.ps1` (`50-claude/tools/check-docs.mjs`) falla si falta una pareja o un
   selector, si difieren títulos, filas de tabla, elementos de lista, enlaces
   o bloques de código, o si hay enlaces o anclas rotos.
 - En inglés: comentarios de código, salida de los scripts, `reason` de los hooks

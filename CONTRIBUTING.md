@@ -51,7 +51,7 @@ The repo is public and every commit publishes the author's email: use the GitHub
 
 All documentation exists in English (`X.md`) and Spanish (`X.es.md`), with the
 language selector on the first line. When you change a document, change its
-pair in the same commit. `.\tools\check.ps1` (`tools\check-docs.ps1`) fails if
+pair in the same commit. `.\tools\check.ps1` (`50-claude/tools/check-docs.mjs`) fails if
 they do not share the same structure (sections, tables, lists, links), if their
 code blocks differ (commands are not translated) or if there are broken links
 or anchors.

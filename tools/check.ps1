@@ -6,7 +6,7 @@
 .DESCRIPTION
   Checks the syntax of every .ps1 and runs PSScriptAnalyzer, validates the pure JSON files and
   that the two app lists do not overlap, scans tracked files for user paths and company data,
-  requires LF line endings, compares the bilingual docs (tools/check-docs.ps1), enforces the
+  requires LF line endings, compares the bilingual docs (50-claude/tools/check-docs.mjs), enforces the
   Claude Code layer's line budget, runs the panel, hook and shared tool tests and the task format
   check, fails on a Spanish code comment (50-claude/tools/check-comments.mjs, which prints its
   exemptions), and scans the history with gitleaks when it is installed.
@@ -126,13 +126,18 @@ if ($crlf.Count -eq 0) { Pass 'LF line endings' }
 else { Fail "CRLF found in: $($crlf -join ', ')" }
 
 # Each X.md (English) has its X.es.md (Spanish) with the same structure, links and code blocks.
-# What it compares is detailed in tools/check-docs.ps1.
-$docsOut = & (Join-Path $PSScriptRoot 'check-docs.ps1') -Root $repo
-if ($LASTEXITCODE -eq 0) { Pass ($docsOut -join ' ') }
-else {
-	Fail 'Bilingual docs out of sync:'
-	$docsOut | ForEach-Object { Write-Host "       $_" }
+# What it compares is detailed in 50-claude/tools/check-docs.mjs. Besides its defaults (CLAUDE.md,
+# .claude/, the task lists), the global rule, the skill and the entorno.md template are Spanish
+# only, like the agent instructions they are.
+if (Get-Command node -ErrorAction SilentlyContinue) {
+	$docsOut = node (Join-Path $repo '50-claude\tools\check-docs.mjs') $repo --exclude 50-claude/rules/ --exclude 50-claude/skills/ --exclude 50-claude/entorno.template.md 2>&1
+	if ($LASTEXITCODE -eq 0) { Pass ($docsOut -join ' ') }
+	else {
+		Fail 'Bilingual docs out of sync:'
+		$docsOut | ForEach-Object { Write-Host "       $_" }
+	}
 }
+else { Skip 'node not installed: bilingual docs not checked' }
 
 # CLAUDE.md loads in every session: growing without a cap costs context in all of them.
 if (Get-Command node -ErrorAction SilentlyContinue) {

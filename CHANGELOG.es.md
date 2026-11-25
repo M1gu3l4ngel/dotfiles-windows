@@ -38,6 +38,11 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- El check de docs bilingües pasa de `tools/check-docs.ps1` a
+  `50-claude/tools/check-docs.mjs`, con tests y las mismas comprobaciones, para que cualquier
+  repo (dotfiles-parrot incluido) corra una sola implementación; cada repo pasa sus exclusiones
+  con `--exclude`.
+
 - Los enlaces de la capa de Claude Code viven en `50-claude/links.json`, que leen
   `lib/links.ps1` y el `lib/links.sh` de dotfiles-parrot. `50-claude/tools/` se enlaza como
   `~/.claude/tools`, para que cualquier repo corra las herramientas compartidas.

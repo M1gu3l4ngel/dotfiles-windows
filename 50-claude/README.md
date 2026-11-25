@@ -25,6 +25,7 @@ specific to a machine stays local (it is not versioned).
 | `links.json` | — (data) | The layer's links: `source` relative to `50-claude/`, `target` relative to `~/.claude/`, and a `label`. `lib/links.ps1` here and `lib/links.sh` in dotfiles-parrot read it, so a new piece reaches both systems with one entry |
 | `tools/` | `~/.claude/tools` | Shared scripts any repo or installer runs with `node`, each with its tests |
 | `tools/check-comments.mjs` | (inside `tools/`) | Fails on a Spanish code comment and prints its exemptions; a repo configures it with `.claude/comments.json`. See [docs/contributing/comments.md](../docs/contributing/comments.md#the-check-in-any-repo). Portable |
+| `tools/check-docs.mjs` | (inside `tools/`) | Fails if the bilingual docs drift apart: missing pair or selector, different headings, table rows, list items, code blocks or links, broken links or anchors. It leaves out every `CLAUDE.md`, `.claude/` and the task lists; a repo adds its own with `--exclude`. Portable |
 | `tools/install-settings.mjs` | (inside `tools/`) | Creates `~/.claude/settings.json` from the template, or adds the hooks and `deny`/`ask` rules it lacks, with a dated backup; `--check` only reports. The installer of each system calls it (`install.ps1` here, `install.sh` in dotfiles-parrot). Portable |
 | `entorno.template.md` | — (template) | Sections of the local `~/.claude/entorno.md` (Spanish, like `CLAUDE.md`), valid on Windows and Linux, with no data from any machine |
 
