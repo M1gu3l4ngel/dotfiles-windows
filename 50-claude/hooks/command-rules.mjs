@@ -53,6 +53,15 @@ const GIT_SIGNED_TAG = new RegExp(String.raw`${GIT_TAG}(?=[^;&|]*\s(?:-s|--sign)
 const GIT_FF_PULL =
 	/\bgit\s+(?:-[cC]\s+\S+\s+)*pull\b(?=[^;&|]*\s--ff-only\b)(?![^;&|]*\s(?:-r|--rebase\S*|--no-ff|--squash|-f|--force)\b)[^;&|]*/g;
 
+// Unstaging paths (`git reset [HEAD] -- <paths>`) only touches the index, like `git add`: it passes.
+// Any other reset without --hard, --merge or --keep moves HEAD or the index but never the files,
+// and the reflog undoes it: it asks. The ones that rewrite the files stay denied.
+// Kept as strings: a rule's pattern must not be global, because `.test()` on a global regex keeps
+// `lastIndex` between calls; `replaceAll` builds its own global copy.
+const GIT_RESET = String.raw`\bgit\s+(?:-[cC]\s+\S+\s+)*reset\b`;
+const GIT_UNSTAGE = String.raw`${GIT_RESET}(?:\s+(?:-q|--quiet))*(?:\s+HEAD)?\s+--\s[^;&|]*`;
+const GIT_SOFT_RESET = String.raw`${GIT_RESET}(?![^;&|]*\s--(?:hard|merge|keep)\b)[^;&|]*`;
+
 /**
  * Masks quoted text with `_`, keeping the length: a `git commit` inside a search pattern or a
  * message is not a command.
@@ -60,10 +69,7 @@ const GIT_FF_PULL =
  * @param {string} command
  */
 export function stripQuotedText(command) {
-	return command.replaceAll(
-		/'[^']*'|"(?:[^"\\]|\\.)*"/g,
-		(m) => `${m[0]}${"_".repeat(m.length - 2)}${m.at(-1)}`,
-	);
+	return command.replaceAll(/'[^']*'|"(?:[^"\\]|\\.)*"/g, (m) => `${m[0]}${"_".repeat(m.length - 2)}${m.at(-1)}`);
 }
 
 /**
@@ -131,7 +137,8 @@ export function buildCommandRules({ isMainProtected }) {
 					stripQuotedText(command)
 						.replaceAll(GIT_READ_ONLY, " ")
 						.replaceAll(GIT_SIGNED_TAG, " ")
-						.replaceAll(GIT_FF_PULL, " "),
+						.replaceAll(GIT_FF_PULL, " ")
+						.replaceAll(new RegExp(GIT_SOFT_RESET, "g"), " "),
 				),
 			decision: "deny",
 			reason:
@@ -139,17 +146,22 @@ export function buildCommandRules({ isMainProtected }) {
 				"status, log, diff and show are fine.",
 		},
 		{
-			pattern: GIT_FF_PULL,
+			pattern: new RegExp(GIT_FF_PULL.source),
 			decision: "ask",
 			reason: "fast-forward pull: it changes the working tree; only if the user expects it.",
+		},
+		{
+			pattern: new RegExp(GIT_SOFT_RESET),
+			applies: (command) =>
+				new RegExp(GIT_RESET).test(stripQuotedText(command).replaceAll(new RegExp(GIT_UNSTAGE, "g"), " ")),
+			decision: "ask",
+			reason: "reset moving HEAD or the index: only if the user asked; `git reset -- <paths>` passes.",
 		},
 		{
 			pattern: /\brobocopy\b/i,
 			applies: (command) => /\/MIR\b/i.test(command) && !/\/XJ\b/i.test(command),
 			decision: "deny",
-			reason:
-				"robocopy /MIR without /XJ follows junctions and empties the real folder behind them. " +
-				"Add /XJ.",
+			reason: "robocopy /MIR without /XJ follows junctions and empties the folder behind them: add /XJ.",
 		},
 		{
 			pattern: /\bprettier\b[^;&|]*--write\b/,
@@ -200,13 +212,7 @@ export async function runCommandHook(rules, label) {
 	const cwd = typeof parsed.cwd === "string" ? parsed.cwd : process.cwd();
 	const rule = findCommandRule(rules, String(parsed.tool_input?.command ?? ""), cwd);
 	if (!rule) return;
-	process.stdout.write(
-		JSON.stringify({
-			hookSpecificOutput: {
-				hookEventName: "PreToolUse",
-				permissionDecision: rule.decision,
-				permissionDecisionReason: `${label}: ${rule.reason}`,
-			},
-		}),
-	);
+	const decision = { hookEventName: "PreToolUse", permissionDecision: rule.decision };
+	const output = { ...decision, permissionDecisionReason: `${label}: ${rule.reason}` };
+	process.stdout.write(JSON.stringify({ hookSpecificOutput: output }));
 }

@@ -38,6 +38,10 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `block-forbidden-commands.mjs` deja sacar archivos del índice con `git reset [HEAD] -- <rutas>`
+  y pregunta antes de un reset que mueve HEAD o el índice sin tocar los archivos (`--soft`,
+  `--mixed`, sin opción); `--hard`, `--merge` y `--keep` siguen denegados.
+
 - El check de docs bilingües pasa de `tools/check-docs.ps1` a
   `50-claude/tools/check-docs.mjs`, con tests y las mismas comprobaciones, para que cualquier
   repo (dotfiles-parrot incluido) corra una sola implementación; cada repo pasa sus exclusiones

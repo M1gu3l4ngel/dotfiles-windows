@@ -51,6 +51,28 @@ test("a fast-forward pull asks and does not hide a write after it", () => {
 	assert.equal(decide("git fetch origin"), "allow");
 });
 
+test("unstaging paths passes, moving HEAD asks and --hard stays blocked", () => {
+	assert.equal(decide("git reset -- README.md docs/tasks.md"), "allow");
+	assert.equal(decide("git reset -q HEAD -- a.mjs"), "allow");
+	assert.equal(decide("git -C ../other reset -- a.mjs"), "allow");
+	assert.equal(decide("git reset"), "ask");
+	assert.equal(decide("git reset --soft HEAD~1"), "ask");
+	assert.equal(decide("git reset --mixed HEAD~1"), "ask");
+	assert.equal(decide("git reset HEAD~1 -- a.mjs"), "ask");
+	assert.equal(decide("git reset --hard HEAD~1"), "deny");
+	assert.equal(decide("git reset --merge"), "deny");
+	assert.equal(decide("git reset --keep HEAD~1"), "deny");
+	assert.equal(decide("git reset -- a.mjs; git reset --hard"), "deny");
+	assert.equal(decide("git reset -- a.mjs; git rebase main"), "deny");
+});
+
+test("repeated calls give the same decision", () => {
+	for (let i = 0; i < 3; i++) {
+		assert.equal(decide("git pull --ff-only"), "ask");
+		assert.equal(decide("git reset --soft HEAD~1"), "ask");
+	}
+});
+
 test("Linux paths get the same decisions", () => {
 	assert.equal(decide("git -C ~/dotfiles-windows tag -l"), "allow");
 	assert.equal(decide("git -C ~/Dev/projects/x push"), "ask");

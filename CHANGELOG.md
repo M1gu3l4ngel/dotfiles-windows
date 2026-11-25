@@ -37,6 +37,10 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `block-forbidden-commands.mjs` lets `git reset [HEAD] -- <paths>` unstage files and asks before
+  a reset that moves HEAD or the index without touching the files (`--soft`, `--mixed`, no
+  option); `--hard`, `--merge` and `--keep` stay denied.
+
 - The bilingual docs check moves from `tools/check-docs.ps1` to
   `50-claude/tools/check-docs.mjs`, with tests and the same checks, so any repo (dotfiles-parrot
   included) runs one implementation; each repo passes its own exclusions with `--exclude`.
