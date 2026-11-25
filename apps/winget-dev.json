@@ -26,9 +26,6 @@
           "PackageIdentifier": "GitHub.cli"
         },
         {
-          "PackageIdentifier": "GnuPG.GnuPG"
-        },
-        {
           "PackageIdentifier": "GnuPG.Gpg4win"
         },
         {

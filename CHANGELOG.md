@@ -66,6 +66,7 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `apps/winget-dev.json` drops `GnuPG.GnuPG`: Gpg4win already includes GnuPG.
 - `install.ps1` no longer links the prompt theme into
   `%LOCALAPPDATA%\Programs\oh-my-posh\themes`: nothing read it there; the
   PowerShell profile and `.bashrc` read it from the repo.
