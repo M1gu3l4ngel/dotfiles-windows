@@ -29,8 +29,10 @@ $ErrorActionPreference = 'Stop'
 
 # ----- ALCANCE -----
 # Instrucciones para Claude Code (no documentacion para el lector): solo en espanol.
+# Las listas del panel de tareas tambien: son el trabajo del agente, y el panel lee
+# sus titulos en espanol.
 $excludedPrefixes = @('.claude/')
-$excludedFiles = @('CLAUDE.md', 'claude/CLAUDE.md')
+$excludedFiles = @('CLAUDE.md', 'claude/CLAUDE.md', 'docs/tasks.md', 'docs/backlog.md')
 
 $esSuffix = '.es.md'
 # Los .ps1 del repo son ASCII puro (PowerShell 5.1): la enie se construye.

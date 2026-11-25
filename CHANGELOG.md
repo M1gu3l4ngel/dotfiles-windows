@@ -72,6 +72,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `docs/tasks.md` and `docs/backlog.md` are Spanish only, like `CLAUDE.md`: they
+  are the agent's work list and the task panel reads their Spanish headings.
+  `tools/check-docs.ps1` leaves them out of the pair check.
 - `apps/winget-dev.json` drops `GnuPG.GnuPG`: Gpg4win already includes GnuPG.
 - `install.ps1` no longer links the prompt theme into
   `%LOCALAPPDATA%\Programs\oh-my-posh\themes`: nothing read it there; the

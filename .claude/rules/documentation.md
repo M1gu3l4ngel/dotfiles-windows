@@ -5,8 +5,10 @@ paths:
 
 # Documentación
 
-Aplica a los `README`, `CONTRIBUTING`, `CHANGELOG` y `docs/`. No a `CLAUDE.md`
-ni a `.claude/rules/` (instrucciones para el agente, solo en español).
+Aplica a los `README`, `CONTRIBUTING`, `CHANGELOG` y `docs/`. No a `CLAUDE.md`,
+`.claude/rules/` ni a `docs/tasks.md` y `docs/backlog.md` (instrucciones y lista
+de trabajo del agente, solo en español; el panel de tareas lee sus títulos en
+español).
 
 ## Idioma: toda la documentación es bilingüe
 

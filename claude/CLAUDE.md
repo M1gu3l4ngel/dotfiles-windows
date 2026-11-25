@@ -8,7 +8,7 @@ El detalle de la máquina (discos, cachés, variables, rustup, robocopy, qué no
 - Todo documento (README, CONTRIBUTING, CHANGELOG, `docs/`, README de carpetas) va en pareja: `X.md` en inglés (el nombre que reconoce GitHub) y `X.es.md` en español, en la misma carpeta, nombres de archivo en inglés y selector `English | Español` en la línea 1 de ambos. Cada idioma enlaza a su idioma.
 - Misma estructura (secciones, tablas, listas, enlaces); se traduce el texto, incluido el `alt`. Bloques de código idénticos byte a byte (placeholders en inglés neutro). Un cambio va a los dos en el mismo commit, y el check del repo (CI) lo verifica: pareja, selector, estructura, código, enlaces y anclas.
 - Vale también en los repos privados: todo lo nuevo nace en pareja, pensando en publicarlo algún día y en el público de los dos idiomas. Lo ya escrito solo en español se pasa a pareja en su propio bloque de tareas.
-- Solo en español: comentarios de código, commits, `CLAUDE.md` y reglas del agente.
+- Solo en español: comentarios de código, commits, `CLAUDE.md`, reglas del agente y las listas del panel (`docs/tasks.md`, `docs/backlog.md`).
 
 ## Disco: el trabajo va en `D:`
 - `C:` es solo Windows y programas. **Nada de trabajo nuevo en `C:`** (proyectos, cachés, clones, descargas, temporales grandes).

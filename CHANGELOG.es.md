@@ -73,6 +73,9 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `docs/tasks.md` y `docs/backlog.md` van solo en español, como `CLAUDE.md`: son
+  la lista de trabajo del agente y el panel de tareas lee sus títulos en
+  español. `tools/check-docs.ps1` los deja fuera de la comprobación de parejas.
 - `apps/winget-dev.json` quita `GnuPG.GnuPG`: Gpg4win ya incluye GnuPG.
 - `install.ps1` ya no enlaza el tema del prompt en
   `%LOCALAPPDATA%\Programs\oh-my-posh\themes`: nada lo leía ahí; el perfil de
