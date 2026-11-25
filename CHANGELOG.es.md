@@ -17,7 +17,8 @@ Cambios relevantes del proyecto. El formato sigue
   apunta a él y avisa de lo que le falta a un repo. Los enlaza `install.ps1`.
 - `15-git/`: la configuración de git, enlazada por `install.ps1`. Cada remoto
   elige su cuenta de GitHub por su dueño; las organizaciones de clientes y del
-  trabajo se quedan en `~/.gitconfig.local` de la máquina, nunca en este repo público.
+  trabajo se quedan en `~/.gitconfig.local` de la máquina, nunca en este repo público,
+  igual que la clave de firma, que es de cada máquina.
 - `repo-conventions`: la versión de Node vive solo en `engines.node`, exacta si
   se despliega y mínimo si la instalan otros.
 

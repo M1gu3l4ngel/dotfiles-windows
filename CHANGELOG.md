@@ -17,7 +17,8 @@ Notable changes to the project. The format follows
   points to it and reports what a repo is missing. Linked by `install.ps1`.
 - `15-git/`: the git configuration, linked by `install.ps1`. Each remote picks
   its GitHub account by owner; client and work organizations stay in the
-  machine's `~/.gitconfig.local`, never in this public repo.
+  machine's `~/.gitconfig.local`, never in this public repo, and so does the
+  signing key, which is specific to each machine.
 - `repo-conventions`: the Node version lives only in `engines.node`, exact when
   deployed and a minimum when others install it.
 

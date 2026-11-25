@@ -1,7 +1,7 @@
+# La clave de firma (`user.signingkey`) es de cada máquina: va en ~/.gitconfig.local.
 [user]
 	name = M1gu3l4ngel
 	email = 88590762+M1gu3l4ngel@users.noreply.github.com
-	signingkey = 62675F1433E06730
 [init]
 	defaultBranch = main
 [commit]

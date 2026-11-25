@@ -88,12 +88,10 @@ Para que tu correo personal **no quede público** en la clave, tienes dos opcion
 
 ## 3. Configurar git para firmar
 
+El correo, los commits y tags firmados y la ruta de GnuPG ya están en `15-git/gitconfig`. La clave es de cada máquina, así que va en `~/.gitconfig.local`, fuera del repo:
+
 ```powershell
-git config --global user.email "<your-noreply>"
-git config --global user.signingkey <fingerprint>
-git config --global commit.gpgsign true
-git config --global tag.gpgsign true
-git config --global gpg.program "C:\Program Files\GnuPG\bin\gpg.exe"
+git config --file ~/.gitconfig.local user.signingkey <fingerprint>
 ```
 
 ## 4. Subir la clave pública a GitHub

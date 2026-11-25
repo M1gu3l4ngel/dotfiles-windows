@@ -329,9 +329,8 @@ function Invoke-Step9Manual {
 		'',
 		'3. Clave GPG (firma de commits + badge "Verified"):',
 		'     gpg --quick-generate-key "M1gu3l4ngel <88590762+M1gu3l4ngel@users.noreply.github.com>" default default 2y',
-		'     git config --global user.signingkey <fingerprint>',
-		'     git config --global commit.gpgsign true',
-		'     git config --global gpg.program "C:\Program Files\GnuPG\bin\gpg.exe"',
+		'     git config --file ~/.gitconfig.local user.signingkey <fingerprint>',
+		'     (la firma ya esta activada en 15-git/gitconfig; la clave es de cada maquina)',
 		'     Sube la clave publica a GitHub. Detalle en docs/gpg-signing.es.md.'
 	)
 	$lines | ForEach-Object { Write-Host "    $_" -ForegroundColor Gray }
