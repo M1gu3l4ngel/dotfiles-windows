@@ -67,6 +67,9 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `tools/check.ps1` (y con él el CI) corre `claude/check-budget.mjs`, que hasta
+  ahora solo se corría a mano. El tope de `block-forbidden-commands.mjs` sube a
+  220 líneas.
 - `block-forbidden-commands.mjs` deja pasar las formas de solo lectura
   (`git tag`, `git tag -l`, `git stash list`, `git stash show`); una escritura
   encadenada detrás sigue bloqueada.

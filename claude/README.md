@@ -17,7 +17,7 @@ specific to a machine stays local (it is not versioned).
 | `hooks.local.example.json` | — (example) | Shape of `~/.claude/hooks.local.json`: the repos whose only branch is `main` (`owner/repo`), where the hook allows pushing to `main`. Without that file no repo has the exception |
 | `hooks/reply-in-spanish.mjs` | `~/.claude/hooks/reply-in-spanish.mjs` | `PostToolUse` and `Stop` hook that keeps replies in Spanish: after each tool it warns Claude if what it last wrote is in English, and it blocks a turn that ends in English. It judges the end of the turn and ignores code, paths and identifiers. Portable Windows/Linux |
 | `settings.template.json` | — (template) | Portable base for `settings.json`: generic secret `deny`/`ask` rules + hook registration + `skillOverrides` |
-| `check-budget.mjs` | — (script) | Budget guard: counts the lines of `CLAUDE.md`/`statusline`/`hook` and fails if they exceed it. `node claude/check-budget.mjs`. Portable |
+| `check-budget.mjs` | — (script) | Budget guard: counts the lines of `CLAUDE.md`/`statusline`/`hook` and fails if they exceed it. Run by `tools/check.ps1` and CI; on its own: `node claude/check-budget.mjs`. Portable |
 | `tasks-artifact.template.html` | — (template) | Fixed design of the task artifact that `CLAUDE.md` asks for on multi-block work: Claude copies it, fills in the content and does not redesign it |
 
 ## What is NOT versioned (stays local, per machine)

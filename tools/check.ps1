@@ -10,7 +10,8 @@
   4. Higiene del repo publico: sin rutas C:\Users\<usuario> ni datos de empresa
   5. Finales de linea LF (sin CRLF)
   6. Documentacion bilingue sincronizada (tools/check-docs.ps1)
-  7. Secretos con gitleaks (si esta instalado)
+  7. Presupuesto de lineas de la capa de Claude Code (claude/check-budget.mjs)
+  8. Secretos con gitleaks (si esta instalado)
 
   Sale con codigo distinto de 0 si alguna comprobacion falla.
 
@@ -127,7 +128,19 @@ else {
 	$docsOut | ForEach-Object { Write-Host "       $_" }
 }
 
-# ----- 7. SECRETOS (gitleaks, si esta disponible) -----
+# ----- 7. PRESUPUESTO DE LA CAPA DE CLAUDE CODE -----
+# CLAUDE.md se carga en cada sesion: crecer sin tope cuesta contexto en todas.
+if (Get-Command node -ErrorAction SilentlyContinue) {
+	$budgetOut = node (Join-Path $repo 'claude\check-budget.mjs') 2>&1
+	if ($LASTEXITCODE -eq 0) { Pass 'Presupuesto de la capa de Claude Code' }
+	else {
+		Fail 'Presupuesto de la capa de Claude Code excedido:'
+		$budgetOut | Where-Object { $_ -match 'XX' } | ForEach-Object { Write-Host "       $_" }
+	}
+}
+else { Skip 'node no instalado: sin comprobar el presupuesto de claude/' }
+
+# ----- 8. SECRETOS (gitleaks, si esta disponible) -----
 if (Get-Command gitleaks -ErrorAction SilentlyContinue) {
 	gitleaks git --no-banner --redact $repo 2>&1 | Out-Null
 	if ($LASTEXITCODE -eq 0) { Pass 'gitleaks: sin secretos en el historial' }
