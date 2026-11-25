@@ -79,9 +79,12 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 encaja; JSDoc o ayuda basada en comentarios; dentro del cuerpo solo el porqué.
 Sin cambiar comportamiento, un commit por carpeta.
 
-- [ ] Decidir con Parrot `40-format`, que es copia idéntica de la suya
 - [ ] Check en `tools/check.ps1` (y CI) que falle ante un comentario en español, con las exenciones en su salida
 - [ ] Nota de lo aprendido en `docs/contributing/comments.md`
+
+# Lo hace el dueño
+
+- [ ] Firmar en dotfiles-parrot el commit de `format/editorconfig` en inglés, ya editado en el clon de `D:\Dev\projects\dotfiles-parrot` e idéntico a `40-format/editorconfig`, y hacer push
 
 # Aplazado — cada uno con el evento que lo dispara
 
