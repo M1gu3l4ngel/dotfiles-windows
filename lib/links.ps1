@@ -76,12 +76,12 @@ function Get-DotfilesLink {
 			Label  = 'Windows Terminal settings'
 		},
 		@{
-			Source = "$DotfilesRoot\vscode\settings.json"
+			Source = "$DotfilesRoot\30-vscode\vscode\settings.json"
 			Target = "$env:APPDATA\Code\User\settings.json"
 			Label  = 'VS Code settings'
 		},
 		@{
-			Source = "$DotfilesRoot\vscode\keybindings.json"
+			Source = "$DotfilesRoot\30-vscode\vscode\keybindings.json"
 			Target = "$env:APPDATA\Code\User\keybindings.json"
 			Label  = 'VS Code keybindings'
 		},

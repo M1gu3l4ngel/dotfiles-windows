@@ -14,10 +14,10 @@ para siempre en el historial.
 - Los commits se firman con GPG y usan el **email noreply** de GitHub, no el
   personal. Ver `docs/gpg-signing.es.md`.
 
-## Ojo con vscode/settings.json
+## Ojo con 30-vscode/vscode/settings.json
 
 Varias extensiones (mssql, generadores de commits, etc.) escriben conexiones y
-**API keys dentro de `vscode/settings.json`**, que sí se versiona. Antes de
+**API keys dentro de `30-vscode/vscode/settings.json`**, que sí se versiona. Antes de
 commitear, revisar ese archivo en busca de `mssql.connections`, `*.apiKey`,
 tokens y correos. Ya se filtraron datos de la empresa y una API key por esto.
 

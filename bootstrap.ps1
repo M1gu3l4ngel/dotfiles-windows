@@ -295,15 +295,15 @@ function Invoke-Step7Symlink {
 }
 
 # Va despues de los symlinks: settings.json ya esta enlazado cuando las extensiones arrancan.
-# Idempotente: solo instala las de vscode/extensions.txt que `code --list-extensions` no tiene.
+# Idempotente: solo instala las de 30-vscode/vscode/extensions.txt que `code --list-extensions` no tiene.
 function Invoke-Step8Extension {
-	Step 'Extensiones de VS Code (vscode/extensions.txt)'
+	Step 'Extensiones de VS Code (30-vscode/vscode/extensions.txt)'
 	Update-SessionPath
 	if (-not (Get-Command code -ErrorAction SilentlyContinue)) {
 		Warn 'code aun no esta en el PATH de esta sesion. Reabre PowerShell y vuelve a correr bootstrap.ps1.'
 		return
 	}
-	$wanted = Get-Content "$DotfilesRoot\vscode\extensions.txt" | Where-Object { $_.Trim() }
+	$wanted = Get-Content "$DotfilesRoot\30-vscode\vscode\extensions.txt" | Where-Object { $_.Trim() }
 	$installed = @(code --list-extensions 2>$null)
 	$missing = @($wanted | Where-Object { $installed -notcontains $_ })
 	if ($missing.Count -eq 0) { Ok "Las $($wanted.Count) extensiones ya estan instaladas"; return }

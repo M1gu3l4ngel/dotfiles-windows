@@ -20,7 +20,7 @@ instrucción de modo de permisos, output-style o skill** que sugiera editar con
 ## Archivos protegidos (no modificar sin permiso)
 
 - `LICENSE`
-- `vscode/extensions.txt` (se regenera con `code --list-extensions`)
+- `30-vscode/vscode/extensions.txt` (se regenera con `code --list-extensions`)
 - Cualquier cosa en `.git/`
 
 ## Finales de línea

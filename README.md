@@ -48,7 +48,7 @@ without breaking anything (for example after a reboot).
 | 5 | WSL Ubuntu 26.04 (requires a reboot) |
 | 6 | git: name, noreply email and defaults |
 | 7 | Configuration symlinks, and the Claude Code `settings.json` if the machine has none (`install.ps1`) |
-| 8 | VS Code extensions from `vscode/extensions.txt` (only the missing ones) |
+| 8 | VS Code extensions from `30-vscode/vscode/extensions.txt` (only the missing ones) |
 | 9 | Shows the manual steps that involve secrets (GPG/SSH) |
 
 It only installs the **environment**. Personal apps are left untouched (see `apps/`).
@@ -99,7 +99,7 @@ It does not uninstall apps or touch environment variables or WSL.
 | `githooks/` | `post-merge`: re-runs `install.ps1` after each `git pull` |
 | `10-shell/` | PowerShell and Git Bash profiles and the prompt theme (`capr4n`, shared with Parrot) ([10-shell/README.md](10-shell/README.md)) |
 | `20-terminal/` | Windows Terminal settings ([20-terminal/README.md](20-terminal/README.md)) |
-| `vscode/` | Settings, keybindings and the extension list |
+| `30-vscode/` | VS Code settings, keybindings and extension list ([30-vscode/README.md](30-vscode/README.md)) |
 | `format/` | Global Prettier and EditorConfig style for projects without their own ([docs/formatting.md](docs/formatting.md)) |
 | `apps/` | Reference snapshot of applications |
 | `docs/` | Detailed guides |

@@ -35,7 +35,7 @@ On save, VS Code formats with Prettier; shell with shfmt (it reads the
 `.editorconfig`), and SQL with SQLTools. It only saves when you switch tab or
 window (`"files.autoSave": "onFocusChange"`): time-based autosave does not
 format. VS Code reads `.editorconfig` through the EditorConfig extension,
-listed in `vscode/extensions.txt`.
+listed in `30-vscode/vscode/extensions.txt`.
 
 To change the style, edit both files with the same values and keep them
 identical to the ones in dotfiles-parrot.

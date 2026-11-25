@@ -76,7 +76,7 @@ people and for Claude Code, which loads them automatically.
 The most important points:
 
 - Never include personal or company data (username, emails, IPs, fingerprints,
-  internal endpoints). Review `vscode/settings.json` before committing:
+  internal endpoints). Review `30-vscode/vscode/settings.json` before committing:
   extensions write keys there.
 - Anything that does not come from winget is downloaded at a pinned version and
   verified with SHA-256.

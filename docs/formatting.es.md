@@ -35,7 +35,7 @@ Al guardar, VS Code formatea con Prettier; el shell con shfmt (lee el
 `.editorconfig`) y el SQL con SQLTools. Solo guarda al cambiar de pestaña o de
 ventana (`"files.autoSave": "onFocusChange"`): el autoguardado por tiempo no
 formatea. VS Code lee el `.editorconfig` con la extensión EditorConfig, que
-está en `vscode/extensions.txt`.
+está en `30-vscode/vscode/extensions.txt`.
 
 Para cambiar el estilo, edita los dos archivos con los mismos valores y
 mantenlos idénticos a los de dotfiles-parrot.

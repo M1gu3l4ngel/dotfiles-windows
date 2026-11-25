@@ -76,7 +76,7 @@ Claude Code, que las carga automáticamente.
 Lo más importante:
 
 - Nunca incluyas datos personales ni de empresa (usuario, emails, IPs,
-  fingerprints, endpoints internos). Revisa `vscode/settings.json` antes de
+  fingerprints, endpoints internos). Revisa `30-vscode/vscode/settings.json` antes de
   commitear: las extensiones escriben keys ahí.
 - Lo que no venga de winget se descarga en versión fija y se verifica con SHA-256.
 - La documentación va sobria, sin emojis.

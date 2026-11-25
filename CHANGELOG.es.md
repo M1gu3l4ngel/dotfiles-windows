@@ -73,6 +73,9 @@ Cambios relevantes del proyecto. El formato sigue
 
 ### Cambiado
 
+- `30-vscode/`: los ajustes, atajos y la lista de extensiones de VS Code pasan
+  de `vscode/` a una carpeta numerada con su README; `bootstrap.ps1` lee la
+  lista desde allí.
 - `20-terminal/`: la configuración de Windows Terminal pasa de
   `windows-terminal/` a una carpeta numerada con su README.
 - `10-shell/`: los perfiles de PowerShell y Git Bash y el tema del prompt pasan

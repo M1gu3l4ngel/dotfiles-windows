@@ -72,6 +72,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `30-vscode/`: the VS Code settings, key bindings and extension list move from
+  `vscode/` into a numbered folder with its README; `bootstrap.ps1` reads the list
+  from there.
 - `20-terminal/`: the Windows Terminal settings move from `windows-terminal/`
   into a numbered folder with its README.
 - `10-shell/`: the PowerShell and Git Bash profiles and the prompt theme move

@@ -54,7 +54,6 @@ Cada movimiento lleva su README en pareja, actualiza `lib/links.ps1`,
 `.prettierignore`, `tools/check.ps1` y la documentación, y se verifica con
 `.\install.ps1 -Check`.
 
-- [ ] `30-vscode`: `vscode/`
 - [ ] `40-format`: `format/`
 - [ ] `50-claude`: `claude/`, con `entorno.template.md` y sin la afirmación de que es idéntico byte a byte al de Parrot
 - [ ] `60-apps`: `essential.json`, que lee `bootstrap.ps1` en lugar de `$WingetEssential`, y `optional.json`, sin solaparse (lo comprueba `tools/check.ps1`)
@@ -84,10 +83,10 @@ Cada movimiento lleva su README en pareja, actualiza `lib/links.ps1`,
 
 **Requiere:** nada.
 
-`vscode/extensions.txt` está protegido. Falta `ms-vscode.powershell`, que
+`30-vscode/vscode/extensions.txt` está protegido. Falta `ms-vscode.powershell`, que
 `settings.json` usa como formateador; sobran `github.copilot-chat` (ya viene en VS
 Code) y `exodiusstudios.comment-anchors`; faltan `dbaeumer.vscode-eslint`,
 `humao.rest-client`, `ms-azuretools.vscode-containers` y
 `elvisrp22.comment-translator`.
 
-- [ ] Decidir si se regenera con `code --list-extensions > vscode/extensions.txt`
+- [ ] Decidir si se regenera con `code --list-extensions > 30-vscode/vscode/extensions.txt`, desde PowerShell 7 o Git Bash (Windows PowerShell escribe UTF-16 con CRLF)
