@@ -86,13 +86,3 @@ Code) y `exodiusstudios.comment-anchors`; faltan `dbaeumer.vscode-eslint`,
 `elvisrp22.comment-translator`.
 
 - [ ] Decidir si se regenera con `code --list-extensions > vscode/extensions.txt`
-
-## Plantilla vieja del artefacto de tareas
-
-**Plataforma:** Claude Code.
-
-**Requiere:** nada.
-
-El hook no deja a Claude usar `git rm`. Ya nada la nombra: la reemplaza el panel.
-
-- [ ] Quitarla con `git rm claude/tasks-artifact.template.html`
