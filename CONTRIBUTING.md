@@ -25,16 +25,23 @@ If the change is visible to the user, add it to the changelog
 
 ## Commits
 
-[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format on
-a single line of 72 characters at most, with the description in Spanish:
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format: a
+title of 72 characters at most, a blank line and a body with one dash per
+concrete change (no body only when the title says it all). The text is written
+in Spanish:
 
 ```
-type(scope): <description>
+type(scope): <summary>
+
+- <change>
+- <change>
 ```
 
 - `type` in English: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
 - `scope` optional: the affected component (`install`, `bootstrap`, `vscode`...).
-- **A single commit** per set of changes, even if it touches several files.
+- **One commit per verified change**: two independent changes go in two
+  commits, so each one can be reviewed and reverted on its own.
+- Add files by path, never with `git add -A` or `git add .`.
 
 The repo is public and every commit publishes the author's email: use the GitHub
 **noreply email** and **sign commits with GPG**. How to set it up:

@@ -25,16 +25,23 @@ Si el cambio es visible para el usuario, añádelo al changelog
 
 ## Commits
 
-Formato [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/) en
-una sola línea de 72 caracteres como máximo, con la descripción en español:
+Formato [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/): un
+título de 72 caracteres como máximo, una línea en blanco y un cuerpo con un
+guion por cambio concreto (sin cuerpo solo si el título lo dice todo). El texto
+va en español:
 
 ```
-type(scope): <description>
+type(scope): <summary>
+
+- <change>
+- <change>
 ```
 
 - `type` en inglés: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `ci`.
 - `scope` opcional: el componente afectado (`install`, `bootstrap`, `vscode`...).
-- **Un solo commit** por conjunto de cambios, aunque toque varios archivos.
+- **Un commit por cambio verificado**: dos cambios independientes van en dos
+  commits, para que cada uno se pueda revisar y revertir solo.
+- Los archivos se añaden por ruta, nunca con `git add -A` ni `git add .`.
 
 El repo es público y cada commit publica el email del autor: usa el **email
 noreply** de GitHub y **firma los commits con GPG**. Cómo configurarlo:

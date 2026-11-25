@@ -14,7 +14,7 @@ Las reglas detalladas están en `.claude/rules/` y **Claude Code las carga solas
 frontmatter `paths:`.
 
 - `security.md`: repo público, secretos, datos de empresa, descargas verificadas.
-- `git.md`: commits (uno solo, los ejecuta el usuario), formato, firma, noreply.
+- `git.md`: un commit firmado por cambio verificado (lo hace Claude, sin push), formato, firma, noreply.
 - `file-edits.md`: editar con Edit/Write nunca con sed; archivos protegidos.
 - `powershell.md`: convenciones de PowerShell (al tocar `.ps1`).
 - `documentation.md`: estilo sobrio de la documentación (al tocar `.md`).
