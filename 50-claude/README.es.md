@@ -41,22 +41,41 @@ máquina se queda local (no se versiona).
 
 ## Montar en una máquina nueva (Windows o Linux)
 
-1. Clonar el repo y correr el instalador: enlaza los archivos de arriba a `~/.claude/`.
-    - Windows: `./install.ps1` (necesita Developer Mode o admin para symlinks).
-2. `~/.claude/settings.json` sale de `settings.template.json`:
-    - En Windows lo crea `install.ps1` si la máquina no tiene uno, con
-      `REEMPLAZA_RUTA_HOME` cambiado por el home real (`C:/Users/<user>`). Las rutas de
-      los hooks van entre comillas, así que un home con espacios funciona.
-    - Si ya existe, el instalador solo le añade los hooks y las reglas `deny`/`ask` de la
-      plantilla que le faltan (un hook enlazado no se ejecuta hasta registrarlo aquí, y una
-      regla de seguridad nueva tiene que llegar a todas las máquinas), con un backup
-      `.pre-dotfiles.bak` con fecha antes; lo demás del archivo queda como estaba.
-      Vuelve a correr tras cada `git pull`, así que un hook nuevo llega a todas las
-      máquinas.
+Cada sistema tiene su instalador: `.\install.ps1` de este repo en Windows
+(necesita Developer Mode o admin para los symlinks), y `./install.sh` de
+[dotfiles-parrot](https://github.com/M1gu3l4ngel/dotfiles-parrot) en Linux, que
+enlaza esta carpeta desde un clon de este repo. Los dos cumplen el mismo contrato,
+así que la capa es la misma en todas las máquinas:
+
+1. **Enlaces.** Cada entrada de `links.json` se convierte en un symlink de
+   `50-claude/<source>` a `~/.claude/<target>`; las carpetas se enlazan enteras.
+   Un archivo real que estorbe se mueve antes a `<archivo>.pre-dotfiles.bak`.
+2. **Settings.** `~/.claude/settings.json` se fusiona, nunca se enlaza, con
+   `tools/install-settings.mjs`:
+    - Si la máquina no tiene uno, se crea desde `settings.template.json` con
+      `REEMPLAZA_RUTA_HOME` cambiado por el home real (`C:/Users/<user>` o
+      `/home/<user>`). Las rutas de los hooks van entre comillas, así que un home
+      con espacios funciona.
+    - Si ya existe, solo se le añaden los hooks y las reglas `deny`/`ask` de la
+      plantilla que le faltan (un hook enlazado no se ejecuta hasta registrarlo
+      aquí, y una regla de seguridad nueva tiene que llegar a todas las máquinas),
+      con un backup `.pre-dotfiles.bak` con fecha antes; lo demás del archivo queda
+      como estaba.
     - Opcional (más fiable en Windows): añadir también rutas **absolutas** de tus secretos,
       p. ej. `Read(//d/Dev/security-keys/**)`, junto a los patrones `**/` genéricos.
-3. Crear tu `~/.claude/entorno.md` local con el detalle de esa máquina (no se
-   versiona), copiando las secciones de `entorno.template.md`.
+3. **Comprobación.** Un modo que no cambia nada informa de los enlaces y de los
+   settings (`.\install.ps1 -Check` aquí). La parte de los settings es el mismo
+   comando en cualquier sistema:
+
+    ```bash
+    node ~/.claude/tools/install-settings.mjs --check
+    ```
+
+4. **Tras cada pull.** Un hook `post-merge` de git vuelve a correr el instalador,
+   así que un enlace, hook o regla nuevos llegan a todas las máquinas con el pull.
+5. **Archivos locales.** Crear tu `~/.claude/entorno.md` con el detalle de esa
+   máquina (no se versiona), copiando las secciones de `entorno.template.md`, y, si
+   lo necesitas, `~/.claude/hooks.local.json` desde `hooks.local.example.json`.
 
 Los patrones de secretos usan `**/` (portables Windows/Linux) y no contienen ningún dato
 personal. El `deny` bloquea en seco claves/credenciales; `.env*` queda en `ask` (pregunta

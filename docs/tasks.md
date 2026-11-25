@@ -72,6 +72,16 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] En Parrot, `git -C ~/dotfiles-windows pull --ff-only` pide aprobación en vez de bloquearse
 - [ ] `git pull` sin `--ff-only` sigue bloqueado
 
+## Herramientas compartidas de la capa de Claude
+
+**Plataforma:** Claude Code.
+
+- [ ] [Esta PC] `.\install.ps1 -Check` sale con 23 enlaces en `ok`, `~/.claude/tools` incluido
+- [ ] [Esta PC] Tras un `git pull`, el post-merge corre `install.ps1` y la parte de `settings.json` dice `skip`
+- [ ] [PC nueva] `.\bootstrap.ps1` crea `~/.claude/settings.json` con la plantilla (ahora lo hace `install-settings.mjs`)
+- [ ] Tras el push, el CI pasa con `Shared tools` y `Bilingual docs` en verde
+- [ ] En Parrot, `install.sh` enlaza la capa desde `links.json` y llama a `install-settings.mjs`
+
 ## Código en inglés
 
 **Plataforma:** Repositorio.
@@ -92,35 +102,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] [Esta PC] Al abrir una sesión nueva en este repo, Claude dice si el panel está al día
 
 ---
-
-# Fase 6 — Capa de Claude universal (Windows y Linux)
-
-## Herramientas compartidas en 50-claude/tools
-
-**Plataforma:** Claude Code.
-
-**Prioridad:** Mejora.
-
-**Requiere:** nada.
-
-**Estado:** en curso.
-
-- [ ] Diseño aprobado: rutas, argumentos y formato de `links.json`
-- [ ] `install-settings.mjs` (con `--check`) fusiona `~/.claude/settings.json` y `install.ps1` lo llama
-- [ ] `links.json` con el mapa de enlaces de la capa, leído por `lib/links.ps1`
-- [ ] `check-comments.mjs` configurable por repo (tipos de comentario y exenciones), con sus tests
-- [ ] Check de docs bilingües en Node, con las exclusiones de cada repo como parámetro, y `tools/check-docs.ps1` lo usa
-
-## Contrato del instalador en el README de 50-claude
-
-**Plataforma:** Claude Code.
-
-**Prioridad:** Mejora.
-
-**Requiere:** «Herramientas compartidas en 50-claude/tools».
-
-- [ ] «Setting up a new machine» describe lo que hace cualquier instalador y dice «Linux: `./install.sh` de dotfiles-parrot», en los dos idiomas
-- [ ] Pasar al chat de Parrot los hashes y lo que cambió del contrato
 
 # Lo hace el dueño
 

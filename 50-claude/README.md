@@ -42,22 +42,40 @@ specific to a machine stays local (it is not versioned).
 
 ## Setting up a new machine (Windows or Linux)
 
-1. Clone the repo and run the installer: it links the files above into `~/.claude/`.
-    - Windows: `./install.ps1` (needs Developer Mode or admin for symlinks).
-2. `~/.claude/settings.json` comes from `settings.template.json`:
-    - On Windows `install.ps1` creates it if the machine does not have one, with
-      `REEMPLAZA_RUTA_HOME` replaced by the real home (`C:/Users/<user>`). The hook
-      paths are quoted, so a home with spaces works.
-    - If it already exists, the installer only adds the template hooks and `deny`/`ask`
-      rules it is missing (a linked hook does not run until it is registered here, and a
-      new security rule has to reach every machine), with a dated
-      `.pre-dotfiles.bak` backup first; everything else in the file stays as it was.
-      It runs again after each `git pull`, so a new hook reaches every machine.
+Each system has its own installer: `.\install.ps1` of this repo on Windows (needs
+Developer Mode or admin for symlinks), and `./install.sh` of
+[dotfiles-parrot](https://github.com/M1gu3l4ngel/dotfiles-parrot) on Linux, which
+links this folder from a clone of this repo. Both meet the same contract, so the
+layer is the same on every machine:
+
+1. **Links.** Each entry of `links.json` becomes a symlink from
+   `50-claude/<source>` to `~/.claude/<target>`; folders are linked whole. A real
+   file in the way is moved to `<file>.pre-dotfiles.bak` first.
+2. **Settings.** `~/.claude/settings.json` is merged, never linked, by
+   `tools/install-settings.mjs`:
+    - If the machine has none, it is created from `settings.template.json` with
+      `REEMPLAZA_RUTA_HOME` replaced by the real home (`C:/Users/<user>` or
+      `/home/<user>`). The hook paths are quoted, so a home with spaces works.
+    - If it exists, only the template hooks and `deny`/`ask` rules it lacks are
+      added (a linked hook does not run until it is registered here, and a new
+      security rule has to reach every machine), with a dated `.pre-dotfiles.bak`
+      backup first; everything else in the file stays as it was.
     - Optional (more reliable on Windows): also add **absolute** paths to your
       secrets, for example `Read(//d/Dev/security-keys/**)`, next to the generic `**/`
       patterns.
-3. Create your local `~/.claude/entorno.md` with that machine's details (not
-   versioned), copying the sections of `entorno.template.md`.
+3. **Check.** A mode that changes nothing reports the links and the settings
+   (`.\install.ps1 -Check` here). The settings part is the same command on any
+   system:
+
+    ```bash
+    node ~/.claude/tools/install-settings.mjs --check
+    ```
+
+4. **After each pull.** A git `post-merge` hook runs the installer again, so a new
+   link, hook or rule reaches every machine with the pull.
+5. **Local files.** Create your `~/.claude/entorno.md` with that machine's details
+   (not versioned), copying the sections of `entorno.template.md`, and, if you
+   need it, `~/.claude/hooks.local.json` from `hooks.local.example.json`.
 
 The secret patterns use `**/` (portable Windows/Linux) and contain no personal
 data. `deny` blocks keys/credentials outright; `.env*` stays in `ask` (it asks
