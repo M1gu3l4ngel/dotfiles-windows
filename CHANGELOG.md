@@ -117,6 +117,9 @@ Notable changes to the project. The format follows
 
 ### Security
 
+- `block-forbidden-commands.mjs` no longer names any repo: the repos where
+  pushing to `main` is allowed come from `~/.claude/hooks.local.json`, which is
+  not versioned (shape in `claude/hooks.local.example.json`).
 - `tools/check.ps1` no longer writes the sensitive literals it looks for into
   the repo: it reads them from `tools/hygiene-patterns.local` (ignored by git)
   or from the `DOTFILES_HYGIENE_PATTERNS` variable. They were purged from the

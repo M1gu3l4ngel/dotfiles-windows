@@ -13,7 +13,8 @@ máquina se queda local (no se versiona).
 | `CLAUDE.md` | `~/.claude/CLAUDE.md` | Reglas universales: documentación bilingüe, disco, editar con Edit/Write, confirmar antes de borrar, interacción, compactación |
 | `statusline.mjs` | `~/.claude/statusline.mjs` | Barra de estado (modelo, contexto en tokens, carpeta) |
 | `hooks/block-shell-edits.mjs` | `~/.claude/hooks/block-shell-edits.mjs` | Hook `PreToolUse` que impone editar con Edit/Write (bloquea `sed -i`, redirecciones, heredocs… y deja pasar temporales). Portable Windows/Linux |
-| `hooks/block-forbidden-commands.mjs` | `~/.claude/hooks/block-forbidden-commands.mjs` | Hook `PreToolUse` que impone las reglas de `CLAUDE.md` sobre comandos: bloquea el git de escritura, `prettier --write` con un glob y `robocopy /MIR` sin `/XJ`, y pregunta antes de un borrado recursivo fuera de un temporal. Portable Windows/Linux |
+| `hooks/block-forbidden-commands.mjs` | `~/.claude/hooks/block-forbidden-commands.mjs` | Hook `PreToolUse` que impone las reglas de `CLAUDE.md` sobre comandos: bloquea los commits sin firma, `git add -A`, los push forzados, los push a `main` y el git que reescribe historia o árbol, `prettier --write` con un glob y `robocopy /MIR` sin `/XJ`; pregunta antes de cualquier otro push y antes de un borrado recursivo fuera de un temporal. Portable Windows/Linux |
+| `hooks.local.example.json` | — (ejemplo) | Forma de `~/.claude/hooks.local.json`: los repos cuya única rama es `main` (`owner/repo`), en los que el hook deja subir a `main`. Sin ese archivo ningún repo tiene la excepción |
 | `hooks/reply-in-spanish.mjs` | `~/.claude/hooks/reply-in-spanish.mjs` | Hook `PostToolUse` y `Stop` que mantiene las respuestas en español: tras cada herramienta avisa a Claude si lo último que escribió está en inglés, y bloquea un turno que termina en inglés. Juzga el final del turno e ignora código, rutas e identificadores. Portable Windows/Linux |
 | `settings.template.json` | — (plantilla) | Base portable de `settings.json`: `deny`/`ask` de secretos genéricos + registro del hook + `skillOverrides` |
 | `check-budget.mjs` | — (script) | Guarda de presupuesto: cuenta líneas de `CLAUDE.md`/`statusline`/`hook` y falla si exceden. `node claude/check-budget.mjs`. Portable |
@@ -25,6 +26,8 @@ máquina se queda local (no se versiona).
   privados. Cada PC tiene el suyo. **Nunca** va a un repo público.
 - **`~/.claude/settings.json`**: tiene rutas con tu usuario, `autoMode` (que genera cada
   máquina y solo se lee del settings global) y plugins. Se queda local.
+- **`~/.claude/hooks.local.json`**: ajustes personales de los hooks (nombra tus
+  repos). Se crea a mano desde `hooks.local.example.json`.
 - Historial, sesiones, memoria (`~/.claude/projects/**`), cachés, `file-history`.
 
 ## Montar en una máquina nueva (Windows o Linux)

@@ -17,6 +17,8 @@
 // Portable Windows/Linux. Solo la ruta de este archivo en settings.json cambia por maquina.
 
 import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 /**
@@ -28,10 +30,22 @@ import path from "node:path";
  * @property {string} reason
  */
 
-// Repos cuya unica rama es main (el cerebro de la empresa): no tienen staging ni CI que gaste
-// minutos, asi que subir a main es su flujo normal. Se reconocen por la URL de su remoto, no por
-// la carpeta, que cambia de una maquina a otra.
-const MAIN_ONLY_REPOS = /[/:]creaskar\/brain(?:\.git)?$/i;
+// Repos cuya unica rama es main (sin staging ni CI que gaste minutos): subir a main es su flujo
+// normal. Son de cada usuario, asi que la lista vive fuera del repo publico, en
+// ~/.claude/hooks.local.json (`{ "mainOnlyRepos": ["owner/repo"] }`, ver
+// claude/hooks.local.example.json). Se reconocen por la URL del remoto, no por la carpeta, que
+// cambia de una maquina a otra. Sin el archivo, ningun repo tiene la excepcion.
+const LOCAL_CONFIG = path.join(os.homedir(), ".claude", "hooks.local.json");
+
+/** @returns {string[]} */
+function readMainOnlyRepos() {
+	try {
+		const repos = JSON.parse(readFileSync(LOCAL_CONFIG, "utf8")).mainOnlyRepos;
+		return Array.isArray(repos) ? repos.filter((repo) => typeof repo === "string") : [];
+	} catch {
+		return [];
+	}
+}
 
 /**
  * La carpeta donde corre el git del comando: la de un `cd`, `Set-Location` o `git -C` delante,
@@ -46,14 +60,23 @@ function resolveCommandDir(command, cwd) {
 	return path.resolve(cwd, match[1].replaceAll(/^["']|["']$/g, ""));
 }
 
+/** @param {string} text */
+function escapeRegExp(text) {
+	return text.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}
+
 /** @param {string} dir */
 function isMainOnlyRepo(dir) {
+	const repos = readMainOnlyRepos();
+	if (repos.length === 0) return false;
 	try {
 		const url = execFileSync("git", ["-C", dir, "remote", "get-url", "origin"], {
 			encoding: "utf8",
 			stdio: ["ignore", "pipe", "ignore"],
-		});
-		return MAIN_ONLY_REPOS.test(url.trim());
+		})
+			.trim()
+			.toLowerCase();
+		return repos.some((repo) => new RegExp(`[/:]${escapeRegExp(repo.toLowerCase())}(?:\\.git)?$`).test(url));
 	} catch {
 		return false;
 	}
@@ -93,7 +116,8 @@ const RULES = [
 		pattern: new RegExp(String.raw`${GIT_PUSH}[^;&|]*\b(main|master)\b`),
 		applies: (command, cwd) => !isMainOnlyRepo(resolveCommandDir(command, cwd)),
 		decision: "deny",
-		reason: "push a main: nunca; main lo promueve el usuario (salvo en un repo de solo main, como el cerebro).",
+		reason:
+			"push a main: nunca; main lo promueve el usuario (salvo los repos de solo main de ~/.claude/hooks.local.json).",
 	},
 	{
 		pattern: new RegExp(GIT_PUSH),

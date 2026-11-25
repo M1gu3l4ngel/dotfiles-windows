@@ -54,7 +54,7 @@ if (Get-Module -ListAvailable PSScriptAnalyzer) {
 else { Skip 'PSScriptAnalyzer no instalado (Install-Module PSScriptAnalyzer -Scope CurrentUser)' }
 
 # ----- 3. JSON VALIDO (solo JSON puro; los de VS Code son JSONC con comentarios) -----
-$jsonPure = @('apps\winget-dev.json', 'oh-my-posh\capr4n.omp.json')
+$jsonPure = @('apps\winget-dev.json', 'oh-my-posh\capr4n.omp.json', 'claude\hooks.local.example.json', 'claude\settings.template.json')
 $jsonOk = $true
 foreach ($rel in $jsonPure) {
 	$p = Join-Path $repo $rel
