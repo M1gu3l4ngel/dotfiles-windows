@@ -1,12 +1,12 @@
 // @ts-check
-// Lo que comparten los comandos del panel (`generate`, `check`, `init`) y sus hooks: dónde vive
-// cada archivo en el repo, su configuración y la huella de sus fuentes.
+// What the panel commands (`generate`, `check`, `init`) and their hooks share: where each file
+// lives in the repo, the panel's configuration and the fingerprint of its sources.
 //
-// La huella hace imposible el desfase silencioso: `generate` la escribe en los datos, el hook de
-// publicar guarda la de lo publicado y al abrir sesión se compara con la de las fuentes de ahora.
-// Vive en un solo módulo para que los comandos y los hooks no puedan calcularla distinto.
+// The fingerprint makes silent drift impossible: `generate` writes it into the data, the publish
+// hook stores the published one, and a new session compares it with the current sources. It lives
+// in one module so that the commands and the hooks cannot compute it differently.
 //
-// Un repo usa el panel si tiene `.claude/panel.json`. Sin ese archivo, los hooks no hacen nada.
+// A repo uses the panel if it has `.claude/panel.json`. Without that file, the hooks do nothing.
 
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -16,26 +16,26 @@ import { fileURLToPath } from "node:url";
 export const CONFIG_FILE = ".claude/panel.json";
 export const TASKS_FILE = "docs/tasks.md";
 export const BACKLOG_FILE = "docs/backlog.md";
-/** Lo generado y lo de esta máquina: la carpeta se ignora a sí misma con su propio `.gitignore`. */
+/** Generated and machine-local files: the folder ignores itself with its own `.gitignore`. */
 export const OUTPUT_DIR = ".claude/artifacts";
 export const BOARD_PAGE = `${OUTPUT_DIR}/project-board.html`;
 export const BOARD_DATA = `${OUTPUT_DIR}/tasks.json`;
-/** URL y huella de lo último publicado desde esta máquina. */
+/** URL and fingerprint of the last publish from this machine. */
 export const PUBLISHED_STATE = `${OUTPUT_DIR}/published.json`;
 export const BOARD_THEME = `${OUTPUT_DIR}/panel-theme.css`;
-/** Lo que se publica junto a la página, por su nombre publicado. */
+/** What is published next to the page, by its published name. */
 export const BOARD_FILES = { "tasks.json": BOARD_DATA, "panel-theme.css": BOARD_THEME };
 
 const PANEL_DIR = path.dirname(fileURLToPath(import.meta.url));
-/** La página fija del panel y su tema, junto a este módulo (en `~/.claude/panel/`, enlazado al repo de dotfiles). */
+/** The panel's fixed page and theme, next to this module (`~/.claude/panel/`, linked to the dotfiles repo). */
 export const PAGE_TEMPLATE = path.join(PANEL_DIR, "board.html");
 export const THEME_TEMPLATE = path.join(PANEL_DIR, "panel-theme.css");
 
 /**
  * @typedef {object} PanelConfig
- * @property {string | null} project Nombre del panel; sin él, el del `package.json` o la carpeta.
- * @property {Record<string, string>} platforms id → nombre visible, el que se escribe tras `**Plataforma:**`.
- * @property {Record<string, string>} devices id → nombre visible, el de las casillas de «Por probar».
+ * @property {string | null} project Panel name; without it, the `package.json` name or the folder.
+ * @property {Record<string, string>} platforms id → display name, the one written after `**Plataforma:**`.
+ * @property {Record<string, string>} devices id → display name, the one in the «Por probar» checkboxes.
  */
 
 /** @param {string} projectDir */
@@ -50,8 +50,8 @@ function toLabels(value) {
 }
 
 /**
- * La configuración del panel del repo. Lanza si el archivo no existe o no es JSON: sin ella no se
- * sabe qué plataformas valen, y un panel que las adivinara diría menos que el repo.
+ * The repo's panel configuration. Throws if the file is missing or is not JSON: without it the
+ * valid platforms are unknown, and a panel that guessed them would say less than the repo.
  * @param {string} projectDir
  * @returns {PanelConfig}
  */
@@ -65,7 +65,7 @@ export function getConfig(projectDir) {
 }
 
 /**
- * El nombre del panel: el de `panel.json`, el `name` del `package.json` o la carpeta.
+ * The panel name: the one in `panel.json`, the `package.json` `name`, or the folder.
  * @param {string} projectDir
  * @param {PanelConfig} config
  */
@@ -75,13 +75,13 @@ export function readProjectName(projectDir, config) {
 		const { name } = JSON.parse(readFileSync(path.join(projectDir, "package.json"), "utf8"));
 		if (typeof name === "string" && name) return name;
 	} catch {
-		// Sin `package.json` legible queda la carpeta.
+		// Without a readable `package.json`, the folder name remains.
 	}
 	return path.basename(projectDir);
 }
 
 /**
- * Una fuente tal como está en disco; la que falta cuenta como vacía.
+ * A source as it is on disk; a missing one counts as empty.
  * @param {string} projectDir
  * @param {string} rel
  */
@@ -90,14 +90,14 @@ export function readSource(projectDir, rel) {
 	return existsSync(file) ? readFileSync(file, "utf8") : "";
 }
 
-/** Las fuentes de la huella. La página y su tema entran también: si cambian, lo publicado ya no es lo de ahora. */
+/** The fingerprint's sources. The page and its theme count too: if they change, the published panel is outdated. */
 export const HASH_SOURCES = [TASKS_FILE, BACKLOG_FILE, CONFIG_FILE, PAGE_TEMPLATE, THEME_TEMPLATE];
 
-/** Las fuentes que se editan en el repo: cambiarlas deja el panel desfasado. */
+/** The sources edited in the repo: changing them leaves the panel outdated. */
 export const EDITED_SOURCES = [TASKS_FILE, BACKLOG_FILE, CONFIG_FILE];
 
 /**
- * Huella de las fuentes, sin distinguir finales de línea (CRLF en Windows, LF en el CI).
+ * Fingerprint of the sources, regardless of line endings (CRLF on Windows, LF in CI).
  * @param {...string} texts
  */
 export function computeSourceHash(...texts) {
@@ -117,7 +117,7 @@ export function readSourceHash(projectDir) {
  */
 
 /**
- * Lo último publicado desde esta máquina, o `null` si nunca se publicó.
+ * The last publish from this machine, or `null` if it was never published.
  * @param {string} projectDir
  * @returns {PublishedState | null}
  */
@@ -126,7 +126,7 @@ export function findPublishedState(projectDir) {
 		const parsed = JSON.parse(readFileSync(path.join(projectDir, PUBLISHED_STATE), "utf8"));
 		if (typeof parsed?.url === "string" && typeof parsed?.sourceHash === "string") return parsed;
 	} catch {
-		// Sin archivo o ilegible: lo mismo que no haber publicado nunca.
+		// Missing or unreadable: the same as never published.
 	}
 	return null;
 }
@@ -140,7 +140,7 @@ export function writePublishedState(projectDir, state) {
 }
 
 /**
- * La huella con la que se generaron los datos, o `null` si aún no existen.
+ * The fingerprint the data was generated with, or `null` if there is no data yet.
  * @param {string} projectDir
  */
 export function findBoardDataHash(projectDir) {
@@ -152,5 +152,5 @@ export function findBoardDataHash(projectDir) {
 	}
 }
 
-/** El comando que regenera los datos, escrito igual en todos los avisos. */
+/** The command that regenerates the data, written the same way in every message. */
 export const GENERATE_COMMAND = "node ~/.claude/panel/generate.mjs";

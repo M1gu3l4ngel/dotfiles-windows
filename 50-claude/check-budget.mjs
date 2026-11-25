@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// check-budget.mjs — guarda de presupuesto de la capa global de Claude Code.
-// Evita que CLAUDE.md (y los archivos de la capa) crezcan sin control.
-// Portable Windows/Linux: mismo runtime que el hook. Correr: `node 50-claude/check-budget.mjs`
-// Sale 0 si todo cumple, 1 si algo excede (apto para git pre-commit).
+// Line budget for the global Claude Code layer: keeps CLAUDE.md and the layer's files from
+// growing unchecked. Exits 0 if every file fits and 1 if one exceeds its budget, so it can run in
+// tools/check.ps1 or a pre-commit hook. Runs the same on Windows and Linux.
+//
+// Usage: node 50-claude/check-budget.mjs
 
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -10,8 +11,8 @@ import { dirname, join } from 'node:path';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
-// Presupuestos. CLAUDE.md es el que de verdad cuesta contexto en cada sesión;
-// el resto son topes de cordura para que la capa no se infle.
+// CLAUDE.md is the one that really costs context in every session; the rest are sanity caps so
+// the layer does not bloat.
 const BUDGETS = [
   { file: 'CLAUDE.md', maxLines: 60 },
   { file: 'statusline.mjs', maxLines: 120 },
@@ -19,7 +20,7 @@ const BUDGETS = [
   { file: 'hooks/block-forbidden-commands.mjs', maxLines: 100 },
   { file: 'hooks/command-rules.mjs', maxLines: 220 },
   { file: 'hooks/reply-in-spanish.mjs', maxLines: 200 },
-  // La regla se carga en todas las sesiones, como CLAUDE.md: corta. El skill solo al usarse.
+  // The rule loads in every session, like CLAUDE.md: keep it short. The skill loads only when used.
   { file: 'rules/repo-conventions.md', maxLines: 30 },
   { file: 'skills/new-repo/SKILL.md', maxLines: 150 },
 ];
@@ -30,17 +31,17 @@ for (const { file, maxLines } of BUDGETS) {
   try {
     lines = readFileSync(join(HERE, file), 'utf8').split(/\r?\n/).length;
   } catch {
-    // Un archivo vigilado que falta (renombrado, movido) dejaría su presupuesto sin vigilar en silencio.
+    // A watched file that is missing (renamed, moved) would leave its budget silently unwatched.
     failed = true;
-    console.log(`  XX  ${file} — no encontrado: actualiza BUDGETS`);
+    console.log(`  XX  ${file} — not found: update BUDGETS`);
     continue;
   }
   const ok = lines <= maxLines;
   if (!ok) failed = true;
-  console.log(`  ${ok ? 'OK ' : 'XX '} ${file} — ${lines}/${maxLines} líneas`);
+  console.log(`  ${ok ? 'OK ' : 'XX '} ${file} — ${lines}/${maxLines} lines`);
 }
 
 console.log(failed
-  ? '\nPresupuesto EXCEDIDO: recorta antes de commitear (la capa global es solo comportamiento universal).'
-  : '\nPresupuesto OK.');
+  ? '\nBudget EXCEEDED: trim before committing (the global layer is only universal behavior).'
+  : '\nBudget OK.');
 process.exit(failed ? 1 : 0);

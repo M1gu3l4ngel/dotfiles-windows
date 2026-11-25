@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // @ts-check
-// Hook SessionStart: dice a Claude dónde está el panel del repo y si dice lo mismo que sus
-// fuentes. Sin `.claude/panel.json` el repo no usa el panel y el hook no dice nada.
+// SessionStart hook: tells Claude where the repo's panel is and whether it matches its sources.
+// Without `.claude/panel.json` the repo does not use the panel and the hook says nothing.
 //
-// Un hook no puede publicar un artefacto: eso solo lo hace Claude con su herramienta. Lo que se
-// imprime entra en el contexto de la sesión; la comparación de huellas es lo que convierte un
-// panel desfasado en un aviso al abrir, en vez de algo que nadie nota.
+// A hook cannot publish an artifact: only Claude can, with its tool. What it prints enters the
+// session context; comparing fingerprints is what turns an outdated panel into a warning at
+// session start, instead of something nobody notices.
 
 import {
 	BOARD_FILES,
@@ -19,22 +19,22 @@ import {
 } from "../panel-files.mjs";
 
 const projectDir = process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
-const PUBLISH = `${GENERATE_COMMAND} y publica ${BOARD_PAGE} tal cual con files ${JSON.stringify(BOARD_FILES)}`;
+const PUBLISH = `${GENERATE_COMMAND} and publish ${BOARD_PAGE} as is with files ${JSON.stringify(BOARD_FILES)}`;
 
 /** @param {string} title */
 function listStatusLines(title) {
 	const published = findPublishedState(projectDir);
 	if (!published)
 		return [
-			`Panel del repo («${title}»): no consta publicado desde esta máquina.`,
-			`- Búscalo con Artifact (action "list"). Si existe, republícalo en su url; si no, créalo con title «${title}» e icon "list".`,
-			`- En los dos casos: ${PUBLISH}. Dile al usuario el enlace.`,
+			`Repo panel («${title}»): no publish recorded from this machine.`,
+			`- Look for it with Artifact (action "list"). If it exists, republish to its url; if not, create it with title «${title}» and icon "list".`,
+			`- Either way: ${PUBLISH}. Give the user the link.`,
 		];
 	if (published.sourceHash === readSourceHash(projectDir))
-		return [`Panel del repo («${title}»): ${published.url} — al día con docs/tasks.md y docs/backlog.md.`];
+		return [`Repo panel («${title}»): ${published.url} — up to date with docs/tasks.md and docs/backlog.md.`];
 	return [
-		`Panel del repo («${title}»): ${published.url} — DESFASADO: sus fuentes cambiaron desde la última publicación.`,
-		`- Antes de seguir: ${PUBLISH}, con url ${published.url} (léelo antes si esta sesión no lo ha leído).`,
+		`Repo panel («${title}»): ${published.url} — OUTDATED: its sources changed since the last publish.`,
+		`- Before continuing: ${PUBLISH}, with url ${published.url} (read it first if this session has not).`,
 	];
 }
 
@@ -42,11 +42,11 @@ try {
 	if (hasPanel(projectDir)) {
 		const lines = listStatusLines(`Panel ${readProjectName(projectDir, getConfig(projectDir))}`);
 		lines.push(
-			"- El panel es una vista de los .md: el estado (en curso, por probar) se cambia en docs/tasks.md y se republica; nunca se edita la página a mano.",
+			"- The panel is a view of the .md files: state (en curso, por probar) is changed in docs/tasks.md and republished; the page is never edited by hand.",
 		);
 		process.stdout.write(`${lines.join("\n")}\n`);
 	}
 } catch (error) {
-	// Un panel.json roto se dice, pero no corta la sesión.
-	process.stdout.write(`Panel del repo: no se pudo leer su configuración (${String(error)}).\n`);
+	// A broken panel.json is reported, but does not stop the session.
+	process.stdout.write(`Repo panel: could not read its configuration (${String(error)}).\n`);
 }

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // @ts-check
-// Hook PostToolUse (Edit|Write): al cambiar una fuente del panel (`docs/tasks.md`,
-// `docs/backlog.md` o `.claude/panel.json`), recuerda que el panel publicado ya no dice lo mismo.
-// El aviso llega en el momento del cambio, no al abrir la próxima sesión, cuando el desfase ya
-// ha durado horas.
+// PostToolUse hook (Edit|Write): when a panel source changes (`docs/tasks.md`, `docs/backlog.md`
+// or `.claude/panel.json`), reminds Claude that the published panel no longer matches. The
+// reminder comes at the moment of the change, not at the next session start, when the drift has
+// already lasted hours.
 
 import path from "node:path";
 import { EDITED_SOURCES, GENERATE_COMMAND, findPublishedState, hasPanel } from "../panel-files.mjs";
@@ -23,16 +23,16 @@ process.stdin.on("end", () => {
 		if (!EDITED_SOURCES.includes(relative)) return;
 
 		const url = findPublishedState(projectDir)?.url;
-		const target = url ? `republícalo en ${url}` : "publícalo";
+		const target = url ? `republish it at ${url}` : "publish it";
 		process.stdout.write(
 			JSON.stringify({
 				hookSpecificOutput: {
 					hookEventName: "PostToolUse",
-					additionalContext: `${relative} cambió: el panel queda desfasado. Al terminar los cambios de este bloque, ${GENERATE_COMMAND} y ${target}.`,
+					additionalContext: `${relative} changed: the panel is now outdated. When this block's changes are done, run ${GENERATE_COMMAND} and ${target}.`,
 				},
 			}),
 		);
 	} catch {
-		// Un hook roto no debe cortar la sesión.
+		// A broken hook must not stop the session.
 	}
 });

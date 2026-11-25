@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // @ts-check
-// Genera el panel del repo en `.claude/artifacts/`: los datos (`tasks.json`, de `docs/tasks.md`,
-// `docs/backlog.md` y `.claude/panel.json`), la página y su tema. Después, Claude publica la
-// página con esos dos archivos al lado.
+// Generates the repo's panel in `.claude/artifacts/`: the data (`tasks.json`, from `docs/tasks.md`,
+// `docs/backlog.md` and `.claude/panel.json`), the page and its theme. Claude then publishes the
+// page with those two files next to it.
 //
-// Se niega si las fuentes tienen problemas: un panel generado a medias diría menos que el repo
-// sin avisar, que es justo el desfase que este comando existe para evitar.
+// It refuses if the sources have problems: a half-generated panel would silently say less than
+// the repo, which is exactly the drift this command exists to prevent.
 //
-// Uso, en la raíz del repo: node ~/.claude/panel/generate.mjs
+// Usage, at the repo root: node ~/.claude/panel/generate.mjs
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -47,7 +47,7 @@ function writeOutput(root, rel, content) {
 function main() {
 	const root = process.cwd();
 	if (!hasPanel(root)) {
-		console.error(`✗ Este repo no tiene ${CONFIG_FILE}. Créalo con: node ~/.claude/panel/init.mjs`);
+		console.error(`✗ This repo has no ${CONFIG_FILE}. Create it with: node ~/.claude/panel/init.mjs`);
 		process.exit(1);
 	}
 	const config = getConfig(root);
@@ -57,7 +57,7 @@ function main() {
 	const problems = listBoardProblems(sources, labels);
 	if (problems.length > 0) {
 		for (const problem of problems) console.error(`✗ ${problem.file}:${problem.line} ${problem.message}`);
-		console.error(`\n${problems.length} problema(s) en las fuentes del panel: arréglalos y vuelve a generar.`);
+		console.error(`\n${problems.length} problem(s) in the panel sources: fix them and generate again.`);
 		process.exit(1);
 	}
 
@@ -67,12 +67,12 @@ function main() {
 	const page = readFileSync(PAGE_TEMPLATE, "utf8").replace("<title>Panel</title>", `<title>Panel ${escapeHtml(project)}</title>`);
 	writeOutput(root, BOARD_PAGE, page);
 	writeOutput(root, BOARD_THEME, readFileSync(THEME_TEMPLATE, "utf8"));
-	// Lo generado y lo de esta máquina no se versiona: la carpeta se ignora a sí misma.
+	// Generated and machine-local files are not versioned: the folder ignores itself.
 	writeOutput(root, `${OUTPUT_DIR}/.gitignore`, "*\n");
 
 	const itemCount = data.groups.reduce((sum, group) => sum + group.items.length, 0);
-	console.log(`✓ Panel ${project}: ${data.groups.length} bloque(s), ${itemCount} tarea(s)`);
-	console.log(`→ Publica ${BOARD_PAGE} con files ${JSON.stringify(BOARD_FILES)}`);
+	console.log(`✓ Panel ${project}: ${data.groups.length} block(s), ${itemCount} task(s)`);
+	console.log(`→ Publish ${BOARD_PAGE} with files ${JSON.stringify(BOARD_FILES)}`);
 }
 
 main();

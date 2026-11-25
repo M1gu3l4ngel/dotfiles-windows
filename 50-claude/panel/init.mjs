@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // @ts-check
-// Prepara un repo para usar el panel: crea `.claude/panel.json`, `docs/tasks.md` y
-// `docs/backlog.md` si faltan. Nunca pisa uno que ya exista. Las plataformas y los dispositivos
-// se rellenan después a mano en `panel.json`: id → nombre que se escribe en los `.md`.
+// Prepares a repo for the panel: creates `.claude/panel.json`, `docs/tasks.md` and
+// `docs/backlog.md` if they are missing, and never overwrites an existing one. Platforms and
+// devices are filled in by hand afterwards in `panel.json`: id → name written in the `.md` files.
+// The two `.md` files start in Spanish, the language the panel reads.
 //
-// Uso, en la raíz del repo: node ~/.claude/panel/init.mjs
+// Usage, at the repo root: node ~/.claude/panel/init.mjs
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -22,11 +23,11 @@ const FILES = {
 for (const [rel, content] of Object.entries(FILES)) {
 	const file = path.join(root, rel);
 	if (existsSync(file)) {
-		console.log(`- ${rel} ya existe: no se toca.`);
+		console.log(`- ${rel} already exists: left untouched.`);
 		continue;
 	}
 	mkdirSync(path.dirname(file), { recursive: true });
 	writeFileSync(file, content, "utf8");
-	console.log(`✓ ${rel} creado.`);
+	console.log(`✓ ${rel} created.`);
 }
-console.log("→ Pon las plataformas y los dispositivos del repo en .claude/panel.json y genera con: node ~/.claude/panel/generate.mjs");
+console.log("→ Put the repo's platforms and devices in .claude/panel.json and generate with: node ~/.claude/panel/generate.mjs");

@@ -1,14 +1,15 @@
 <title>Panel</title>
 <!--
-  Página del artefacto «Panel <proyecto>»: las tareas de `docs/tasks.md` y `docs/backlog.md` del
-  repo. `node ~/.claude/panel/generate.mjs` la copia a `.claude/artifacts/` con el nombre del
-  proyecto en el <title>, y se publica con `tasks.json` y `panel-theme.css` al lado. Ni las tareas,
-  ni las plataformas, ni los dispositivos se escriben aquí: salen de `tasks.json`, que se genera de
-  los `.md` y del `.claude/panel.json` del repo. Así el panel no puede decir otra cosa que el repo,
-  y la misma página sirve a cualquier proyecto. No se edita en el repo que la usa: se edita aquí.
+  Page of the «Panel <project>» artifact: the repo's tasks from `docs/tasks.md` and
+  `docs/backlog.md`. `node ~/.claude/panel/generate.mjs` copies it to `.claude/artifacts/` with the
+  project name in the <title>, and it is published with `tasks.json` and `panel-theme.css` next to
+  it. No tasks, platforms or devices are written here: they come from `tasks.json`, generated from
+  the repo's `.md` files and `.claude/panel.json`. So the panel cannot say anything the repo does
+  not, and the same page serves any project. It is edited here, never in the repo that uses it.
+  Its visible text is Spanish, like the `.md` files it shows.
 -->
 <script>
-// El tema se aplica antes de pintar, para que no parpadee. Sin elección guardada, el del sistema.
+// The theme is applied before the first paint, so it does not flicker. With no saved choice, the system's.
 (() => {
   let t = null;
   try { t = localStorage.getItem("panel-theme"); } catch (e) {}
@@ -21,8 +22,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="panel-theme.css">
 <style>
-/* Los colores, radios, alto de campo y letra salen de `panel-theme.css`: aquí solo se componen
-   (menú lateral, barra superior, tarjetas, badges, campos y botones). */
+/* Colors, radii, field height and font come from `panel-theme.css`: here they are only composed
+   (side menu, top bar, cards, badges, fields and buttons). */
 :root{--shadow-xs:0 1px 2px rgb(0 0 0 / 6%); --side-w:256px; --top-h:56px}
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0}
@@ -37,7 +38,7 @@ h1,h2,h3{text-wrap:balance}
 .muted{color:var(--muted-foreground)}
 [hidden]{display:none !important}
 
-/* Marco: menú lateral y contenido a todo el ancho. */
+/* Frame: side menu and full-width content. */
 .shell{display:grid; grid-template-columns:var(--side-w) minmax(0,1fr); min-height:100vh}
 .side{
   background:var(--sidebar); color:var(--sidebar-foreground); border-right:1px solid var(--sidebar-border);
@@ -60,7 +61,7 @@ h1,h2,h3{text-wrap:balance}
 .nav button[aria-selected="true"] svg{color:var(--sidebar-primary)}
 .side-foot{margin-top:auto; padding:12px; border-top:1px solid var(--sidebar-border); display:flex; flex-direction:column; gap:8px}
 
-/* Selector segmentado (tema). */
+/* Segmented selector (theme). */
 .seg{display:inline-flex; padding:2px; gap:2px; background:var(--muted); border-radius:var(--radius-md); max-width:100%; overflow-x:auto; scrollbar-width:none}
 .seg button{
   height:calc(var(--field-height) - 4px); padding:0 10px; border:0; background:none; border-radius:calc(var(--radius-md) - 2px); cursor:pointer;
@@ -72,7 +73,7 @@ h1,h2,h3{text-wrap:balance}
 .seg.full{display:flex}
 .seg.full button{flex:1; justify-content:center; padding:0 6px}
 
-/* Barra superior y contenido. */
+/* Top bar and content. */
 .content{min-width:0; display:flex; flex-direction:column}
 .topbar{
   position:sticky; top:env(safe-area-inset-top,0px); z-index:5; height:var(--top-h); display:flex; align-items:center; gap:12px; padding-inline:24px;
@@ -98,13 +99,13 @@ h1,h2,h3{text-wrap:balance}
   .page{padding-block:16px 40px; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px))}
 }
 
-/* Card y bloque con cabecera. */
+/* Card and block with a header. */
 .card{background:var(--card); color:var(--card-foreground); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); min-width:0}
 .block-head{padding:14px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
 .block-head h2{font-size:15px; margin:0; font-weight:600}
 .block-head p{margin:2px 0 0; font-size:13px; color:var(--muted-foreground); max-width:78ch}
 
-/* Controles con el alto de un campo. */
+/* Controls with the height of a field. */
 .field{height:var(--field-height); padding:0 10px; font-size:13px; background:var(--background); border:1px solid var(--input); border-radius:var(--radius-md); color:var(--foreground); min-width:0}
 .field::placeholder{color:var(--muted-foreground)}
 .search{position:relative; flex:1 1 260px; max-width:420px; min-width:0}
@@ -130,7 +131,7 @@ h1,h2,h3{text-wrap:balance}
 .switch input:checked + .knob::after{transform:translateX(14px)}
 .switch input:focus-visible + .knob{outline:2px solid var(--ring); outline-offset:2px}
 
-/* Tarjetas que filtran. */
+/* Cards that filter. */
 .stats{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px}
 .stats.products{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
 .stats[hidden]{display:none}
@@ -149,7 +150,7 @@ h1,h2,h3{text-wrap:balance}
 .stat .lbl small{font-size:12px; color:var(--muted-foreground); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 @media (max-width:480px){.stat .icon-box{display:none}}
 
-/* Recorrido de fases. */
+/* Phase track. */
 .track{display:flex; gap:8px; overflow-x:auto; padding:16px 20px}
 .step{flex:1 0 150px; border:1px solid var(--border); border-radius:var(--radius-lg); padding:8px 12px; min-width:0}
 .step b{display:block; font-size:12px; font-weight:500; color:var(--muted-foreground)}
@@ -168,7 +169,7 @@ h1,h2,h3{text-wrap:balance}
 .badge.outline{border-color:var(--border); color:var(--muted-foreground)}
 .badge svg.i{width:12px; height:12px}
 
-/* Bloques de tareas. */
+/* Task blocks. */
 .phase{margin:8px 0 -6px; font-size:12px; font-weight:600; color:var(--muted-foreground); text-transform:uppercase; letter-spacing:.04em}
 .groups{display:flex; flex-direction:column; gap:8px}
 details.group{background:var(--card); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs)}
@@ -270,15 +271,15 @@ mark{background:var(--warning-tint); color:inherit; border-radius:2px}
 </div>
 
 <script>
-// Tareas: todo sale de `tasks.json` (`node ~/.claude/panel/generate.mjs`), publicado junto a la página:
+// Tasks: everything comes from `tasks.json` (`node ~/.claude/panel/generate.mjs`), published next to the page:
 // { project, sourceHash, platforms: [[id, label]], devices: [[id, label]], priorities: [[id, label]],
 //   phases: [{id, label}], track: [{label, name, status}],
 //   groups: [{id, phase, title, platforms, priority, requires, note, working, blockedBy, items: [{id, text, devices}]}] }.
-// Plataformas y dispositivos los pone cada repo en su `.claude/panel.json`. Una casilla sin
-// dispositivos vale en todos.
+// Each repo sets its platforms and devices in its `.claude/panel.json`. A checkbox without
+// devices applies to all of them.
 let PLATFORMS = [];
 let DEVICES = [];
-// El tono de la pastilla de cada prioridad; sus nombres llegan en `tasks.json`.
+// The badge tone of each priority; their names arrive in `tasks.json`.
 const PRIORITY_TONES = { p0: "danger", p1: "warning", p2: "neutral", improvement: "outline" };
 let PRIORITIES = [];
 const ICONS = {
@@ -291,9 +292,9 @@ const ICONS = {
   expand: '<svg class="i" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>',
   collapse: '<svg class="i" viewBox="0 0 24 24"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>',
 };
-// Las tres vistas: qué se está haciendo, qué falta probar y lo pendiente. «Pendientes» deja
-// fuera lo de «Por probar»: eso ya está hecho y solo espera comprobarse. Lo que no se puede
-// empezar aún lo dice cada bloque con su «Espera a N».
+// The three views: what is being done, what is left to test and what is pending. «Pendientes»
+// leaves out «Por probar»: that work is done and only waits to be checked. What cannot start yet
+// says so in each block with its «Espera a N».
 const VIEWS = [
   { id: "working", label: "En curso", hint: "lo que se hace ahora", match: (g) => g.working },
   { id: "test", label: "Por probar", hint: "te toca comprobarlo", match: (g) => g.phase === "test" },
@@ -308,7 +309,7 @@ let state = { done: {}, view: "pending", phase: "all", platform: "all", priority
 function save() { if (KEY) try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-// El marcado que usan los `.md` en el texto de una tarea: negrita y código.
+// The markup the `.md` files use in a task's text: bold and code.
 function fmt(text, q) {
   let html = esc(text);
   if (q) {
@@ -317,8 +318,8 @@ function fmt(text, q) {
   }
   return html.replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
 }
-// Qué bloques están abiertos. Vive aparte del filtro: cambiar de vista, fase, plataforma o el
-// interruptor los cierra todos, y buscar abre solo los que tienen resultados.
+// Which blocks are open. It lives apart from the filter: changing view, phase, platform or the
+// switch closes them all, and a search opens only the ones with results.
 let openState = {};
 let visibleIds = [];
 const list = document.getElementById("list");
@@ -330,13 +331,13 @@ const deviceSelect = document.getElementById("device");
 const productCards = document.getElementById("products");
 const toggleAll = document.getElementById("toggle-all");
 const view = () => VIEWS.find((v) => v.id === state.view) || VIEWS[2];
-// «En curso» cruza las plataformas, igual que un bloque sin plataformas (Aplazado, Bloqueado): se
-// ve con cualquier filtro. «Por probar» sí declara la suya: es lo que deja probar plataforma a plataforma.
+// «En curso» spans platforms, like a block without platforms (Aplazado, Bloqueado): it shows with
+// any filter. «Por probar» does declare its own: that is what lets you test platform by platform.
 const inPlatformOnly = (g) => state.platform === "all" || g.working || !g.platforms.length || g.platforms.includes(state.platform);
-// El dispositivo se filtra por casilla, no por bloque: una casilla sin dispositivos vale en todos.
+// Devices filter per checkbox, not per block: a checkbox without devices applies to all.
 const inDevice = (item) => state.device === "all" || !(item.devices || []).length || item.devices.includes(state.device);
-// La prioridad solo la llevan los bloques de una fase numerada: con un filtro puesto, el resto
-// (Por probar, Cierre, Aplazado…) se oculta, salvo lo que está en curso.
+// Only numbered-phase blocks have a priority: with a filter set, the rest (Por probar, Cierre,
+// Aplazado…) is hidden, except what is in progress.
 const inPriority = (g) => state.priority === "all" || state.view === "test" || g.working || g.priority === state.priority;
 const inPlatform = (g) => inPlatformOnly(g) && inPriority(g);
 const inPhase = (g) => state.phase === "all" || g.phase === state.phase;
@@ -368,7 +369,7 @@ function renderSelects() {
     .map((p) => [p, countItems(visible.filter((g) => g.phase === p.id))])
     .filter(([p, n]) => n > 0 || p.id === state.phase)
     .map(([p, n]) => '<option value="' + p.id + '"' + (state.phase === p.id ? " selected" : "") + ">" + esc(p.label) + " (" + n + ")</option>").join("");
-  // Sin plataformas configuradas el filtro no filtra nada: no sale.
+  // Without configured platforms the filter filters nothing: it is not shown.
   platformSelect.hidden = !PLATFORMS.length;
   platformSelect.innerHTML = [["all", "Todas las plataformas"]].concat(PLATFORMS).map(([id, label]) => {
     const n = id === "all" ? "" : " (" + countItems(GROUPS.filter((g) => view().match(g) && inPriority(g) && (!g.platforms.length || g.platforms.includes(id)))) + ")";
@@ -378,8 +379,8 @@ function renderSelects() {
     const n = id === "all" ? "" : " (" + countItems(GROUPS.filter((g) => view().match(g) && inPlatformOnly(g) && g.priority === id)) + ")";
     return '<option value="' + id + '"' + (state.priority === id ? " selected" : "") + ">" + esc(label) + n + "</option>";
   }).join("");
-  // La prioridad solo la llevan las fases y el dispositivo solo las casillas de «Por probar»: cada
-  // filtro sale en la vista donde filtra algo.
+  // Only phases have a priority and only «Por probar» checkboxes have a device: each filter shows
+  // in the view where it filters something.
   const testing = state.view === "test";
   prioritySelect.hidden = testing;
   deviceSelect.hidden = !testing || !DEVICES.length;
@@ -390,8 +391,8 @@ function renderSelects() {
   }).join("");
 }
 
-// En «Por probar», una tarjeta por plataforma con lo que queda por probar en ella: se ve de un
-// vistazo dónde se acumula, y pulsarla filtra por esa plataforma (otra vez, lo quita).
+// In «Por probar», one card per platform with what is left to test on it: it shows at a glance
+// where work piles up, and clicking it filters by that platform (again, clears it).
 function renderProducts() {
   const testing = state.view === "test";
   productCards.hidden = !testing || !PLATFORMS.length;
@@ -470,7 +471,7 @@ function render() {
 }
 
 function renderAll() { renderViews(); renderProducts(); renderSelects(); render(); }
-// Un filtro nuevo empieza con todo cerrado: se ven los títulos y se abre lo que interesa.
+// A new filter starts with everything closed: the titles show and you open what matters.
 function onFilterChange() { closeAll(); save(); renderAll(); }
 
 list.addEventListener("change", (e) => {
@@ -501,7 +502,7 @@ phaseSelect.addEventListener("change", () => { state.phase = phaseSelect.value; 
 platformSelect.addEventListener("change", () => { state.platform = platformSelect.value; onFilterChange(); });
 prioritySelect.addEventListener("change", () => { state.priority = prioritySelect.value; onFilterChange(); });
 document.getElementById("onlyOpen").addEventListener("change", (e) => { state.onlyOpen = e.target.checked; onFilterChange(); });
-// Buscar abre los bloques con resultados, que son lo que se busca; vaciar la búsqueda los cierra.
+// A search opens the blocks with results, which are what you look for; clearing it closes them.
 qInput.addEventListener("input", () => {
   closeAll();
   const q = query();
@@ -515,14 +516,14 @@ toggleAll.addEventListener("click", () => {
 });
 document.getElementById("reset").addEventListener("click", () => { state.done = {}; save(); render(); });
 
-// Las marcas viejas apuntan a tareas que ya no existen: se quitan para que el contador no mienta.
+// Old checkmarks point to tasks that no longer exist: they are dropped so the counter does not lie.
 function pruneMarks() {
   const live = new Set();
   GROUPS.forEach((g) => g.items.forEach((item) => live.add(item.id)));
   Object.keys(state.done).forEach((k) => { if (!live.has(k)) delete state.done[k]; });
 }
 
-// Sin logo: las iniciales del nombre, en el color primario.
+// No logo: the name's initials, in the primary color.
 function toInitials(name) {
   const words = String(name).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
   return (words.length > 1 ? words[0][0] + words[1][0] : String(name).slice(0, 2)).toUpperCase();
@@ -558,7 +559,7 @@ async function loadBoard() {
   if (state.view === "working" && !GROUPS.some((g) => g.working)) state.view = "pending";
   pruneMarks();
   save();
-  // Al abrir, lo que está en curso se ve desplegado; lo demás, cerrado.
+  // On open, what is in progress shows expanded; the rest, closed.
   GROUPS.forEach((g) => { if (g.working) openState[g.id] = true; });
   document.getElementById("project").textContent = data.project;
   document.getElementById("crumb-project").textContent = "Panel " + data.project;
@@ -571,7 +572,7 @@ async function loadBoard() {
 loadBoard();
 </script>
 <script>
-// Tema: claro u oscuro. El script del principio ya puso uno; aquí solo se marca y se cambia.
+// Theme: light or dark. The script at the top already set one; here it is only marked and switched.
 (() => {
   const write = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
   function applyTheme(choice) {

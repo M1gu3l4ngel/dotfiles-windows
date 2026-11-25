@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // @ts-check
-// Comprueba que `docs/tasks.md` y `docs/backlog.md` siguen el formato del panel, sin generar
-// nada. Sale con 1 si hay problemas; un repo sin `.claude/panel.json` no tiene panel y pasa.
-// Sirve para el check de cada repo y para su CI.
+// Checks that `docs/tasks.md` and `docs/backlog.md` follow the panel format, without generating
+// anything. Exits with 1 on problems; a repo without `.claude/panel.json` has no panel and passes.
+// Used by each repo's check and its CI.
 //
-// Uso, en la raíz del repo: node ~/.claude/panel/check.mjs [carpeta del repo]
+// Usage, at the repo root: node ~/.claude/panel/check.mjs [repo folder]
 
 import path from "node:path";
 import { listBoardProblems } from "./board.mjs";
@@ -12,7 +12,7 @@ import { BACKLOG_FILE, CONFIG_FILE, TASKS_FILE, getConfig, hasPanel, readSource 
 
 const root = path.resolve(process.argv[2] ?? process.cwd());
 if (!hasPanel(root)) {
-	console.log(`- Sin ${CONFIG_FILE}: este repo no usa el panel.`);
+	console.log(`- No ${CONFIG_FILE}: this repo does not use the panel.`);
 	process.exit(0);
 }
 const config = getConfig(root);
@@ -24,4 +24,4 @@ if (problems.length > 0) {
 	for (const problem of problems) console.error(`✗ ${problem.file}:${problem.line} ${problem.message}`);
 	process.exit(1);
 }
-console.log(`✓ ${TASKS_FILE} y ${BACKLOG_FILE} siguen el formato del panel.`);
+console.log(`✓ ${TASKS_FILE} and ${BACKLOG_FILE} follow the panel format.`);

@@ -1,23 +1,23 @@
 // @ts-check
-// Lee `docs/tasks.md` y `docs/backlog.md` y los convierte en los datos del panel.
+// Reads `docs/tasks.md` and `docs/backlog.md` and turns them into the panel's data.
 //
-// El panel no se escribe a mano: es una vista de estos dos archivos. Copiado a mano, el texto se
-// resumía, perdía detalle y se desalineaba sin que nada lo detectara. Aquí el texto de cada tarea
-// pasa tal cual, y lo que el análisis no sabe leer sale como problema de formato
-// (`listBoardProblems`): nada se pierde en silencio.
+// The panel is never written by hand: it is a view of these two files. Copied by hand, the text
+// got summarized, lost detail and drifted without anything noticing. Here each task's text passes
+// as is, and whatever the parser cannot read comes out as a format problem (`listBoardProblems`):
+// nothing is lost silently.
 //
-// Las plataformas y los dispositivos los define cada repo en `.claude/panel.json`; las
-// prioridades y las fases con nombre son las mismas en todos. El formato lo describe el README
-// de esta carpeta.
+// Each repo defines its platforms and devices in `.claude/panel.json`; the priorities and the
+// named phases are the same everywhere. The format is described in this folder's README. The
+// headings and field names it reads are Spanish, like `docs/tasks.md`.
 
 import { createHash } from "node:crypto";
 import { BACKLOG_FILE, TASKS_FILE } from "./panel-files.mjs";
 
-/** Prioridades en el orden en que se trabajan: P0 seguridad o pérdida de datos, P1 comportamiento incorrecto, P2 incumple una regla, Mejora. */
+/** Priorities in working order: P0 security or data loss, P1 wrong behavior, P2 breaks a rule, Mejora (improvement). */
 export const PRIORITY_LABELS = /** @type {const} */ ({ p0: "P0", p1: "P1", p2: "P2", improvement: "Mejora" });
 const PRIORITY_ORDER = Object.keys(PRIORITY_LABELS);
 
-/** Fases que no son `Fase N`: su título en el `.md`, su id en el panel y si salen en el recorrido. */
+/** Phases other than `Fase N`: their heading in the `.md`, their panel id and whether they show in the track. */
 const NAMED_PHASES = [
 	{ prefix: "Por probar", id: "test", inTrack: false },
 	{ prefix: "Cierre", id: "final", inTrack: true },
@@ -37,9 +37,9 @@ const DEVICE_TAG_RE = /^\[([^\]]+)\]\s+(.*)$/;
 
 /**
  * @typedef {object} BoardItem
- * @property {string} id Huella del texto sin la etiqueta de dispositivo: la marca sobrevive a que se muevan otras.
+ * @property {string} id Fingerprint of the text without the device tag: a checkmark survives other items moving.
  * @property {string} text
- * @property {string[]} devices Vacío: se prueba en cualquiera.
+ * @property {string[]} devices Empty: tested on any device.
  *
  * @typedef {object} BoardGroup
  * @property {string} id
@@ -50,7 +50,7 @@ const DEVICE_TAG_RE = /^\[([^\]]+)\]\s+(.*)$/;
  * @property {string | null} requires
  * @property {string | null} note
  * @property {boolean} working
- * @property {string[]} blockedBy Los bloques de su «Requiere» que siguen abiertos.
+ * @property {string[]} blockedBy The blocks in its «Requiere» that are still open.
  * @property {BoardItem[]} items
  *
  * @typedef {{ id: string, label: string }} BoardPhase
@@ -68,7 +68,7 @@ const DEVICE_TAG_RE = /^\[([^\]]+)\]\s+(.*)$/;
  */
 
 /**
- * Id legible y estable a partir de un título: sin acentos, sin signos, en minúsculas.
+ * A readable, stable id from a title: no accents, no punctuation, lowercase.
  * @param {string} text
  */
 export function toSlug(text) {
@@ -87,7 +87,7 @@ export function computeItemId(text) {
 }
 
 /**
- * Nombres separados por comas o «y» → sus ids; lo que no reconoce va a `unknown`.
+ * Names separated by commas or «y» → their ids; anything unrecognized goes to `unknown`.
  * @param {string} value
  * @param {Record<string, string>} labels
  */
@@ -111,7 +111,7 @@ function parseLabelList(value, labels) {
 }
 
 /**
- * `Instalación y Shell.` → sus ids; lo que no reconoce va a `unknown`.
+ * `Instalación y Shell.` → their ids; anything unrecognized goes to `unknown`.
  * @param {string} value
  * @param {Record<string, string>} labels
  */
@@ -121,8 +121,8 @@ export function parsePlatforms(value, labels) {
 }
 
 /**
- * `[Esta PC] El prompt…` → sus dispositivos y el texto sin la etiqueta. Sin etiqueta, o sin
- * dispositivos configurados, el texto queda tal cual.
+ * `[Esta PC] El prompt…` → its devices and the text without the tag. Without a tag, or without
+ * configured devices, the text stays as is.
  * @param {string} text
  * @param {Record<string, string>} labels
  */
@@ -134,7 +134,7 @@ export function parseDeviceTag(text, labels) {
 }
 
 /**
- * `P1.` o `Mejora` → su id; `null` si no es ninguna.
+ * `P1.` or `Mejora` → its id; `null` if it is neither.
  * @param {string} value
  */
 export function parsePriority(value) {
@@ -160,7 +160,7 @@ function parsePhaseHeading(heading, line) {
 	if (!named) return null;
 	const rest = heading.slice(named.prefix.length).replace(/^ — /, "");
 	return {
-		// Con su nombre en el id: puede haber dos «Bloqueado por terceros», y el panel agrupa por id.
+		// The name goes into the id: there can be two «Bloqueado por terceros», and the panel groups by id.
 		id: rest ? `${named.id}-${toSlug(rest)}` : named.id,
 		label: rest ? `${named.prefix}: ${rest}` : named.prefix,
 		inTrack: named.inTrack,
@@ -196,7 +196,7 @@ function createGroup(phase, title, line) {
 }
 
 /**
- * Une las líneas de prosa de un bloque en párrafos, como los pinta el `.md`: cada viñeta, el suyo.
+ * Joins a block's prose lines into paragraphs, as the `.md` renders them: each bullet is its own.
  * @param {readonly string[]} lines
  */
 function toNoteParagraphs(lines) {
@@ -218,7 +218,7 @@ function toNoteParagraphs(lines) {
 }
 
 /**
- * Recorre un `.md` y devuelve sus fases y bloques, con lo que no supo leer.
+ * Walks a `.md` and returns its phases and blocks, with whatever it could not read.
  * @param {string} source
  * @param {{ file: string, blockLevel: 2 | 3, fixedPhase?: string, labels: Labels }} options
  */
@@ -241,11 +241,11 @@ function parseFile(source, options) {
 	let phaseNote = [];
 	/** @type {ParsedGroup | null} */
 	let group = null;
-	// El primer `#` es el título del archivo: lo que cuelga de él (cómo se lee) no es una fase.
+	// The first `#` is the file title: what hangs from it (how to read the file) is not a phase.
 	let seenTitle = false;
 	/** @type {BoardItem | null} */
 	let lastItem = null;
-	// El valor de `**Requiere:**` puede seguir en las líneas siguientes hasta el párrafo vacío.
+	// The value of `**Requiere:**` can continue on the next lines, up to the blank line.
 	let readingRequires = false;
 
 	lines.forEach((raw, index) => {
@@ -261,7 +261,7 @@ function parseFile(source, options) {
 				return;
 			}
 			if (options.fixedPhase) {
-				report(lineNumber, `título de nivel 1 de más: «${line}»`);
+				report(lineNumber, `extra level-1 heading: «${line}»`);
 				return;
 			}
 			phase = parsePhaseHeading(line.slice(2), lineNumber);
@@ -270,7 +270,7 @@ function parseFile(source, options) {
 			else
 				report(
 					lineNumber,
-					`fase desconocida «${line.slice(2)}»: usa «Fase N — nombre», «Por probar», «Cierre», «Lo hace el dueño», «Aplazado» o «Bloqueado por terceros»`,
+					`unknown phase «${line.slice(2)}»: use «Fase N — nombre», «Por probar», «Cierre», «Lo hace el dueño», «Aplazado» or «Bloqueado por terceros»`,
 				);
 			return;
 		}
@@ -284,20 +284,20 @@ function parseFile(source, options) {
 			return;
 		}
 		if (/^#{2,6} /.test(line)) {
-			if (phaseId) report(lineNumber, `título de nivel inesperado: «${line}»`);
+			if (phaseId) report(lineNumber, `unexpected heading level: «${line}»`);
 			return;
 		}
 		if (!phaseId || line === "---") return;
 
 		if (CHECKED_ITEM_RE.test(line)) {
-			report(lineNumber, "tarea marcada como hecha: lo hecho se borra, no se marca");
+			report(lineNumber, "task checked as done: finished work is deleted, not checked");
 			return;
 		}
 
 		const item = OPEN_ITEM_RE.exec(line);
 		if (item) {
 			readingRequires = false;
-			// Tareas sueltas bajo la fase (Aplazado, Bloqueado): la fase hace de bloque.
+			// Loose tasks under the phase (Aplazado, Bloqueado): the phase acts as their block.
 			const currentPhase = /** @type {ParsedPhase | null} */ (phase);
 			if (!group && currentPhase) {
 				const phaseGroup = createGroup(phaseId, currentPhase.label, currentPhase.line);
@@ -313,11 +313,11 @@ function parseFile(source, options) {
 			let tagged = parseDeviceTag(text, deviceLabels);
 			if (phaseId === TEST_PHASE) {
 				for (const label of tagged.unknown)
-					report(lineNumber, `dispositivo desconocido «${label}»: usa ${Object.values(deviceLabels).join(", ")}`);
+					report(lineNumber, `unknown device «${label}»: use ${Object.values(deviceLabels).join(", ")}`);
 			} else {
-				// Fuera de «Por probar» unos corchetes al principio son texto de la tarea; solo se
-				// avisa si son, de verdad, una etiqueta de dispositivo.
-				if (tagged.devices.length > 0) report(lineNumber, "el dispositivo solo va en las casillas de «Por probar»");
+				// Outside «Por probar», leading brackets are part of the task text; only a real device
+				// tag is reported.
+				if (tagged.devices.length > 0) report(lineNumber, "a device only goes in «Por probar» checkboxes");
 				tagged = { devices: [], text, unknown: [] };
 			}
 			/** @type {BoardItem} */
@@ -326,7 +326,7 @@ function parseFile(source, options) {
 			target.items.push(created);
 			return;
 		}
-		// Continuación de una tarea larga partida en varias líneas.
+		// A long task continued on the next lines.
 		const previousItem = /** @type {BoardItem | null} */ (lastItem);
 		if (previousItem && /^\s{2,}\S/.test(raw)) {
 			previousItem.text = `${previousItem.text} ${line.trim()}`;
@@ -345,11 +345,11 @@ function parseFile(source, options) {
 				current.platforms = platforms;
 				current.hasPlatform = true;
 				for (const label of unknown)
-					report(lineNumber, `plataforma desconocida «${label}»: usa ${Object.values(platformLabels).join(", ")}`);
+					report(lineNumber, `unknown platform «${label}»: use ${Object.values(platformLabels).join(", ")}`);
 			} else if (name === "Prioridad") {
 				current.priority = parsePriority(value);
 				if (!current.priority)
-					report(lineNumber, `prioridad desconocida «${value}»: usa ${Object.values(PRIORITY_LABELS).join(", ")}`);
+					report(lineNumber, `unknown priority «${value}»: use ${Object.values(PRIORITY_LABELS).join(", ")}`);
 			} else if (name === "Requiere") {
 				current.requires = value.trim();
 				current.hasRequires = true;
@@ -357,7 +357,7 @@ function parseFile(source, options) {
 			} else if (value.replace(/\.$/, "").trim().toLowerCase() === WORKING_STATE) {
 				current.working = true;
 			} else {
-				report(lineNumber, `estado desconocido «${value}»: el único es «${WORKING_STATE}»`);
+				report(lineNumber, `unknown state «${value}»: the only one is «${WORKING_STATE}»`);
 			}
 			return;
 		}
@@ -374,8 +374,8 @@ function parseFile(source, options) {
 }
 
 /**
- * Los títulos entre comillas latinas de un «Requiere» que siguen siendo un bloque abierto. Un
- * bloque cerrado se borra del `.md`, así que lo que ya no está como bloque ya no bloquea.
+ * The «quoted» titles in a «Requiere» that are still an open block. A closed block is deleted
+ * from the `.md`, so whatever is no longer a block no longer blocks.
  * @param {string | null} requires
  * @param {ReadonlySet<string>} openTitles
  */
@@ -405,7 +405,7 @@ function toBoardGroups(parsed, openTitles) {
 }
 
 /**
- * Lo que el formato exige y el análisis no puede arreglar solo.
+ * What the format requires and the parser cannot fix on its own.
  * @param {string} file
  * @param {readonly ParsedGroup[]} groups
  * @param {{ needsRequires: boolean, needsPlatform: boolean }} rules
@@ -413,37 +413,37 @@ function toBoardGroups(parsed, openTitles) {
 function listGroupProblems(file, groups, rules) {
 	/** @type {BoardProblem[]} */
 	const problems = [];
-	// La prioridad del bloque anterior de la misma fase: dentro de una fase van de P0 a Mejora.
+	// The previous block of the same phase: within a phase, blocks go from P0 to Mejora.
 	/** @type {ParsedGroup | null} */
 	let previous = null;
 	for (const group of groups) {
 		/** @param {string} message */
 		const report = (message) => problems.push({ file, line: group.line, message: `«${group.title}»: ${message}` });
-		if (group.items.length === 0) report("bloque sin tareas: si se vació, se borra");
-		if (rules.needsPlatform && !group.hasPlatform) report("falta la línea **Plataforma:**");
+		if (group.items.length === 0) report("block without tasks: once empty, delete it");
+		if (rules.needsPlatform && !group.hasPlatform) report("missing **Plataforma:** line");
 		if (group.phase === TEST_PHASE) {
-			if (group.working) report("lo que está por probar no se marca en curso");
+			if (group.working) report("what waits to be tested is never marked «en curso»");
 			continue;
 		}
-		if (rules.needsRequires && !group.hasRequires) report("falta la línea **Requiere:**");
+		if (rules.needsRequires && !group.hasRequires) report("missing **Requiere:** line");
 		if (isNumberedPhase(group.phase)) {
 			const prev = /** @type {ParsedGroup | null} */ (previous);
-			if (!group.priority) report("falta la línea **Prioridad:**");
+			if (!group.priority) report("missing **Prioridad:** line");
 			else if (
 				prev?.phase === group.phase &&
 				prev.priority &&
 				PRIORITY_ORDER.indexOf(group.priority) < PRIORITY_ORDER.indexOf(prev.priority)
 			)
 				report(
-					`${labelOf(group.priority)} va detrás de «${prev.title}» (${labelOf(prev.priority)}): dentro de una fase, de P0 a Mejora`,
+					`${labelOf(group.priority)} comes after «${prev.title}» (${labelOf(prev.priority)}): within a phase, from P0 to Mejora`,
 				);
 			previous = group;
 		} else if (group.priority) {
-			report("la prioridad solo va en los bloques de una fase numerada");
+			report("a priority only goes in the blocks of a numbered phase");
 		}
 		const seen = new Set();
 		for (const item of group.items) {
-			if (seen.has(item.id)) report(`tarea repetida: «${item.text.slice(0, 60)}»`);
+			if (seen.has(item.id)) report(`repeated task: «${item.text.slice(0, 60)}»`);
 			seen.add(item.id);
 		}
 	}
@@ -469,7 +469,7 @@ function listDuplicateIds(groups, file) {
 			problems.push({
 				file,
 				line: group.line,
-				message: `«${group.title}» se llama casi igual que «${previous.title}»: cambia uno de los dos títulos`,
+				message: `«${group.title}» is named almost like «${previous.title}»: rename one of the two`,
 			});
 		seen.set(group.id, group);
 	}
@@ -487,7 +487,7 @@ function parseSources(sources, labels) {
 }
 
 /**
- * Todo lo que impide generar un panel fiel a los dos `.md`. Vacío = el formato es correcto.
+ * Everything that prevents generating a panel faithful to the two `.md` files. Empty: the format is right.
  * @param {BoardSources} sources
  * @param {Labels} labels
  */
@@ -503,25 +503,25 @@ export function listBoardProblems(sources, labels) {
 	];
 	for (const phase of tasks.phases) {
 		if (phase.id !== TEST_PHASE && !tasks.groups.some((group) => group.phase === phase.id))
-			problems.push({ file: TASKS_FILE, line: phase.line, message: `la fase «${phase.label}» no tiene bloques: si se vació, se borra` });
+			problems.push({ file: TASKS_FILE, line: phase.line, message: `phase «${phase.label}» has no blocks: once empty, delete it` });
 	}
 	const working = tasks.groups.filter((group) => group.working);
 	if (working.length > 1)
 		problems.push({
 			file: TASKS_FILE,
 			line: working[1]?.line ?? 1,
-			message: `${working.length} bloques en curso (${working.map((group) => `«${group.title}»`).join(", ")}): solo uno a la vez`,
+			message: `${working.length} blocks «en curso» (${working.map((group) => `«${group.title}»`).join(", ")}): only one at a time`,
 		});
 	return problems;
 }
 
 /**
- * Los datos que pinta la página, en el orden de los `.md`, con las etiquetas del repo.
+ * The data the page renders, in the order of the `.md` files, with the repo's labels.
  * @param {BoardSources & { project: string, sourceHash: string, labels: Labels }} input
  */
 export function buildBoardData(input) {
 	const { tasks, backlog } = parseSources(input, input.labels);
-	// «Por probar» no es trabajo pendiente: lo que solo espera la prueba del usuario no bloquea a nadie.
+	// «Por probar» is not pending work: what only waits for the user's test blocks nobody.
 	const openTitles = new Set(
 		[...tasks.groups, ...backlog.groups].filter((group) => group.phase !== TEST_PHASE).map((group) => group.title),
 	);

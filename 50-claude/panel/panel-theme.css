@@ -1,5 +1,5 @@
-/* Tema del panel: colores, radios, alto de campo y letra, en claro y oscuro. Se publica junto a
-   la página. Grises neutros sin marca, para que el panel no se parezca a ningún proyecto. */
+/* The panel's theme: colors, radii, field height and font, in light and dark. Published next to
+   the page. Neutral unbranded grays, so the panel looks like no particular project. */
 :root {
 	--radius: 0.625rem;
 	--radius-sm: calc(var(--radius) - 4px);

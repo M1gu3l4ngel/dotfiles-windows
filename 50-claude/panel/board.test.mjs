@@ -1,6 +1,7 @@
 // @ts-check
-// Tests del parser del panel. Corre con `node --test claude/panel/` (lo hace tools/check.ps1).
-// Las etiquetas son de ejemplo: cada repo pone las suyas en `.claude/panel.json`.
+// Tests for the panel parser. Run with `node --test 50-claude/panel/board.test.mjs` (tools/check.ps1 does).
+// The fixtures are Spanish, like `docs/tasks.md`; the labels are examples, since each repo sets
+// its own in `.claude/panel.json`.
 
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
@@ -86,14 +87,14 @@ const build = (sources = SOURCES, labels = LABELS) => buildBoardData({ ...source
 /** @param {string} tasks @param {string} [backlog] */
 const messages = (tasks, backlog = BACKLOG) => listBoardProblems({ tasks, backlog }, LABELS).map((p) => p.message);
 /** @param {string[]} list @param {string} part */
-const hasMessage = (list, part) => assert.ok(list.some((m) => m.includes(part)), `falta «${part}» en: ${JSON.stringify(list)}`);
+const hasMessage = (list, part) => assert.ok(list.some((m) => m.includes(part)), `missing «${part}» in: ${JSON.stringify(list)}`);
 
 describe("buildBoardData", () => {
 	const data = build();
 	/** @param {string} id */
 	const group = (id) => data.groups.find((g) => g.id === id);
 
-	it("lee fases, bloques y tareas en el orden de los .md, con Por probar primero y Backlog al final", () => {
+	it("reads phases, blocks and tasks in .md order, with Por probar first and Backlog last", () => {
 		assert.deepEqual(
 			data.phases.map((p) => p.id),
 			["test", "p1", "final-al-final", "later-con-su-evento", "backlog"],
@@ -104,14 +105,14 @@ describe("buildBoardData", () => {
 		);
 	});
 
-	it("el preámbulo no es un bloque", () => {
+	it("the preamble is not a block", () => {
 		assert.equal(
 			data.groups.some((g) => g.title === "Cómo se lee"),
 			false,
 		);
 	});
 
-	it("lee plataforma, requisito de varias líneas, estado y prosa", () => {
+	it("reads platform, a multi-line requirement, state and prose", () => {
 		const a = group("bloque-a");
 		assert.equal(a?.phase, "p1");
 		assert.deepEqual(a?.platforms, ["web", "repo"]);
@@ -121,13 +122,13 @@ describe("buildBoardData", () => {
 		assert.equal(a?.working, true);
 	});
 
-	it("une la tarea partida en varias líneas y le da la huella del texto entero", () => {
+	it("joins a task split over several lines and fingerprints the whole text", () => {
 		const second = group("bloque-a")?.items[1];
 		assert.equal(second?.text, "Segunda tarea partida en dos líneas");
 		assert.equal(second?.id, computeItemId("Segunda tarea partida en dos líneas"));
 	});
 
-	it("lee el dispositivo de una casilla de Por probar y lo quita del texto y de la huella", () => {
+	it("reads the device of a Por probar checkbox and drops it from the text and fingerprint", () => {
 		const [all, tagged] = group("login-nuevo")?.items ?? [];
 		assert.equal(all?.text, "Entrar con contraseña");
 		assert.deepEqual(all?.devices, []);
@@ -138,7 +139,7 @@ describe("buildBoardData", () => {
 		});
 	});
 
-	it("las tareas sueltas de una fase forman un bloque con el nombre de la fase y sin plataformas", () => {
+	it("loose tasks in a phase form a block named after the phase, with no platforms", () => {
 		const later = group("aplazado-con-su-evento");
 		assert.equal(later?.phase, "later-con-su-evento");
 		assert.deepEqual(later?.platforms, []);
@@ -146,23 +147,23 @@ describe("buildBoardData", () => {
 		assert.equal(later?.items[0]?.text, "Algo aplazado");
 	});
 
-	it("en el backlog, cada viñeta de la prosa es su propio párrafo", () => {
+	it("in the backlog, each prose bullet is its own paragraph", () => {
 		assert.equal(group("diferido")?.note, "El porqué:\n\n- una razón\n\n- otra razón");
 		assert.equal(group("diferido")?.phase, "backlog");
 	});
 
-	it("un requisito abierto bloquea; lo que solo está por probar no", () => {
+	it("an open requirement blocks; one that only waits to be tested does not", () => {
 		assert.deepEqual(group("bloque-b")?.blockedBy, ["Bloque A"]);
 	});
 
-	it("el recorrido marca en curso la fase del bloque que se trabaja", () => {
+	it("the track marks as current the phase of the block being worked on", () => {
 		assert.deepEqual(data.track, [
 			{ label: "Fase 1", name: "Base", status: "now" },
 			{ label: "Cierre", name: "al final", status: "todo" },
 		]);
 	});
 
-	it("los datos llevan las etiquetas del repo para que la página no nombre ninguna", () => {
+	it("the data carries the repo's labels so the page names none", () => {
 		assert.deepEqual(data.platforms, Object.entries(LABELS.platforms));
 		assert.deepEqual(data.devices, Object.entries(LABELS.devices));
 		assert.deepEqual(
@@ -171,13 +172,13 @@ describe("buildBoardData", () => {
 		);
 	});
 
-	it("la huella de una tarea no cambia al moverla ni al borrar sus vecinas", () => {
+	it("a task's fingerprint survives moving it or deleting its neighbors", () => {
 		const moved = build({ tasks: TASKS.replace("- [ ] Primera tarea\n", ""), backlog: BACKLOG });
 		const before = group("bloque-a")?.items[1]?.id;
 		assert.equal(moved.groups.find((g) => g.id === "bloque-a")?.items[0]?.id, before);
 	});
 
-	it("dos secciones con el mismo prefijo son dos fases, cada una con sus bloques", () => {
+	it("two sections with the same prefix are two phases, each with its blocks", () => {
 		const twoBlocked = build({
 			tasks: [
 				"# Tareas",
@@ -210,7 +211,7 @@ describe("buildBoardData", () => {
 		);
 	});
 
-	it("los .md vacíos dan un panel vacío y sin problemas", () => {
+	it("empty .md files give an empty panel with no problems", () => {
 		const empty = { tasks: "# Tareas\n", backlog: "# Backlog\n" };
 		assert.deepEqual(listBoardProblems(empty, LABELS), []);
 		assert.deepEqual(build(empty).groups, []);
@@ -218,93 +219,93 @@ describe("buildBoardData", () => {
 });
 
 describe("listBoardProblems", () => {
-	it("el formato de ejemplo no tiene problemas", () => {
+	it("the sample format has no problems", () => {
 		assert.deepEqual(listBoardProblems(SOURCES, LABELS), []);
 	});
 
-	it("una tarea marcada como hecha es un error: lo hecho se borra", () => {
-		hasMessage(messages(TASKS.replace("- [ ] Cerrar", "- [x] Cerrar")), "tarea marcada como hecha");
+	it("a task checked as done is an error: finished work is deleted", () => {
+		hasMessage(messages(TASKS.replace("- [ ] Cerrar", "- [x] Cerrar")), "task checked as done");
 	});
 
-	it("un bloque sin plataforma, sin requisito o sin tareas es un error", () => {
+	it("a block without platform, requirement or tasks is an error", () => {
 		const broken = TASKS.replace("**Plataforma:** App Site.\n", "")
 			.replace("**Requiere:** «Bloque A».\n", "")
 			.replace("- [ ] Cerrar\n", "");
 		const found = messages(broken);
-		hasMessage(found, "falta la línea **Plataforma:**");
-		hasMessage(found, "falta la línea **Requiere:**");
-		hasMessage(found, "bloque sin tareas");
+		hasMessage(found, "missing **Plataforma:** line");
+		hasMessage(found, "missing **Requiere:** line");
+		hasMessage(found, "block without tasks");
 	});
 
-	it("sin plataformas configuradas no se exige la línea de plataforma", () => {
+	it("without configured platforms the platform line is not required", () => {
 		const noPlatforms = { platforms: {}, devices: LABELS.devices };
 		const tasks = TASKS.replaceAll(/\*\*Plataforma:\*\* [^\n]+\n/g, "");
 		const backlog = BACKLOG.replace("**Plataforma:** Tool Workbench.\n", "");
 		assert.deepEqual(listBoardProblems({ tasks, backlog }, noPlatforms), []);
 	});
 
-	it("el backlog no exige requisito", () => {
+	it("the backlog does not require a requirement line", () => {
 		assert.deepEqual(messages(TASKS, BACKLOG), []);
 	});
 
-	it("una plataforma, una fase o un estado desconocidos son errores", () => {
-		hasMessage(messages(TASKS.replace("App Site.", "App Móvil.")), "plataforma desconocida «App Móvil»");
-		hasMessage(messages(TASKS.replace("# Cierre — al final", "# Extra")), "fase desconocida «Extra»");
-		hasMessage(messages(TASKS.replace("**Estado:** en curso.", "**Estado:** pausado.")), "estado desconocido «pausado.»");
+	it("an unknown platform, phase or state is an error", () => {
+		hasMessage(messages(TASKS.replace("App Site.", "App Móvil.")), "unknown platform «App Móvil»");
+		hasMessage(messages(TASKS.replace("# Cierre — al final", "# Extra")), "unknown phase «Extra»");
+		hasMessage(messages(TASKS.replace("**Estado:** en curso.", "**Estado:** pausado.")), "unknown state «pausado.»");
 	});
 
-	it("en Por probar, un bloque sin plataforma o un dispositivo desconocido son errores", () => {
-		hasMessage(messages(TASKS.replace("**Plataforma:** App Web.\n", "")), "«Login nuevo»: falta la línea **Plataforma:**");
-		hasMessage(messages(TASKS.replace("[Móvil, Tableta]", "[Móvil, Reloj]")), "dispositivo desconocido «Reloj»");
+	it("in Por probar, a block without platform or an unknown device is an error", () => {
+		hasMessage(messages(TASKS.replace("**Plataforma:** App Web.\n", "")), "«Login nuevo»: missing **Plataforma:** line");
+		hasMessage(messages(TASKS.replace("[Móvil, Tableta]", "[Móvil, Reloj]")), "unknown device «Reloj»");
 	});
 
-	it("el dispositivo solo va en Por probar; otros corchetes al principio son texto", () => {
-		hasMessage(messages(TASKS.replace("- [ ] Cerrar", "- [ ] [Escritorio] Cerrar")), "el dispositivo solo va en las casillas de «Por probar»");
+	it("a device only goes in Por probar; other leading brackets are text", () => {
+		hasMessage(messages(TASKS.replace("- [ ] Cerrar", "- [ ] [Escritorio] Cerrar")), "a device only goes in «Por probar» checkboxes");
 		assert.deepEqual(messages(TASKS.replace("- [ ] Cerrar", "- [ ] [Opcional] Cerrar")), []);
 	});
 
-	it("dos bloques en curso a la vez es un error", () => {
+	it("two blocks in progress at once is an error", () => {
 		const twice = TASKS.replace("**Requiere:** «Bloque A».", "**Requiere:** «Bloque A».\n\n**Estado:** en curso.");
-		hasMessage(messages(twice), "2 bloques en curso");
+		hasMessage(messages(twice), "2 blocks «en curso»");
 	});
 
-	it("lo que está por probar no se marca en curso", () => {
+	it("what waits to be tested is never marked in progress", () => {
 		const testing = TASKS.replace("## Login nuevo\n", "## Login nuevo\n\n**Estado:** en curso.\n");
-		hasMessage(messages(testing), "lo que está por probar no se marca en curso");
+		hasMessage(messages(testing), "what waits to be tested is never marked «en curso»");
 	});
 
-	it("una fase sin bloques y una tarea repetida son errores", () => {
-		hasMessage(messages(`${TASKS}\n# Fase 2 — Vacía\n`), "«Fase 2: Vacía» no tiene bloques");
-		hasMessage(messages(TASKS.replace("- [ ] Cerrar", "- [ ] Cerrar\n- [ ] Cerrar")), "tarea repetida");
+	it("a phase without blocks and a repeated task are errors", () => {
+		hasMessage(messages(`${TASKS}\n# Fase 2 — Vacía\n`), "phase «Fase 2: Vacía» has no blocks");
+		hasMessage(messages(TASKS.replace("- [ ] Cerrar", "- [ ] Cerrar\n- [ ] Cerrar")), "repeated task");
 	});
 
-	it("un bloque de una fase numerada sin prioridad, o con una desconocida, es un error", () => {
-		hasMessage(messages(TASKS.replace("**Prioridad:** P1.\n", "")), "falta la línea **Prioridad:**");
-		hasMessage(messages(TASKS.replace("P1.", "Urgente.")), "prioridad desconocida «Urgente.»");
+	it("a numbered-phase block with no priority, or an unknown one, is an error", () => {
+		hasMessage(messages(TASKS.replace("**Prioridad:** P1.\n", "")), "missing **Prioridad:** line");
+		hasMessage(messages(TASKS.replace("P1.", "Urgente.")), "unknown priority «Urgente.»");
 	});
 
-	it("dentro de una fase, un bloque más grave detrás de otro menos grave es un error", () => {
+	it("within a phase, a more severe block after a less severe one is an error", () => {
 		const extra = "## Bloque C\n\n**Plataforma:** App Web.\n\n**Prioridad:** P0.\n\n**Requiere:** nada.\n\n- [ ] Arreglar\n\n# Cierre";
-		hasMessage(messages(TASKS.replace("# Cierre", extra)), "P0 va detrás de «Bloque A» (P1)");
+		hasMessage(messages(TASKS.replace("# Cierre", extra)), "P0 comes after «Bloque A» (P1)");
 	});
 
-	it("la prioridad solo va en las fases numeradas", () => {
+	it("a priority only goes in numbered phases", () => {
 		const closing = TASKS.replace("**Requiere:** «Bloque A».", "**Prioridad:** P2.\n\n**Requiere:** «Bloque A».");
-		hasMessage(messages(closing), "la prioridad solo va en los bloques de una fase numerada");
+		hasMessage(messages(closing), "a priority only goes in the blocks of a numbered phase");
 	});
 
-	it("dos títulos que dan el mismo id son un error", () => {
+	it("two titles that give the same id are an error", () => {
 		const backlog = `${BACKLOG}\n### Bloque A!\n\n**Plataforma:** App Web.\n\n- [ ] Otra\n`;
-		hasMessage(messages(TASKS, backlog), "se llama casi igual");
+		hasMessage(messages(TASKS, backlog), "is named almost like");
 	});
 });
 
-describe("piezas sueltas", () => {
-	it("toSlug quita acentos y signos", () => {
+describe("helpers", () => {
+	it("toSlug drops accents and punctuation", () => {
 		assert.equal(toSlug("Organización 3: ajustes que faltan"), "organizacion-3-ajustes-que-faltan");
 	});
 
-	it("parsePlatforms acepta comas y «y», y separa lo que no conoce", () => {
+	it("parsePlatforms accepts commas and «y», and sets aside what it does not know", () => {
 		assert.deepEqual(parsePlatforms("Repositorio, App Web y App Site.", LABELS.platforms), {
 			platforms: ["repo", "web", "site"],
 			unknown: [],
@@ -312,20 +313,20 @@ describe("piezas sueltas", () => {
 		assert.deepEqual(parsePlatforms("App Web, Móvil", LABELS.platforms), { platforms: ["web"], unknown: ["Móvil"] });
 	});
 
-	it("parsePriority acepta el nombre con o sin punto y sin distinguir mayúsculas", () => {
+	it("parsePriority accepts the name with or without a period, case-insensitively", () => {
 		assert.equal(parsePriority("P0."), "p0");
 		assert.equal(parsePriority("mejora"), "improvement");
 		assert.equal(parsePriority("P3"), null);
 	});
 
-	it("un requisito bloquea solo mientras su bloque sigue abierto", () => {
+	it("a requirement blocks only while its block is still open", () => {
 		const open = new Set(["Modelo de datos"]);
 		assert.deepEqual(listOpenRequirements("«Modelo de datos» y «Ya cerrado».", open), ["Modelo de datos"]);
 		assert.deepEqual(listOpenRequirements("Con plan.", open), []);
 		assert.deepEqual(listOpenRequirements(null, open), []);
 	});
 
-	it("la huella de los .md no distingue CRLF de LF y cambia con el contenido", () => {
+	it("the .md fingerprint ignores CRLF versus LF and changes with the content", () => {
 		assert.equal(computeSourceHash("a\r\nb", "c"), computeSourceHash("a\nb", "c"));
 		assert.notEqual(computeSourceHash("a", "b"), computeSourceHash("a", "c"));
 		assert.notEqual(computeSourceHash("ab", ""), computeSourceHash("a", "b"));

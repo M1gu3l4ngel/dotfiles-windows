@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // @ts-check
-// Hook PostToolUse (Artifact): al publicar el panel, guarda su URL y la huella de lo publicado.
+// PostToolUse hook (Artifact): when the panel is published, stores its URL and the published
+// fingerprint.
 //
-// Es la otra mitad de la comparación que hace `panel-session-start.mjs`: sin saber qué huella se
-// publicó, no hay forma de decir al abrir sesión si el panel sigue diciendo lo mismo que sus
-// fuentes. Si se publicó con datos viejos (sin regenerar), lo dice en el momento.
+// It is the other half of the comparison `panel-session-start.mjs` makes: without knowing which
+// fingerprint was published, a new session cannot tell whether the panel still matches its
+// sources. If it was published with stale data (not regenerated), it says so right away.
 
 import { BOARD_FILES, BOARD_PAGE, GENERATE_COMMAND, findBoardDataHash, hasPanel, readSourceHash, writePublishedState } from "../panel-files.mjs";
 
@@ -36,14 +37,14 @@ process.stdin.on("end", () => {
 		const publishedHash = findBoardDataHash(projectDir);
 		const sent = JSON.stringify(input.files ?? {});
 		const sentData = Object.keys(BOARD_FILES).every((name) => sent.includes(name));
-		// Sin sus datos en esta publicación quedan los que ya tenía el artefacto: no se puede saber
-		// su huella, así que se guarda vacía y el próximo arranque lo da por desfasado.
+		// Without its data in this publish, the artifact keeps the files it had: their fingerprint is
+		// unknown, so it is stored empty and the next session start reports the panel as outdated.
 		writePublishedState(projectDir, { url, sourceHash: sentData ? (publishedHash ?? "") : "" });
 
-		if (!sentData) reply(`Panel publicado sin todos sus archivos: vuelve a publicarlo con files ${JSON.stringify(BOARD_FILES)}.`);
+		if (!sentData) reply(`Panel published without all its files: publish it again with files ${JSON.stringify(BOARD_FILES)}.`);
 		else if (publishedHash !== readSourceHash(projectDir))
-			reply(`Panel publicado con datos viejos: sus fuentes cambiaron después de generarlos. Corre ${GENERATE_COMMAND} y republica.`);
+			reply(`Panel published with stale data: its sources changed after it was generated. Run ${GENERATE_COMMAND} and republish.`);
 	} catch {
-		// Un hook roto no debe cortar la sesión; en el peor caso el próximo arranque avisa de desfase.
+		// A broken hook must not stop the session; at worst, the next session start reports drift.
 	}
 });
