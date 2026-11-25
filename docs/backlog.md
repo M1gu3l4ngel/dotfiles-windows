@@ -67,12 +67,3 @@ Los plugins de TypeScript y Rust necesitan sus binarios; sin ellos fallan al
 arrancar.
 
 - [ ] `enabledPlugins` en `50-claude/settings.template.json` y sus binarios en `bootstrap.ps1`
-
-### Nombre de un repo en el historial
-
-**Plataforma:** Repositorio.
-
-Un commit antiguo nombra el repo de solo `main`. Purgarlo exige `git filter-repo`
-y un push forzado: lo decide y lo hace el dueño.
-
-- [ ] Decidir si se purga el historial

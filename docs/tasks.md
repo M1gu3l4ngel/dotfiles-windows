@@ -28,6 +28,7 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] [Esta PC] Tras un `git pull` en otra PC, el `post-merge` rehace los enlaces y el prompt sigue igual
 - [ ] [Esta PC] Windows Terminal abre con PowerShell 7, Monokai Soda y la fuente de siempre
 - [ ] [PC nueva] `bootstrap.ps1` instala las 18 apps de `60-apps/essential.json`
+- [ ] [PC nueva] `bootstrap.ps1` instala las 39 extensiones de VS Code y los `.ps1` se formatean al guardar
 
 ## Panel de tareas
 
@@ -57,19 +58,3 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 - [ ] Corregir las entradas desfasadas del CHANGELOG
 - [ ] Probar `bootstrap.ps1` y la guía en Windows Sandbox
 - [ ] Cortar el CHANGELOG como 1.0.0 (el tag lo crea el dueño)
-
-# Lo hace el dueño — decisiones y archivos protegidos
-
-## Lista de extensiones de VS Code
-
-**Plataforma:** VS Code.
-
-**Requiere:** nada.
-
-`30-vscode/vscode/extensions.txt` está protegido. Falta `ms-vscode.powershell`, que
-`settings.json` usa como formateador; sobran `github.copilot-chat` (ya viene en VS
-Code) y `exodiusstudios.comment-anchors`; faltan `dbaeumer.vscode-eslint`,
-`humao.rest-client`, `ms-azuretools.vscode-containers` y
-`elvisrp22.comment-translator`.
-
-- [ ] Decidir si se regenera con `code --list-extensions > 30-vscode/vscode/extensions.txt`, desde PowerShell 7 o Git Bash (Windows PowerShell escribe UTF-16 con CRLF)

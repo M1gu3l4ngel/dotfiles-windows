@@ -72,6 +72,10 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- `30-vscode/vscode/extensions.txt` matches the installed extensions: it adds
+  `ms-vscode.powershell` (the `.ps1` formatter in `settings.json`), ESLint, REST
+  Client, Containers and Comment Translator, and drops `github.copilot-chat`
+  (bundled with VS Code) and Comment Anchors.
 - `60-apps/`: `apps/winget-dev.json` splits into `essential.json`, which
   `bootstrap.ps1` now reads instead of its own list, and `optional.json`, both in
   the `winget export` format. `tools/check.ps1` fails if an app is in both.
