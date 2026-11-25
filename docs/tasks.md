@@ -42,6 +42,15 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 - [ ] Los diagramas del README y de `docs/getting-started` se dibujan en tema claro y oscuro
 
+## Repos nuevos con new-repo
+
+**Plataforma:** Claude Code.
+
+- [ ] Al pedir un repo nuevo, Claude usa `new-repo`: pregunta dueño y visibilidad juntos y confirma antes de `gh repo create`
+- [ ] El repo nace con descripción, topics, licencia, README y CHANGELOG en pareja, `CLAUDE.md`, formato y CI
+- [ ] En un repo de una organización con cerebro, lo registra en su catálogo
+- [ ] En un repo existente al que le falta algo, Claude lo avisa como hallazgo
+
 ## Panel de tareas
 
 **Plataforma:** Claude Code.

@@ -110,6 +110,18 @@ function Get-DotfilesLink {
 			Target = "$env:USERPROFILE\.claude\hooks\reply-in-spanish.mjs"
 			Label  = 'Claude hook reply-in-spanish'
 		},
+		# Regla global: Claude Code carga ~/.claude/rules/*.md en todos los proyectos.
+		@{
+			Source = "$DotfilesRoot\50-claude\rules\repo-conventions.md"
+			Target = "$env:USERPROFILE\.claude\rules\repo-conventions.md"
+			Label  = 'Claude regla repo-conventions'
+		},
+		# Skill global: la carpeta, como pide Claude Code (~/.claude/skills/<nombre>/SKILL.md).
+		@{
+			Source = "$DotfilesRoot\50-claude\skills\new-repo"
+			Target = "$env:USERPROFILE\.claude\skills\new-repo"
+			Label  = 'Claude skill new-repo'
+		},
 		# Panel de tareas: la carpeta entera (pagina, tema, generador y sus hooks), porque los
 		# modulos se importan entre si por ruta relativa.
 		@{

@@ -8,6 +8,14 @@ Notable changes to the project. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `50-claude/skills/new-repo`: global skill that creates a well-built repo, or
+  completes an existing one (GitHub description and topics, license, bilingual
+  README with a diagram, CHANGELOG, `CLAUDE.md`, formatting, CI and the brain
+  catalog), and `50-claude/rules/repo-conventions.md`, a short global rule that
+  points to it and reports what a repo is missing. Linked by `install.ps1`.
+
 ## [1.0.0] - 2026-11-24
 
 First release: the full Windows 11 environment, reproducible on a new PC with

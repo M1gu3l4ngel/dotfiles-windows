@@ -31,7 +31,7 @@ $ErrorActionPreference = 'Stop'
 # Instrucciones para Claude Code (no documentacion para el lector): solo en espanol.
 # Las listas del panel de tareas tambien: son el trabajo del agente, y el panel lee
 # sus titulos en espanol.
-$excludedPrefixes = @('.claude/')
+$excludedPrefixes = @('.claude/', '50-claude/rules/', '50-claude/skills/')
 $excludedFiles = @('CLAUDE.md', '50-claude/CLAUDE.md', '50-claude/entorno.template.md', 'docs/tasks.md', 'docs/backlog.md')
 
 $esSuffix = '.es.md'

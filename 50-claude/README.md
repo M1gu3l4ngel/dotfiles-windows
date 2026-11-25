@@ -11,6 +11,8 @@ specific to a machine stays local (it is not versioned).
 | File | Linked to | What it is |
 |---|---|---|
 | `CLAUDE.md` | `~/.claude/CLAUDE.md` | Universal rules: bilingual documentation, disk, editing with Edit/Write, confirming before deleting, interaction, compaction |
+| `rules/repo-conventions.md` | `~/.claude/rules/repo-conventions.md` | Global rule (Spanish, loaded in every project): what every repo has, and to report what is missing as a finding |
+| `skills/new-repo/` | `~/.claude/skills/new-repo` | Global skill (Spanish): creates a well-built repo, or completes an existing one: GitHub description and topics, license, bilingual README with a diagram, CHANGELOG, `CLAUDE.md`, formatting, CI and the organization's brain catalog. Company specifics live in each company's brain |
 | `statusline.mjs` | `~/.claude/statusline.mjs` | Status line (model, context in tokens, folder) |
 | `hooks/block-shell-edits.mjs` | `~/.claude/hooks/block-shell-edits.mjs` | `PreToolUse` hook that enforces editing with Edit/Write (blocks `sed -i`, redirections, heredocs… and lets temporary files through). Portable Windows/Linux |
 | `hooks/block-forbidden-commands.mjs` | `~/.claude/hooks/block-forbidden-commands.mjs` | `PreToolUse` hook that enforces the `CLAUDE.md` rules about commands: blocks unsigned commits, `git add -A`, forced pushes, pushes to `main` and git that rewrites history or the tree, `prettier --write` with a glob and `robocopy /MIR` without `/XJ`; asks before any other push and before a recursive delete outside a temporary folder. Portable Windows/Linux |
