@@ -53,7 +53,6 @@ Solo lo que falta: lo hecho se borra. Formato y reglas en
 
 **Estado:** en curso.
 
-- [ ] `CONTRIBUTING` al día con las reglas del repo
 - [ ] Corregir las entradas desfasadas del CHANGELOG
 - [ ] Probar `bootstrap.ps1` y la guía en Windows Sandbox
 - [ ] Cortar el CHANGELOG como 1.0.0 (el tag lo crea el dueño)

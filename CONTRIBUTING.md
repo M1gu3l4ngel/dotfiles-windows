@@ -56,8 +56,11 @@ they do not share the same structure (sections, tables, lists, links), if their
 code blocks differ (commands are not translated) or if there are broken links
 or anchors.
 
-Code comments, commit messages and the rules in `.claude/rules/` are written in
-Spanish only.
+Where a flow reads better drawn, use a Mermaid diagram: it is a code block, so
+it is identical in both languages, with English labels.
+
+Code comments, commit messages, the rules in `.claude/rules/` and the task
+lists (`docs/tasks.md`, `docs/backlog.md`) are written in Spanish only.
 
 ## Conventions
 
@@ -72,6 +75,7 @@ people and for Claude Code, which loads them automatically.
 | `powershell.md` | PowerShell conventions |
 | `documentation.md` | Documentation style and the two-language rule |
 | `environment.md` | Disks, Developer Mode, symlinks, WSL |
+| `task-tracking.md` | `docs/tasks.md` and `docs/backlog.md` (in Spanish): what is left to do, and the task panel generated from them |
 
 The most important points:
 

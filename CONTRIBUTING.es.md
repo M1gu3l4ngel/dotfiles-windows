@@ -56,8 +56,12 @@ también su pareja en el mismo commit. `.\tools\check.ps1`
 tablas, listas, enlaces), si sus bloques de código difieren (los comandos no se
 traducen) o si hay enlaces o anclas rotos.
 
-Los comentarios del código, los commits y las reglas de `.claude/rules/` se
-escriben solo en español.
+Donde un flujo se entiende mejor dibujado, va un diagrama Mermaid: es un bloque
+de código, así que es idéntico en los dos idiomas, con etiquetas en inglés.
+
+Los comentarios del código, los commits, las reglas de `.claude/rules/` y las
+listas de tareas (`docs/tasks.md`, `docs/backlog.md`) se escriben solo en
+español.
 
 ## Convenciones
 
@@ -72,6 +76,7 @@ Claude Code, que las carga automáticamente.
 | `powershell.md` | Convenciones de PowerShell |
 | `documentation.md` | Estilo de la documentación y la regla de los dos idiomas |
 | `environment.md` | Discos, Developer Mode, symlinks, WSL |
+| `task-tracking.md` | `docs/tasks.md` y `docs/backlog.md` (en español): lo que falta por hacer, y el panel de tareas que se genera de ellos |
 
 Lo más importante:
 
