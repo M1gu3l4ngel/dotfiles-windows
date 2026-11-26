@@ -1,5 +1,3 @@
-**English** | [Español](README.es.md)
-
 # 60-apps
 
 The environment's applications, in two lists in the `winget export` format. This

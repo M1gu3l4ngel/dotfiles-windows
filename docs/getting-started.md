@@ -1,5 +1,3 @@
-**English** | [Español](getting-started.es.md)
-
 # A new PC from scratch
 
 From a freshly installed Windows 11 to the full environment. Each step says which

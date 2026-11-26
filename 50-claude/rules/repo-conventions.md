@@ -13,7 +13,7 @@ Todo repo mío (personal, de una organización propia o de un empleador) tiene:
   los otros repos del mismo dueño: se compara con una de ellas, no de memoria.
 - `.editorconfig`, `.prettierrc.json` y `.gitattributes` propios.
 - `CLAUDE.md` del repo: qué es, stack, comandos, convenciones y enlace a sus docs.
-- CI mínimo: lint, formato, tests y el check de docs bilingües.
+- CI mínimo: lint, formato, tests y el check de docs.
 - Registro en el catálogo del cerebro, si su organización tiene uno.
 - La versión de Node (o del runtime) en un solo sitio, `engines.node` de `package.json`,
   que leen el CI (`node-version-file: package.json`), el despliegue, pnpm y fnm. Exacta

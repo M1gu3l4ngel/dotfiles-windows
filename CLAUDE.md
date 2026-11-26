@@ -31,8 +31,7 @@ Documentación oficial de Claude Code (para mantener estas reglas al día):
 En este repo los **comentarios de código, las salidas de los scripts, los `reason` de
 los hooks y los nombres de los tests van en inglés**, con la forma de
 `docs/contributing/comments.md`, como dice también la regla global de
-`50-claude/CLAUDE.md` para todos los proyectos. Siguen en español: los `.es.md`, este
-archivo, `.claude/rules/`, `docs/tasks.md`, `docs/backlog.md` y el texto visible del
+`50-claude/CLAUDE.md` para todos los proyectos. Siguen en español: este archivo, `.claude/rules/`, `docs/tasks.md`, `docs/backlog.md` y el texto visible del
 panel. `.\tools\check.ps1` falla ante un comentario en español.
 
 ## Comandos

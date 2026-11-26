@@ -1,5 +1,3 @@
-**English** | [Español](README.es.md)
-
 # 40-format
 
 The global code style: it only applies to projects that bring no `.prettierrc` or

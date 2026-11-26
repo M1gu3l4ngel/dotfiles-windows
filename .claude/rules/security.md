@@ -12,7 +12,7 @@ para siempre en el historial.
 - Usar placeholders (`<TU_FINGERPRINT>`, `<usuario>`) o valores en tiempo de
   ejecución (`$env:USERPROFILE`, `[Environment]::GetFolderPath(...)`).
 - Los commits se firman con GPG y usan el **email noreply** de GitHub, no el
-  personal. Ver `docs/gpg-signing.es.md`.
+  personal. Ver `docs/gpg-signing.md`.
 
 ## Ojo con 30-vscode/vscode/settings.json
 

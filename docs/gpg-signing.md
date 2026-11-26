@@ -1,5 +1,3 @@
-**English** | [Español](gpg-signing.es.md)
-
 # Commit signing with GPG (Windows)
 
 Sign every commit and tag (integrity + "Verified" badge on GitHub) without

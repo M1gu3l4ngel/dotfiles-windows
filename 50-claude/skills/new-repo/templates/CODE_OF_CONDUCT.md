@@ -1,5 +1,3 @@
-**English** | [Español](CODE_OF_CONDUCT.es.md)
-
 # Code of conduct
 
 This project follows the

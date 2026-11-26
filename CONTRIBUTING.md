@@ -1,5 +1,3 @@
-**English** | [Español](CONTRIBUTING.es.md)
-
 # Contributing
 
 Thank you for helping. It is a personal repo, but it follows a standard flow to keep it clean and
@@ -41,10 +39,9 @@ To see what the installer would change on your PC without changing anything:
   version and verified with SHA-256.
 - **Idempotent scripts:** each step checks whether it is already done, so a script can run
   again without breaking anything.
-- **Documents in pairs:** `X.md` in English and `X.es.md` in Spanish, with the same sections,
-  identical code blocks and the language selector on line 1. `.\tools\check.ps1`
+- **Documents in English only:** no `X.es.md` copy and no language selector. `.\tools\check.ps1`
   (`50-claude/tools/check-docs.mjs`) checks it, links and anchors included. Where a flow reads
-  better drawn, a Mermaid diagram, identical in both languages, with English labels.
+  better drawn, a Mermaid diagram with English labels.
 - **English** in code comments, script output, hook messages and test names, following
   [docs/contributing/comments.md](docs/contributing/comments.md). The rules in
   `.claude/rules/` and the task lists (`docs/tasks.md`, `docs/backlog.md`) are Spanish only.

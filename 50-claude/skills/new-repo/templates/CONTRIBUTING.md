@@ -1,5 +1,3 @@
-**English** | [Español](CONTRIBUTING.es.md)
-
 # Contributing
 
 Thank you for helping. <What this repository is, and what is not edited here.>
@@ -27,8 +25,8 @@ The checks are the same ones CI runs.
 ## What a change has to keep
 
 - **Nothing personal or from a client:** no username, email, hostname, key or token.
-- **Documents in pairs:** `X.md` in English and `X.es.md` in Spanish, with the same sections,
-  identical code blocks and the language selector on line 1. <The check> verifies it.
+- **Documents in English only:** no translated copies and no language selector. <The check>
+  verifies it, links and anchors included.
 - **English** in code comments, script output and test names.
 - **Tests:** new logic comes with its test.
 - **<Invariant of this repository>:** <one line>.

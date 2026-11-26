@@ -7,5 +7,4 @@
 - [ ] `.\tools\check.ps1` passes
 - [ ] Tested on a real machine: what was run and what came out is in the description
 - [ ] Nothing personal or from a company: usernames, emails, hostnames, keys, tokens
-- [ ] A change people notice has its line in `CHANGELOG.md` and `CHANGELOG.es.md`
-- [ ] A document changed in one language is changed in the other
+- [ ] A change people notice has its line in `CHANGELOG.md`

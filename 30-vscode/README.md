@@ -1,5 +1,3 @@
-**English** | [Español](README.es.md)
-
 # 30-vscode
 
 The VS Code user settings, its key bindings and the list of extensions that a new

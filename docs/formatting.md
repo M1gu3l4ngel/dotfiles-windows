@@ -1,5 +1,3 @@
-**English** | [Español](formatting.es.md)
-
 # Code formatting
 
 The style lives in two files that every tool reads (VS Code, the Prettier CLI,

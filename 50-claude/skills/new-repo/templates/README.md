@@ -1,5 +1,3 @@
-**English** | [Español](README.es.md)
-
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="<assets>/<repo>-lockup-white.svg">

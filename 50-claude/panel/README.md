@@ -1,5 +1,3 @@
-**English** | [Español](README.es.md)
-
 # Task panel
 
 A Claude Code artifact that shows a repo's tasks. It is a **view** of

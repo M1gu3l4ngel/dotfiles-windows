@@ -1,6 +1,6 @@
 ---
 name: new-repo
-description: Crea un repositorio nuevo bien armado (GitHub con descripción y topics, licencia, README bilingüe con diagrama, CHANGELOG, CLAUDE.md, formato, CI y registro en el cerebro de la organización) o completa uno existente al que le faltan piezas. Úsalo al crear un repo (git init, gh repo create) o cuando la regla repo-conventions detecte que falta algo.
+description: Crea un repositorio nuevo bien armado (GitHub con descripción y topics, licencia, README en inglés con diagrama, CHANGELOG, CLAUDE.md, formato, CI y registro en el cerebro de la organización) o completa uno existente al que le faltan piezas. Úsalo al crear un repo (git init, gh repo create) o cuando la regla repo-conventions detecte que falta algo.
 ---
 
 # new-repo
@@ -10,7 +10,7 @@ un empleador. Lo específico de una empresa (nombre de la organización, web, c�
 se nombran sus repos, plantillas) **no está aquí**: vive en su cerebro, y lo que
 diga el cerebro manda sobre lo de aquí.
 
-Ya aplican y no se repiten: documentación bilingüe, editar con Edit/Write,
+Ya aplican y no se repiten: repo solo en inglés, editar con Edit/Write,
 commits y push, carpeta de trabajo y formato (`~/.claude/CLAUDE.md`).
 
 ## 1. Antes de tocar nada
@@ -40,7 +40,7 @@ al pie de la letra; si no está claro de quién es el código, se pregunta.
 
 | Archivo | Qué lleva |
 |---|---|
-| `README.md` + `README.es.md` | Cabecera: selector en la línea 1; si hay marca, el logo en `<picture>` con su versión clara y oscura (una sola desaparece en uno de los temas), sin título `#` que repita el nombre debajo; descripción centrada en dos líneas; fila de enlaces a las secciones en su orden; badges de tecnologías y licencia, y de CI solo si es público. Cuerpo en el orden de `docs-standard.md`, con la versión de Node en `engines.node` como fuente única (regla `repo-conventions`) y comandos copiables y probados. Si la organización tiene receta propia, manda la suya, y la cabecera se compara con la de otro de sus repos antes de cerrar |
+| `README.md` | Cabecera: si hay marca, el logo en `<picture>` con su versión clara y oscura (una sola desaparece en uno de los temas), sin título `#` que repita el nombre debajo; descripción centrada en dos líneas; fila de enlaces a las secciones en su orden; badges de tecnologías y licencia, y de CI solo si es público. Cuerpo en el orden de `docs-standard.md`, con la versión de Node en `engines.node` como fuente única (regla `repo-conventions`) y comandos copiables y probados. Si la organización tiene receta propia, manda la suya, y la cabecera se compara con la de otro de sus repos antes de cerrar |
 | Documentos de comunidad | Los de su tipo en `docs-standard.md`, desde `templates/` |
 | `.editorconfig`, `.prettierrc.json`, `.prettierignore` | Propios del repo, aunque copien el estilo global: con CI no se depende de `~` |
 | `.gitattributes` | `* text=auto eol=lf` y los binarios marcados |
@@ -55,12 +55,12 @@ código: idéntico en las dos versiones, con etiquetas en inglés.
 ## 4. CI mínimo
 
 - `.github/workflows/ci.yml`: lint, formato (`prettier --check`), tests y el
-  check de docs bilingües. Acciones fijadas por SHA de commit,
+  check de docs. Acciones fijadas por SHA de commit,
   `permissions: contents: read`, `concurrency` con `cancel-in-progress` y
   filtros de `paths` para no gastar minutos en lo que no los necesita. Si otros
   lo instalan o lo corren en su máquina, matriz con `windows-latest` y
   `macos-latest` además de Linux, en `bash`.
-- Check bilingüe: el de la organización si su cerebro o su plantilla lo trae;
+- Check de docs: el de la organización si su cerebro o su plantilla lo trae;
   si no, `node ~/.claude/tools/check-docs.mjs . --community <tipo>` (de dotfiles-windows, con
   `--exclude` para lo que el repo tenga solo en español). En el CI, un segundo
   `actions/checkout` de dotfiles-windows fijado por SHA y el mismo comando con su
@@ -110,6 +110,6 @@ y el formato que ya usa, con su propio commit en el cerebro.
 ## Repo que ya existe
 
 El mismo recorrido como auditoría: cada pieza que falta es un hallazgo, una línea
-con archivo, qué falta y qué se recomienda. Lo pequeño (un `.gitattributes`, el
-selector de idioma) se crea en el mismo cambio y se dice; lo grande (CI,
+con archivo, qué falta y qué se recomienda. Lo pequeño (un `.gitattributes`, un
+enlace roto) se crea en el mismo cambio y se dice; lo grande (CI,
 licencia, visibilidad, el catálogo del cerebro) se propone y decide el usuario.

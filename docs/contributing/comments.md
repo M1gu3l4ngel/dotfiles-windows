@@ -1,5 +1,3 @@
-**English** | [Español](comments.es.md)
-
 # Code comments
 
 How comments are written in this repo: PowerShell, JavaScript (`.mjs`), shell,

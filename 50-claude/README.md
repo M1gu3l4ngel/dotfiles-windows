@@ -1,5 +1,3 @@
-**English** | [Español](README.es.md)
-
 # Global Claude Code layer
 
 **Universal** Claude Code behavior, the same on any project, PC and operating
@@ -10,9 +8,9 @@ specific to a machine stays local (it is not versioned).
 
 | File | Linked to | What it is |
 |---|---|---|
-| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Universal rules: bilingual documentation, work folder, editing with Edit/Write, confirming before deleting, interaction, compaction |
+| `CLAUDE.md` | `~/.claude/CLAUDE.md` | Universal rules: English-only repos, work folder, editing with Edit/Write, confirming before deleting, interaction, compaction |
 | `rules/repo-conventions.md` | `~/.claude/rules/repo-conventions.md` | Global rule (Spanish, loaded in every project): what every repo has, and to report what is missing as a finding |
-| `skills/new-repo/` | `~/.claude/skills/new-repo` | Global skill (Spanish): creates a well-built repo, or completes an existing one: GitHub description and topics, `main` protection, license, bilingual README with a diagram, CHANGELOG, `CLAUDE.md`, formatting, CI and the organization's brain catalog. Its `docs-standard.md` is the documentation standard of every repo (which files each kind of repo carries, their section order and how they are written), with bilingual templates in `templates/`. Company specifics live in each company's brain |
+| `skills/new-repo/` | `~/.claude/skills/new-repo` | Global skill (Spanish): creates a well-built repo, or completes an existing one: GitHub description and topics, `main` protection, license, README with a diagram, CHANGELOG, `CLAUDE.md`, formatting, CI and the organization's brain catalog. Its `docs-standard.md` is the documentation standard of every repo (which files each kind of repo carries, their section order and how they are written), with English templates in `templates/`. Company specifics live in each company's brain |
 | `statusline.mjs` | `~/.claude/statusline.mjs` | Status line (model, context in tokens, folder) |
 | `hooks/block-shell-edits.mjs` | `~/.claude/hooks/block-shell-edits.mjs` | `PreToolUse` hook that enforces editing with Edit/Write (blocks `sed -i`, redirections, heredocs… and lets temporary files through). Portable Windows/Linux |
 | `hooks/block-forbidden-commands.mjs` | `~/.claude/hooks/block-forbidden-commands.mjs` | `PreToolUse` hook that enforces the `CLAUDE.md` rules about commands: blocks unsigned commits, `git add -A`, forced pushes, pushes to `main`, git that rewrites history or the tree and deleting, moving or creating an unsigned tag (creating a signed one passes), `prettier --write` with a glob and `robocopy /MIR` without `/XJ`; lets `git reset -- <paths>` unstage files and `git rm` or `git mv` remove or rename tracked files by path; asks before any other push, a `git pull --ff-only`, a reset that keeps the files (`--soft`, `--mixed`), a recursive or forced `git rm`/`git mv` and a recursive delete outside a temporary folder. Its rules come from `command-rules.mjs`. Portable Windows/Linux |
@@ -25,7 +23,7 @@ specific to a machine stays local (it is not versioned).
 | `links.json` | — (data) | The layer's links: `source` relative to `50-claude/`, `target` relative to `~/.claude/`, and a `label`. `lib/links.ps1` here and `lib/links.sh` in dotfiles-parrot read it, so a new piece reaches both systems with one entry |
 | `tools/` | `~/.claude/tools` | Shared scripts any repo or installer runs with `node`, each with its tests |
 | `tools/check-comments.mjs` | (inside `tools/`) | Fails on a Spanish code comment and prints its exemptions; a repo configures it with `.claude/comments.json`. See [docs/contributing/comments.md](../docs/contributing/comments.md#the-check-in-any-repo). Portable |
-| `tools/check-docs.mjs` | (inside `tools/`) | Fails if the bilingual docs drift apart: missing pair or selector, different headings, table rows, list items, code blocks or links, broken links or anchors. It leaves out every `CLAUDE.md`, `.claude/` and the task lists; a repo adds its own with `--exclude`. Portable |
+| `tools/check-docs.mjs` | (inside `tools/`) | Fails on a translated copy (`X.es.md`), a language selector, or a broken link or anchor. It leaves out every `CLAUDE.md`, `.claude/` and the task lists; a repo adds its own with `--exclude`. Portable |
 | `tools/install-settings.mjs` | (inside `tools/`) | Creates `~/.claude/settings.json` from the template, or adds the hooks and `deny`/`ask` rules it lacks, with a dated backup; `--check` only reports. The installer of each system calls it (`install.ps1` here, `install.sh` in dotfiles-parrot). Portable |
 | `entorno.template.md` | — (template) | Sections of the local `~/.claude/entorno.md` (Spanish, like `CLAUDE.md`), valid on Windows and Linux, with no data from any machine |
 

@@ -1,5 +1,3 @@
-**English** | [Español](SECURITY.es.md)
-
 # Security
 
 ## Supported versions

@@ -1,5 +1,3 @@
-**English** | [Español](README.es.md)
-
 # 20-terminal
 
 The Windows Terminal settings: PowerShell 7 as the default profile, the Monokai

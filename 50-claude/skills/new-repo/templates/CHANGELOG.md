@@ -1,5 +1,3 @@
-**English** | [Español](CHANGELOG.es.md)
-
 # Changelog
 
 Notable changes to the project. The format follows

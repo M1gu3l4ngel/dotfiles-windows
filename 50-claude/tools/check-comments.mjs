@@ -28,7 +28,7 @@ import { parseArgs } from "node:util";
 
 /** Printed with every run, before the repo's own exemptions. */
 export const EXEMPTIONS = [
-	"Markdown files: docs are bilingual pairs, and CLAUDE.md, .claude/rules/, docs/tasks.md and docs/backlog.md are Spanish by rule.",
+	"Markdown files: they are prose, not comments; CLAUDE.md, .claude/rules/, docs/tasks.md and docs/backlog.md are Spanish by rule.",
 	"String literals other than test names: text a program shows or writes is not a comment.",
 	"Text between «» or backticks inside a comment: quoted terms and identifiers.",
 ];

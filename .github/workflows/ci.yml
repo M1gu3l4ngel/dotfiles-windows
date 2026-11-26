@@ -38,8 +38,7 @@ jobs:
 
       # gitleaks is not on the runner: it is downloaded at a pinned version and its SHA-256 is
       # verified before use. It goes to the runner's temp folder, outside the repo: the zip has a
-      # README.md, and inside the repo the bilingual docs check would take it for a document with
-      # no Spanish pair.
+      # README.md, and inside the repo the docs check would read it as one of the repo's documents.
       - name: Install gitleaks
         shell: pwsh
         env:

@@ -1,5 +1,3 @@
-**English** | [Español](CHANGELOG.es.md)
-
 # Changelog
 
 Notable changes to the project. The format follows
@@ -53,6 +51,9 @@ Notable changes to the project. The format follows
 
 ### Changed
 
+- Documentation is English only: the `.es.md` copies and the language selectors are gone, the
+  global rule, `docs-standard.md` and the `new-repo` templates ask for one language, and
+  `check-docs.mjs` now fails on a translated copy, a selector, or a broken link or anchor.
 - The git identity leaves the public repo: `15-git/gitconfig` keeps only what can be public, and
   `bootstrap.ps1` writes the name and email to `~/.gitconfig.local` from `-GitName` and
   `-GitEmail` (the owner's by default) when the machine has none, instead of

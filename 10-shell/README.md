@@ -1,5 +1,3 @@
-**English** | [Español](README.es.md)
-
 # 10-shell
 
 The shells and their prompt: PowerShell and Git Bash load the same oh-my-posh

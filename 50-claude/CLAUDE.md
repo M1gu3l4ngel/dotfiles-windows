@@ -4,11 +4,11 @@ Capa global: **solo comportamiento universal**. Lo de cada proyecto vive en su r
 El detalle de la máquina (carpeta de trabajo, cachés, variables, trampas del sistema, qué no tocar) está en
 `~/.claude/entorno.md`: **léelo antes de operar fuera de un repo** (mover/borrar/instalar en disco, tocar cachés, WSL, Docker o herramientas globales).
 
-## Documentación: bilingüe en todos los repos
-- Qué documentos lleva un repo, su orden y cómo se escriben: `~/.claude/skills/new-repo/docs-standard.md`, con sus plantillas. Todo documento (README, CONTRIBUTING, CHANGELOG, SECURITY, CODE_OF_CONDUCT, `docs/`, README de carpetas) va en pareja: `X.md` en inglés (el nombre que reconoce GitHub) y `X.es.md` en español, en la misma carpeta, nombres de archivo en inglés y selector `English | Español` en la línea 1 de ambos. Cada idioma enlaza a su idioma. Vale también en los repos privados, pensando en publicarlos algún día: lo nuevo nace en pareja y lo escrito solo en español se pasa en su propio bloque de tareas.
-- Misma estructura (secciones, tablas, listas, enlaces); se traduce el texto, incluido el `alt`. Bloques de código idénticos byte a byte (placeholders en inglés neutro). Un cambio va a los dos en el mismo commit, y el check del repo (CI) lo verifica: pareja, selector, estructura, código, enlaces y anclas.
+## Documentación: repo solo en inglés
+- Qué documentos lleva un repo, su orden y cómo se escriben: `~/.claude/skills/new-repo/docs-standard.md`, con sus plantillas. Todo documento (README, CONTRIBUTING, CHANGELOG, SECURITY, CODE_OF_CONDUCT, `docs/`, README de carpetas) va solo en inglés: sin copia `X.es.md` ni selector de idioma. Vale también en los repos privados, pensando en publicarlos algún día. El español de un producto va por su i18n, no por el repo.
+- Placeholders en inglés neutro. El check del repo (CI) lo verifica: ninguna copia `.es.md` ni selector, y enlaces y anclas que funcionan (`check-docs.mjs`).
 - **Nunca desfasada**: cada cambio actualiza en el mismo commit los README, sus diagramas (se amplían si el cambio añade una pieza o una relación) y los docs que lo describen. Clara, precisa, concisa y cuidada.
-- En inglés: comentarios de código, salida de los scripts, `reason` de los hooks y nombres de los tests (guía: `docs/contributing/comments.md` de dotfiles-windows); y los commits, en imperativo, nunca en dos idiomas. Solo en español: `CLAUDE.md`, reglas del agente y las listas del panel (`docs/tasks.md`, `docs/backlog.md`).
+- En inglés: comentarios de código, salida de los scripts, `reason` de los hooks y nombres de los tests (guía: `docs/contributing/comments.md` de dotfiles-windows); y los commits, en imperativo, nunca en dos idiomas. Solo en español, la capa del agente: `CLAUDE.md`, `AGENTS.md`, `.claude/` y las listas del panel (`docs/tasks.md`, `docs/backlog.md`).
 
 ## Carpeta de trabajo: la que dice `entorno.md`
 - El disco o la carpeta del sistema es solo sistema y programas. **Nada de trabajo nuevo ahí** (proyectos, cachés, clones, descargas, temporales grandes): va en la carpeta de trabajo de `entorno.md`.

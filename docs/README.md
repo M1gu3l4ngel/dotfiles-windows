@@ -1,5 +1,3 @@
-**English** | [Español](README.es.md)
-
 # docs
 
 Detailed guides for the repo.

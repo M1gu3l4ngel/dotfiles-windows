@@ -1,5 +1,3 @@
-**English** | [Español](README.es.md)
-
 # 15-git
 
 The git configuration: identity, signed commits and tags, and which GitHub account each
