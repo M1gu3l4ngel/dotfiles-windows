@@ -7,10 +7,12 @@
 // Shared by every repo through ~/.claude/tools. It reads comments and test names (the global rule
 // wants both in English, and CI prints the names), never other string literals, so Spanish text
 // kept on purpose in strings is out of reach by design. What it skips is printed with every run,
-// passing or failing, so the exemptions are visible, not buried here. A repo adds file types, skipped paths
-// and its own exemptions in .claude/comments.json (or --config), with this shape:
+// passing or failing, so the exemptions are visible, not buried here. A repo adds file types,
+// skipped paths, marker comments and its own exemptions in .claude/comments.json (or --config):
 //   { "styles": { "hash": ["regex"], "slash": [], "dash": [], "ini": [] },
-//     "skip": ["regex"], "exemptions": ["text printed with every run"] }
+//     "skip": ["regex"], "directives": ["regex"], "exemptions": ["text printed with every run"] }
+// A repo that runs it in CI keeps an identical copy in its own .claude/tools/, compared with this
+// one by a check of that repo.
 //
 // The test is a heuristic, not a language detector: a comment is Spanish if it has an accented
 // letter or more Spanish function words than English ones, so even a short label such as
@@ -110,15 +112,18 @@ const ENGLISH = new Set(
  */
 export function styleOf(file, text, config = {}) {
 	for (const [name, patterns] of Object.entries(config.styles ?? {})) {
-		if (STYLES[name] && patterns.some((p) => new RegExp(p).test(file))) {
-			return { style: STYLES[name], trailing: name === "slash" || name === "dash" };
+		const style = STYLES[name];
+		if (style && patterns.some((p) => new RegExp(p).test(file))) {
+			return { style, trailing: name === "slash" || name === "dash" };
 		}
 	}
 	const known = FILE_STYLES.find((entry) => entry.pattern.test(file));
-	if (known) return { style: STYLES[known.style], trailing: known.trailing };
+	const knownStyle = known && STYLES[known.style];
+	if (known && knownStyle) return { style: knownStyle, trailing: known.trailing };
 	if (!path.posix.basename(file).includes(".") && text.startsWith("#!")) {
 		const firstLine = text.slice(0, text.indexOf("\n") >>> 0);
-		return { style: /\bnode\b/.test(firstLine) ? STYLES.slash : STYLES.hash, trailing: true };
+		const style = /\bnode\b/.test(firstLine) ? STYLES.slash : STYLES.hash;
+		return style ? { style, trailing: true } : null;
 	}
 	return null;
 }
@@ -214,7 +219,7 @@ export function extractTestNames(file, text) {
 	if (!framework) return [];
 	return [...text.matchAll(framework.name)].map((m) => ({
 		line: text.slice(0, m.index).split("\n").length,
-		text: m[2],
+		text: m[2] ?? "",
 	}));
 }
 
