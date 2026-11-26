@@ -127,6 +127,28 @@
 	"mssql.autoDisableNonTSqlLanguageService": true,
 	"editor.largeFileOptimizations": false,
 	"sonarlint.automaticAnalysis": true,
+	// SonarLint reads its rule list only from user settings (`sonarlint.rules` is application
+	// scope): a repo's `.vscode/settings.json` cannot turn one off. These are the rules the repos'
+	// ESLint config turns off on purpose, each with its reason there, so the editor does not flag
+	// what the lint gate accepts. ESLint runs the same SonarJS rules in the editor, where it applies.
+	"sonarlint.rules": {
+		// `no-await-in-loop`: a sequential loop is often required (transactions, ordered steps).
+		"typescript:S9382": { "level": "off" },
+		// `no-alphabetical-sort`: `require-array-sort-compare` covers it.
+		"typescript:S2871": { "level": "off" },
+		// `no-unused-vars`: the typescript-eslint rule covers it.
+		"typescript:S1481": { "level": "off" },
+		// `function-return-type`, `different-types-comparison`, `argument-type`: strict TypeScript.
+		"typescript:S3800": { "level": "off" },
+		"typescript:S3403": { "level": "off" },
+		"typescript:S3782": { "level": "off" },
+		// `prefer-nullish-coalescing`: ESLint runs it with options SonarLint cannot take.
+		"typescript:S6606": { "level": "off" },
+		// `no-os-command-from-path`, `super-linear-regex`: off only in tools and tests, which
+		// ESLint scopes; SonarLint cannot scope by folder.
+		"typescript:S4036": { "level": "off" },
+		"typescript:S8786": { "level": "off" },
+	},
 	"[powershell]": {
 		"editor.defaultFormatter": "ms-vscode.powershell",
 	},
