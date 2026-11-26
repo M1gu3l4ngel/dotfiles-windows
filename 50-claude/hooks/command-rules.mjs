@@ -22,26 +22,30 @@ import path from "node:path";
  * @property {string} reason
  */
 
-// Temp folders and regenerable caches: deleting them needs no confirmation.
-const TEMP_TARGET =
-	/\$\{?(env:)?(TEMP|TMP|TMPDIR)\b|(^|[\s"'\\/])(tmp|temp)[\\/]|scratchpad|[\\/]dev[\\/]scratch[\\/]|node_modules|[\\/]\.next\b|[\\/]coverage\b/i;
+// Temp folders and regenerable caches: deleting them needs no confirmation. One entry per kind.
+const TEMP_ENV = String.raw`\$\{?(env:)?(TEMP|TMP|TMPDIR)\b|(^|[\s"'\\/])(tmp|temp)[\\/]`;
+const TEMP_DIRS = String.raw`scratchpad|[\\/]dev[\\/]scratch[\\/]|node_modules|[\\/]\.next\b|[\\/]coverage\b`;
+const TEMP_TARGET = new RegExp(`${TEMP_ENV}|${TEMP_DIRS}`, "i");
 
-// A `git push`, also after global options (`git -C ../other push`), which skipped every push rule.
-const GIT_PUSH = String.raw`\bgit(?:\s+-[cC]\s+\S+)*\s+push\b`;
+// `git` and its global options (`git -C ../other push`): every git rule starts here, and one that
+// left the options out was skipped by `git -C`.
+const GIT = String.raw`\bgit\s+(?:-[cC]\s+\S+\s+)*`;
+const GIT_PUSH = String.raw`${GIT}push\b`;
 
 // `add`, `commit`, `rm` and `mv` are missing on purpose: Claude runs them on its own changes and
 // git keeps every version (a recursive or forced rm/mv asks). The rest belongs to the user.
-const GIT_WRITE =
-	/\bgit\s+(?:-[cC]\s+\S+\s+)*(pull|reset|rebase|merge|checkout|switch|restore|clean|stash|cherry-pick|revert|tag|apply|am)\b/;
+const WRITE_SUBCOMMANDS = "pull|reset|rebase|merge|checkout|switch|restore|clean|stash|cherry-pick|revert|tag|apply|am";
+const GIT_WRITE = new RegExp(String.raw`${GIT}(${WRITE_SUBCOMMANDS})\b`);
 
 // The read-only forms of those subcommands (listing and verifying tags, viewing the stash). They
 // are removed from the command and the rest is searched again: `git tag -l; git reset` blocks.
-const GIT_READ_ONLY =
-	/\bgit\s+(?:-[cC]\s+\S+\s+)*(?:tag(?:\s+(?:-l|--list|-v|--verify|-n\d*|--contains|--points-at|--sort=\S+|--format=\S+)\b[^;&|]*)?\s*(?:$|[;&|])|stash\s+(?:list|show)\b)/g;
+const TAG_READ_OPTIONS = String.raw`-l|--list|-v|--verify|-n\d*|--contains|--points-at|--sort=\S+|--format=\S+`;
+const READ_ONLY = String.raw`${GIT}(?:tag(?:\s+(?:${TAG_READ_OPTIONS})\b[^;&|]*)?\s*(?:$|[;&|])|stash\s+(?:list|show)\b)`;
+const GIT_READ_ONLY = new RegExp(READ_ONLY, "g");
 
 // A release's signed tag closes it, the way a signed commit closes a change: Claude creates it,
 // so it is removed from the command like a read. Deleting, moving or creating it unsigned is not.
-const GIT_TAG = String.raw`\bgit\s+(?:-[cC]\s+\S+\s+)*tag\b`;
+const GIT_TAG = String.raw`${GIT}tag\b`;
 const GIT_TAG_FORBIDDEN = new RegExp(
 	String.raw`${GIT_TAG}[^;&|]*\s(?:-d|--delete|-f|--force|--no-sign)\b`,
 );
@@ -49,14 +53,15 @@ const GIT_SIGNED_TAG = new RegExp(String.raw`${GIT_TAG}(?=[^;&|]*\s(?:-s|--sign)
 
 // A fast-forward pull loses no work and rewrites no history, so it asks instead of denying (a
 // read-only clone needs it). Any option that merges, rebases or forces keeps it a write.
-const GIT_FF_PULL =
-	/\bgit\s+(?:-[cC]\s+\S+\s+)*pull\b(?=[^;&|]*\s--ff-only\b)(?![^;&|]*\s(?:-r|--rebase\S*|--no-ff|--squash|-f|--force)\b)[^;&|]*/g;
+const MERGING_PULL_OPTIONS = String.raw`-r|--rebase\S*|--no-ff|--squash|-f|--force`;
+const FF_PULL = String.raw`${GIT}pull\b(?=[^;&|]*\s--ff-only\b)(?![^;&|]*\s(?:${MERGING_PULL_OPTIONS})\b)[^;&|]*`;
+const GIT_FF_PULL = new RegExp(FF_PULL, "g");
 
 // Unstaging paths (`git reset [HEAD] -- <paths>`) only touches the index: it passes. Any other
 // reset without --hard, --merge or --keep keeps the files and the reflog undoes it: it asks. Kept
 // as strings: a rule's pattern must not be global, because `.test()` on a global regex keeps
 // `lastIndex` between calls; `replaceAll` builds its own global copy.
-const GIT_RESET = String.raw`\bgit\s+(?:-[cC]\s+\S+\s+)*reset\b`;
+const GIT_RESET = String.raw`${GIT}reset\b`;
 const GIT_UNSTAGE = String.raw`${GIT_RESET}(?:\s+(?:-q|--quiet))*(?:\s+HEAD)?\s+--\s[^;&|]*`;
 const GIT_SOFT_RESET = String.raw`${GIT_RESET}(?![^;&|]*\s--(?:hard|merge|keep)\b)[^;&|]*`;
 
@@ -101,7 +106,7 @@ export function buildCommandRules({ isMainProtected }) {
 				"unsigned commit: commits are always signed; if the key expired, ask the user to unlock it.",
 		},
 		{
-			pattern: /\bgit\s+(?:-[cC]\s+\S+\s+)*add\b[^;&|]*\s(-A|--all|\.)(?=\s|$|[;&|])/,
+			pattern: new RegExp(String.raw`${GIT}add\b[^;&|]*\s(-A|--all|\.)(?=\s|$|[;&|])`),
 			decision: "deny",
 			reason: "git add -A or `.`: add only the change's files, by path.",
 		},
@@ -144,7 +149,7 @@ export function buildCommandRules({ isMainProtected }) {
 				"status, log, diff and show are fine.",
 		},
 		{
-			pattern: new RegExp(GIT_FF_PULL.source),
+			pattern: new RegExp(FF_PULL),
 			decision: "ask",
 			reason: "fast-forward pull: it changes the working tree; only if the user expects it.",
 		},
@@ -156,7 +161,7 @@ export function buildCommandRules({ isMainProtected }) {
 			reason: "reset moving HEAD or the index: only if the user asked; `git reset -- <paths>` passes.",
 		},
 		{
-			pattern: /\bgit\s+(?:-[cC]\s+\S+\s+)*(?:rm|mv)\b[^;&|]*\s(?:-[a-zA-Z]*[rRf][a-zA-Z]*|--force)\b/,
+			pattern: new RegExp(String.raw`${GIT}(?:rm|mv)\b[^;&|]*\s(?:-[a-zA-Z]*[rRf][a-zA-Z]*|--force)\b`),
 			decision: "ask",
 			reason: "git rm or mv recursive or forced: -r takes whole folders, -f drops uncommitted edits.",
 		},
@@ -175,7 +180,7 @@ export function buildCommandRules({ isMainProtected }) {
 				"Write the paths of the edited files in the command.",
 		},
 		{
-			pattern: /\brm\s+-[a-zA-Z]*[rR]|\bRemove-Item\b[^;&|]*-Recurse|\brmdir\s+\/s\b|\brd\s+\/s\b/i,
+			pattern: /\brm\s+-[a-z]*r|\bRemove-Item\b[^;&|]*-Recurse|\brmdir\s+\/s\b|\brd\s+\/s\b/i,
 			applies: (command) => !TEMP_TARGET.test(command),
 			decision: "ask",
 			reason:
@@ -203,15 +208,19 @@ export function findCommandRule(rules, command, cwd) {
  */
 export async function runCommandHook(rules, label) {
 	let input = "";
-	for await (const chunk of process.stdin) input += chunk;
+	for await (const chunk of process.stdin) input += String(chunk);
+	/** @type {unknown} */
 	let parsed;
 	try {
 		parsed = JSON.parse(input);
 	} catch {
 		return;
 	}
-	const cwd = typeof parsed.cwd === "string" ? parsed.cwd : process.cwd();
-	const rule = findCommandRule(rules, String(parsed.tool_input?.command ?? ""), cwd);
+	if (typeof parsed !== "object" || parsed === null) return;
+	const event = /** @type {{ cwd?: unknown, tool_input?: { command?: unknown } }} */ (parsed);
+	const command = event.tool_input?.command;
+	const cwd = typeof event.cwd === "string" ? event.cwd : process.cwd();
+	const rule = findCommandRule(rules, typeof command === "string" ? command : "", cwd);
 	if (!rule) return;
 	const decision = { hookEventName: "PreToolUse", permissionDecision: rule.decision };
 	const output = { ...decision, permissionDecisionReason: `${label}: ${rule.reason}` };

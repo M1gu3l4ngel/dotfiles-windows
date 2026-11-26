@@ -128,26 +128,55 @@
 	"editor.largeFileOptimizations": false,
 	"sonarlint.automaticAnalysis": true,
 	// SonarLint reads its rule list only from user settings (`sonarlint.rules` is application
-	// scope): a repo's `.vscode/settings.json` cannot turn one off. These are the rules the repos'
-	// ESLint config turns off on purpose, each with its reason there, so the editor does not flag
-	// what the lint gate accepts. ESLint runs the same SonarJS rules in the editor, where it applies.
+	// scope): a repo's `.vscode/settings.json` cannot turn one off. The repos run the same SonarJS
+	// rules through ESLint, which fails CI and shows them in the editor too, so SonarLint only drops
+	// what ESLint decides otherwise: the rules it turns off (each with its reason in the repo's
+	// `eslint.config.mjs`) and the ones it scopes to some folders, which SonarLint cannot scope and
+	// would flag everywhere. TypeScript and JavaScript files have separate keys (`.mjs` hooks are
+	// JavaScript), so each rule goes twice.
 	"sonarlint.rules": {
-		// `no-await-in-loop`: a sequential loop is often required (transactions, ordered steps).
+		// Off everywhere: `no-await-in-loop` (a sequential loop is often required),
+		// `no-alphabetical-sort` (`require-array-sort-compare` covers it), `no-unused-vars` (the
+		// typescript-eslint rule covers it), the three strict-TypeScript duplicates
+		// (`function-return-type`, `different-types-comparison`, `argument-type`) and
+		// `prefer-nullish-coalescing` (ESLint runs it with options SonarLint cannot take).
 		"typescript:S9382": { "level": "off" },
-		// `no-alphabetical-sort`: `require-array-sort-compare` covers it.
+		"javascript:S9382": { "level": "off" },
 		"typescript:S2871": { "level": "off" },
-		// `no-unused-vars`: the typescript-eslint rule covers it.
+		"javascript:S2871": { "level": "off" },
 		"typescript:S1481": { "level": "off" },
-		// `function-return-type`, `different-types-comparison`, `argument-type`: strict TypeScript.
+		"javascript:S1481": { "level": "off" },
 		"typescript:S3800": { "level": "off" },
+		"javascript:S3800": { "level": "off" },
 		"typescript:S3403": { "level": "off" },
+		"javascript:S3403": { "level": "off" },
 		"typescript:S3782": { "level": "off" },
-		// `prefer-nullish-coalescing`: ESLint runs it with options SonarLint cannot take.
+		"javascript:S3782": { "level": "off" },
 		"typescript:S6606": { "level": "off" },
-		// `no-os-command-from-path`, `super-linear-regex`: off only in tools and tests, which
-		// ESLint scopes; SonarLint cannot scope by folder.
+		"javascript:S6606": { "level": "off" },
+		// Scoped by ESLint to tools and tests, where the input is the repo's own: commands from the
+		// PATH, slow-backtracking regexes, cognitive complexity in scripts, and the test fixtures
+		// (float equality, `http://`, fixed IPs, `/tmp`, seedless random, passwords, `eval`).
 		"typescript:S4036": { "level": "off" },
+		"javascript:S4036": { "level": "off" },
 		"typescript:S8786": { "level": "off" },
+		"javascript:S8786": { "level": "off" },
+		"typescript:S3776": { "level": "off" },
+		"javascript:S3776": { "level": "off" },
+		"typescript:S1244": { "level": "off" },
+		"javascript:S1244": { "level": "off" },
+		"typescript:S5332": { "level": "off" },
+		"javascript:S5332": { "level": "off" },
+		"typescript:S1313": { "level": "off" },
+		"javascript:S1313": { "level": "off" },
+		"typescript:S5443": { "level": "off" },
+		"javascript:S5443": { "level": "off" },
+		"typescript:S2245": { "level": "off" },
+		"javascript:S2245": { "level": "off" },
+		"typescript:S2068": { "level": "off" },
+		"javascript:S2068": { "level": "off" },
+		"typescript:S1523": { "level": "off" },
+		"javascript:S1523": { "level": "off" },
 	},
 	"[powershell]": {
 		"editor.defaultFormatter": "ms-vscode.powershell",

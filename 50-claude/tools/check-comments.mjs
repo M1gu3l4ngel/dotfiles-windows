@@ -202,7 +202,7 @@ export function extractComments(file, text, config = {}) {
 	let previous = null;
 	for (const entry of lines) {
 		const last = comments.at(-1);
-		if (last && previous && entry.group === previous.group && entry.line === previous.line + 1) last.text += ` ${entry.text}`;
+		if (last && entry.group === previous?.group && entry.line === previous.line + 1) last.text += ` ${entry.text}`;
 		else comments.push({ line: entry.line, text: entry.text });
 		previous = entry;
 	}
@@ -246,11 +246,11 @@ export function isSpanish(text) {
 		.replaceAll(/«[^»]*»/g, " ")
 		.replaceAll(/`[^`]*`/g, " ")
 		.replaceAll(/"[^"]*"/g, " ")
-		.replaceAll(/(^|[^\p{L}])'[^']*'(?![\p{L}])/gu, " ");
+		.replaceAll(/(^|[^\p{L}])'[^']*'(?!\p{L})/gu, " ");
 	// A capitalized word in the middle of a sentence is a proper noun ("Pago Móvil") or a code
 	// ("ES", "MX") and says nothing about the language around it. Function words count only in
 	// lowercase, so "El Salvador" in an English comment is not Spanish either.
-	const words = [...prose.matchAll(/[\p{L}]+/gu)].filter(
+	const words = [...prose.matchAll(/\p{L}+/gu)].filter(
 		(m) => m[0] === m[0].toLowerCase() || /(^|[.!?:;]\s*)$/.test(prose.slice(0, m.index).trimEnd()),
 	);
 	if (words.some((m) => ACCENT.test(m[0]))) return true;
@@ -300,7 +300,51 @@ export function loadConfig(root, file) {
 		if (file) throw new Error(`config not found: ${configPath}`);
 		return {};
 	}
-	return JSON.parse(readFileSync(configPath, "utf8"));
+	return parseConfig(readFileSync(configPath, "utf8"), configPath);
+}
+
+/**
+ * @param {unknown} value
+ * @returns {value is string[]}
+ */
+function isStringList(value) {
+	return Array.isArray(value) && value.every((item) => typeof item === "string");
+}
+
+/**
+ * The config in `text`, checked field by field: a wrong shape fails here, naming the field, and
+ * not halfway through the check.
+ *
+ * @param {string} text
+ * @param {string} configPath
+ * @returns {CommentConfig}
+ */
+function parseConfig(text, configPath) {
+	/** @type {unknown} */
+	const parsed = JSON.parse(text);
+	const fail = (/** @type {string} */ field) => new Error(`${configPath}: ${field} has the wrong shape`);
+	if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) throw fail("the file");
+	const { styles, skip, exemptions, directives } = /** @type {Record<string, unknown>} */ (parsed);
+	/** @type {CommentConfig} */
+	const config = {};
+	if (styles !== undefined) {
+		if (typeof styles !== "object" || styles === null || !Object.values(styles).every(isStringList))
+			throw fail("styles");
+		config.styles = /** @type {Record<string, string[]>} */ (styles);
+	}
+	if (skip !== undefined) {
+		if (!isStringList(skip)) throw fail("skip");
+		config.skip = skip;
+	}
+	if (exemptions !== undefined) {
+		if (!isStringList(exemptions)) throw fail("exemptions");
+		config.exemptions = exemptions;
+	}
+	if (directives !== undefined) {
+		if (!isStringList(directives)) throw fail("directives");
+		config.directives = directives;
+	}
+	return config;
 }
 
 // Runs only from the command line, not when the test imports it.
