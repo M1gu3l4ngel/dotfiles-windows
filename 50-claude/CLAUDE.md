@@ -34,7 +34,7 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 - El trabajo se hace en la sesión principal. Un subagente solo si el usuario lo pide y nunca para implementar: solo lectura. Su encargo lleva las rutas que puede leer, las reglas que le aplican (copiadas), cuándo ha terminado y el formato y el tope de la respuesta.
 
 ## Hallazgos
-- Al empezar en una zona se lee lo que hay y la documentación oficial de cada herramienta, librería o servicio que toca, de la versión instalada y no de memoria (se cita la página): lo que el repo hace distinto de lo que recomienda es un hallazgo. Se avisa lo que está mal aunque nadie lo pida (o «sin hallazgos»): una línea por hallazgo, con archivo, qué pasa y qué se recomienda. Lo pequeño se arregla en el mismo cambio y se dice; lo demás se propone y decide el usuario.
+- Al empezar en una zona se lee lo que hay y la documentación oficial de cada herramienta, librería o servicio que toca, de la versión instalada y no de memoria (se cita la página): lo que el repo hace distinto de lo que recomienda es un hallazgo. Se avisa lo que está mal aunque nadie lo pida (o «sin hallazgos»): una línea por hallazgo, con archivo, qué pasa y qué se recomienda. Lo pequeño se arregla en el mismo cambio y se dice; lo demás se propone y decide el usuario. El código muerto confirmado (versionado en git y sin ningún uso según la herramienta del repo o una búsqueda de cada referencia) se borra sin preguntar, aunque fuera anterior al cambio, y el cierre dice qué se borró.
 - Saber algo y no decirlo es el fallo: un hueco de verificación o una limitación conocida se avisa la primera vez que aparece, y al cerrar se repite lo que quedó sin resolver.
 
 ## Artefacto de tareas
