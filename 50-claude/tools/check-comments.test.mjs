@@ -34,6 +34,13 @@ describe("isSpanish", () => {
 		assert.equal(isSpanish("Barra superior y contenido."), true);
 	});
 
+	it("flags short unaccented sentences made of common Spanish words", () => {
+		assert.equal(isSpanish("Si alguien acepta conexiones ahi ahora mismo."), true);
+		assert.equal(isSpanish("Portal donde aparece."), true);
+		assert.equal(isSpanish("no parkeado todavia."), true);
+		assert.equal(isSpanish("incidencia -> si"), true);
+	});
+
 	it("does not flag an English comment that shares a word with Spanish", () => {
 		assert.equal(isSpanish("Swaps the x and y coordinates."), false);
 	});
@@ -129,6 +136,11 @@ describe("extractTestNames", () => {
 			{ line: 3, text: "reads x" },
 			{ line: 4, text: "agrupa" },
 		]);
+	});
+
+	it("gives the line of the name, not the blank line before it", () => {
+		const js = ["});", "", '\tit("borra el reloj", () => {});'].join("\n");
+		assert.deepEqual(extractTestNames("a.test.ts", js), [{ line: 3, text: "borra el reloj" }]);
 	});
 
 	it("reads Pester and bats names, and nothing outside test files", () => {

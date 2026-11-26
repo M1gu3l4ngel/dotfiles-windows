@@ -84,7 +84,20 @@ const ACCENT = /[áéíóúñü¿¡]/i;
 const SPANISH = new Set(
 	("que los las del para con una unos unas por sin cuando esta este estos estas pero como porque " +
 		"hay son lo al se el la de y en es un ya su sus muy nada todo todos todas cada desde hasta " +
-		"solo ni nunca siempre puede pueden sobre entre otro otra tiene tienen").split(" "),
+		"solo ni nunca siempre puede pueden sobre entre otro otra tiene tienen si donde mismo misma " +
+		"ahora ahi aqui alguien todavia tambien despues dia mi mis le tras primero cero mes fecha " +
+		"nombre valor estado cliente proyecto proyectos documento contacto cuenta cuentas detalle " +
+		"filtros errores notificaciones activo activos eliminados anterior secundario largos texto " +
+		"cuerpo etiquetas resto bueno malo tono intentos exitoso requerido aprobada rechazada " +
+		"crea actualiza elimina borra retorna restaura excluye incluye lista listar desmarca " +
+		"desaparece cambia alterna oculta resetea quita cubre deriva convierte usando seteado " +
+		"ejecutar obtener establecer limpiar inicializar requiere jornada abierta archivar borrado " +
+		"editar eliminar enviado equipo historial peticiones pide quien rechaza sesiones sufijo " +
+		"lleva genera creados vacio vacia cadena objeto agrega interno portada variante secciones " +
+		"masiva tarde turno entrada prioridad usuarios filtrado notas validaciones seguimiento " +
+		"plataforma contrato pago cobros despliegue entorno limpieza relaciones vacantes perfil " +
+		"formulario descanso idiomas confirmaciones tipos acciones preferencias estados facturas " +
+		"calidad empresa ayuda papelera columnas desarrollo guardado motivos personas").split(" "),
 );
 const ENGLISH = new Set(
 	("the and of to is are was be this that these with for from into on in it its you we they " +
@@ -202,10 +215,11 @@ export function extractComments(file, text, config = {}) {
 const TEST_NAMES = [
 	{
 		file: /\.(test|spec)\.[cm]?[jt]sx?$/,
-		name: /^\s*(?:test|it|describe|suite)(?:\.\w+)?\(\s*(["'`])((?:\\.|(?!\1).)*)\1/gm,
+		// `[ \t]*`, not `\s*`: with `m`, `\s` crosses a blank line and the match starts a line early.
+		name: /^[ \t]*(?:test|it|describe|suite)(?:\.\w+)?\(\s*(["'`])((?:\\.|(?!\1).)*)\1/gm,
 	},
-	{ file: /\.Tests\.ps1$/i, name: /^\s*(?:Describe|Context|It)\s+(["'])((?:(?!\1).)*)\1/gm },
-	{ file: /\.bats$/, name: /^\s*@test\s+(["'])((?:(?!\1).)*)\1/gm },
+	{ file: /\.Tests\.ps1$/i, name: /^[ \t]*(?:Describe|Context|It)\s+(["'])((?:(?!\1).)*)\1/gm },
+	{ file: /\.bats$/, name: /^[ \t]*@test\s+(["'])((?:(?!\1).)*)\1/gm },
 ];
 
 /**
