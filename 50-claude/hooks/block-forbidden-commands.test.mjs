@@ -66,6 +66,19 @@ test("unstaging paths passes, moving HEAD asks and --hard stays blocked", () => 
 	assert.equal(decide("git reset -- a.mjs; git rebase main"), "deny");
 });
 
+test("git rm and git mv by path pass, recursive or forced asks", () => {
+	assert.equal(decide("git rm -q scripts/a.ts scripts/a.test.ts"), "allow");
+	assert.equal(decide("git rm --cached secrets.txt"), "allow");
+	assert.equal(decide("git mv old-name.ts new-name.ts"), "allow");
+	assert.equal(decide("git -C ../other rm a.mjs"), "allow");
+	assert.equal(decide("git rm -r docs/old"), "ask");
+	assert.equal(decide("git rm -rf docs/old"), "ask");
+	assert.equal(decide("git rm -f a.mjs"), "ask");
+	assert.equal(decide("git mv --force a.mjs b.mjs"), "ask");
+	assert.equal(decide("git rm a.mjs; git reset --hard"), "deny");
+	assert.equal(decide("git rm a.mjs; git checkout main"), "deny");
+});
+
 test("repeated calls give the same decision", () => {
 	for (let i = 0; i < 3; i++) {
 		assert.equal(decide("git pull --ff-only"), "ask");

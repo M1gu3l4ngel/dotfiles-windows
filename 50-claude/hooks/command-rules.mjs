@@ -3,7 +3,7 @@
 //
 // Single source: this file lives in `dotfiles/50-claude/hooks/`, and each project keeps an
 // identical copy in `.claude/hooks/`, because its hook travels to extracted projects where the
-// dotfiles do not exist. Edit it here and copy it as is; each project's `hook-rules-copy` check
+// dotfiles do not exist. Edit it here and copy it as is; each project's `dotfiles-copies` check
 // fails if the two copies differ. What belongs to one project (its package manager, its ports,
 // its `main`) goes in that project's hook, never here.
 //
@@ -26,14 +26,13 @@ import path from "node:path";
 const TEMP_TARGET =
 	/\$\{?(env:)?(TEMP|TMP|TMPDIR)\b|(^|[\s"'\\/])(tmp|temp)[\\/]|scratchpad|[\\/]dev[\\/]scratch[\\/]|node_modules|[\\/]\.next\b|[\\/]coverage\b/i;
 
-// A `git push`, also with global options before it (`git -C ../other push`): without them in the
-// pattern, that command skipped every push rule.
+// A `git push`, also after global options (`git -C ../other push`), which skipped every push rule.
 const GIT_PUSH = String.raw`\bgit(?:\s+-[cC]\s+\S+)*\s+push\b`;
 
-// `add` and `commit` are missing on purpose: Claude runs them to close each verified change.
-// Whatever rewrites history or the tree belongs to the user.
+// `add`, `commit`, `rm` and `mv` are missing on purpose: Claude runs them on its own changes and
+// git keeps every version (a recursive or forced rm/mv asks). The rest belongs to the user.
 const GIT_WRITE =
-	/\bgit\s+(?:-[cC]\s+\S+\s+)*(pull|reset|rebase|merge|checkout|switch|restore|clean|stash|cherry-pick|revert|tag|mv|rm|apply|am)\b/;
+	/\bgit\s+(?:-[cC]\s+\S+\s+)*(pull|reset|rebase|merge|checkout|switch|restore|clean|stash|cherry-pick|revert|tag|apply|am)\b/;
 
 // The read-only forms of those subcommands (listing and verifying tags, viewing the stash). They
 // are removed from the command and the rest is searched again: `git tag -l; git reset` blocks.
@@ -53,10 +52,9 @@ const GIT_SIGNED_TAG = new RegExp(String.raw`${GIT_TAG}(?=[^;&|]*\s(?:-s|--sign)
 const GIT_FF_PULL =
 	/\bgit\s+(?:-[cC]\s+\S+\s+)*pull\b(?=[^;&|]*\s--ff-only\b)(?![^;&|]*\s(?:-r|--rebase\S*|--no-ff|--squash|-f|--force)\b)[^;&|]*/g;
 
-// Unstaging paths (`git reset [HEAD] -- <paths>`) only touches the index, like `git add`: it passes.
-// Any other reset without --hard, --merge or --keep moves HEAD or the index but never the files,
-// and the reflog undoes it: it asks. The ones that rewrite the files stay denied.
-// Kept as strings: a rule's pattern must not be global, because `.test()` on a global regex keeps
+// Unstaging paths (`git reset [HEAD] -- <paths>`) only touches the index: it passes. Any other
+// reset without --hard, --merge or --keep keeps the files and the reflog undoes it: it asks. Kept
+// as strings: a rule's pattern must not be global, because `.test()` on a global regex keeps
 // `lastIndex` between calls; `replaceAll` builds its own global copy.
 const GIT_RESET = String.raw`\bgit\s+(?:-[cC]\s+\S+\s+)*reset\b`;
 const GIT_UNSTAGE = String.raw`${GIT_RESET}(?:\s+(?:-q|--quiet))*(?:\s+HEAD)?\s+--\s[^;&|]*`;
@@ -158,6 +156,11 @@ export function buildCommandRules({ isMainProtected }) {
 			reason: "reset moving HEAD or the index: only if the user asked; `git reset -- <paths>` passes.",
 		},
 		{
+			pattern: /\bgit\s+(?:-[cC]\s+\S+\s+)*(?:rm|mv)\b[^;&|]*\s(?:-[a-zA-Z]*[rRf][a-zA-Z]*|--force)\b/,
+			decision: "ask",
+			reason: "git rm or mv recursive or forced: -r takes whole folders, -f drops uncommitted edits.",
+		},
+		{
 			pattern: /\brobocopy\b/i,
 			applies: (command) => /\/MIR\b/i.test(command) && !/\/XJ\b/i.test(command),
 			decision: "deny",
@@ -184,7 +187,6 @@ export function buildCommandRules({ isMainProtected }) {
 
 /**
  * The first rule that matches the command, or `undefined`.
- *
  * @param {readonly CommandRule[]} rules
  * @param {string} command
  * @param {string} cwd
@@ -196,7 +198,6 @@ export function findCommandRule(rules, command, cwd) {
 
 /**
  * Reads Claude Code's call from stdin and, if a rule matches, answers with its decision.
- *
  * @param {readonly CommandRule[]} rules
  * @param {string} label Who blocks, so the reason says which hook to edit.
  */
