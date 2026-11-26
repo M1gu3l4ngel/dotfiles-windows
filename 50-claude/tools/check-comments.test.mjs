@@ -10,7 +10,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { extractComments, extractTestNames, isSpanish } from "./check-comments.mjs";
+import { extractComments, extractTestNames, findSpanishComments, isSpanish } from "./check-comments.mjs";
 
 /**
  * @param {string} file
@@ -41,6 +41,13 @@ describe("isSpanish", () => {
 	it("passes English, also with a few Spanish words", () => {
 		assert.equal(isSpanish("Runs at the start of every session; reload it with . $PROFILE"), false);
 		assert.equal(isSpanish("Within a phase, blocks go from P0 to Mejora."), false);
+	});
+
+	it("does not take a proper noun or a code in the middle of a sentence for Spanish", () => {
+		assert.equal(isSpanish("Venezuela's Pago Móvil is reconciled by reference."), false);
+		assert.equal(isSpanish("Tax identifier: `RFC` (MX), NIF (ES), EIN (US)."), false);
+		assert.equal(isSpanish("El Salvador"), false);
+		assert.equal(isSpanish("Configuración"), true);
 	});
 
 	it("ignores terms quoted between «» or backticks", () => {
@@ -74,6 +81,11 @@ describe("extractComments", () => {
 			"const url = 'https://example.com'; // the public page",
 		].join("\n");
 		assert.deepEqual(flagged("board.mjs", js), [1, 3]);
+	});
+
+	it("reads JSX comments wrapped in braces", () => {
+		const jsx = ["<div>", "\t{/* Lista de las tareas del día */}", "</div>"].join("\n");
+		assert.deepEqual(flagged("list.tsx", jsx, { styles: { slash: ["\\.tsx$"] } }), [2]);
 	});
 
 	it("reads HTML and CSS comments inside a page", () => {
@@ -142,6 +154,21 @@ describe("extractTestNames", () => {
 			);
 		} finally {
 			rmSync(repo, { recursive: true, force: true });
+		}
+	});
+
+	it("skips runs of marker comments that the repo declares as directives, and nothing else", () => {
+		const dir = mkdtempSync(path.join(tmpdir(), "check-comments-"));
+		try {
+			const ts = ["// kind: announcements:end", "// kind: todos:start", "x();", "// todos los días"].join("\n");
+			writeFileSync(path.join(dir, "a.ts"), ts);
+			const found = findSpanishComments(dir, ["a.ts"], { directives: ["^kind: [\\w:-]+$"] });
+			assert.deepEqual(
+				found.map((hit) => hit.line),
+				[4],
+			);
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
 		}
 	});
 });

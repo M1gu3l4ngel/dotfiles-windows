@@ -45,6 +45,8 @@ export const STYLES = {
 		line: ["//"],
 		blocks: [
 			["/*", "*/"],
+			// JSX: a comment inside markup is wrapped in braces.
+			["{/*", "*/}"],
 			["<!--", "-->"],
 		],
 		trailing: /(^|\s)\/\/(\s|$)/,
@@ -93,6 +95,8 @@ const ENGLISH = new Set(
  * @property {Record<string, string[]>} [styles] Extra path regexes per style name.
  * @property {string[]} [skip] Path regexes that are not checked.
  * @property {string[]} [exemptions] The repo's own exemptions, printed with every run.
+ * @property {string[]} [directives] Regexes for comments that are markers a tool reads, not
+ *   prose, such as `kind: todos:start`; matched against the comment text.
  */
 
 /**
@@ -224,10 +228,16 @@ export function isSpanish(text) {
 		.replaceAll(/`[^`]*`/g, " ")
 		.replaceAll(/"[^"]*"/g, " ")
 		.replaceAll(/(^|[^\p{L}])'[^']*'(?![\p{L}])/gu, " ");
-	if (ACCENT.test(prose)) return true;
+	// A capitalized word in the middle of a sentence is a proper noun ("Pago Móvil") or a code
+	// ("ES", "MX") and says nothing about the language around it. Function words count only in
+	// lowercase, so "El Salvador" in an English comment is not Spanish either.
+	const words = [...prose.matchAll(/[\p{L}]+/gu)].filter(
+		(m) => m[0] === m[0].toLowerCase() || /(^|[.!?:;]\s*)$/.test(prose.slice(0, m.index).trimEnd()),
+	);
+	if (words.some((m) => ACCENT.test(m[0]))) return true;
 	let es = 0;
 	let en = 0;
-	for (const word of prose.toLowerCase().match(/[\p{L}]+/gu) ?? []) {
+	for (const word of words.map((m) => m[0]).filter((w) => w === w.toLowerCase())) {
 		if (SPANISH.has(word)) es++;
 		if (ENGLISH.has(word)) en++;
 	}
@@ -242,10 +252,14 @@ export function isSpanish(text) {
  */
 export function findSpanishComments(root, files, config = {}) {
 	const found = [];
+	const directives = (config.directives ?? []).map((p) => new RegExp(p));
 	for (const file of files) {
 		const text = readFileSync(path.join(root, file), "utf8");
 		const texts = [
-			...extractComments(file, text, config),
+			// A run of markers is joined into one entry, so each line of it must be a marker.
+			...extractComments(file, text, config).filter(
+				(c) => !c.text.split(/\s{2,}/).every((part) => directives.some((re) => re.test(part.trim()))),
+			),
 			...extractTestNames(file, text).map((t) => ({ ...t, text: `test name: ${t.text}` })),
 		];
 		for (const entry of texts) {
@@ -290,5 +304,6 @@ if (invoked === realpathSync(fileURLToPath(import.meta.url))) {
 	// Printed on both outcomes: a failure is when the reader most needs to know what is left out.
 	for (const exemption of [...EXEMPTIONS, ...(config.exemptions ?? [])]) console.log(`exempt: ${exemption}`);
 	for (const pattern of config.skip ?? []) console.log(`exempt: paths matching ${pattern}`);
+	for (const pattern of config.directives ?? []) console.log(`exempt: marker comments matching ${pattern}`);
 	process.exitCode = found.length > 0 ? 1 : 0;
 }

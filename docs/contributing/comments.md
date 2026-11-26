@@ -185,14 +185,19 @@ node ~/.claude/tools/check-comments.mjs .
 
 It knows the comments of shell, PowerShell, YAML, TOML, JavaScript, CSS, HTML,
 Lua, `.ini`, `.conf`, `.rasi`, `sxhkdrc` and scripts with a shebang, and the test
-names of node:test, Jest, Vitest, Pester and bats. A repo adds its own file types,
-paths to skip and exemptions in `.claude/comments.json`; the exemptions print on
+names of node:test, Jest, Vitest, Pester and bats, and JSX comments (`{/* */}`)
+once a repo maps `.tsx` to the slash style. A capitalized word in the middle of a
+sentence is read as a proper noun or a code, so `Pago Móvil` or `(ES)` in an
+English comment does not fail it. A repo adds its own file types, paths to skip,
+exemptions and `directives` (marker comments a tool reads, matched against the
+comment text) in `.claude/comments.json`; the exemptions and directives print on
 every run, passing or failing:
 
 ```json
 {
   "styles": { "slash": ["(^|/)xkb/symbols/"] },
   "skip": ["^vendor/"],
+  "directives": ["^kind: [\\w-]+$"],
   "exemptions": ["What this repo keeps in Spanish on purpose, and why."]
 }
 ```

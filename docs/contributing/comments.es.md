@@ -189,14 +189,20 @@ node ~/.claude/tools/check-comments.mjs .
 
 Conoce los comentarios de shell, PowerShell, YAML, TOML, JavaScript, CSS, HTML,
 Lua, `.ini`, `.conf`, `.rasi`, `sxhkdrc` y los scripts con shebang, y los nombres
-de los tests de node:test, Jest, Vitest, Pester y bats. Un repo añade sus tipos de
-archivo, las rutas que salta y sus exenciones en `.claude/comments.json`; las
-exenciones se imprimen en cada ejecución, pase o falle:
+de los tests de node:test, Jest, Vitest, Pester y bats, y los comentarios JSX
+(`{/* */}`) en cuanto un repo asocia `.tsx` al estilo slash. Una palabra con
+mayúscula en mitad de una frase se lee como nombre propio o código, así que
+`Pago Móvil` o `(ES)` en un comentario en inglés no lo hacen fallar. Un repo añade
+sus tipos de archivo, las rutas que salta, sus exenciones y sus `directives`
+(comentarios marcador que lee una herramienta, comparados con el texto del
+comentario) en `.claude/comments.json`; las exenciones y las directivas se
+imprimen en cada ejecución, pase o falle:
 
 ```json
 {
   "styles": { "slash": ["(^|/)xkb/symbols/"] },
   "skip": ["^vendor/"],
+  "directives": ["^kind: [\\w-]+$"],
   "exemptions": ["What this repo keeps in Spanish on purpose, and why."]
 }
 ```
