@@ -15,6 +15,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildCommandRules, findCommandRule, runCommandHook } from "./command-rules.mjs";
+import { OUTWARD_RULES } from "./outward-rules.mjs";
 
 // Repos whose only branch is main (no staging, no CI spending minutes): pushing to main is their
 // normal flow. They are each user's own, so the list lives outside the public repo, in
@@ -57,7 +58,7 @@ function isMainOnlyRepo(dir) {
 	}
 }
 
-const RULES = buildCommandRules({ isMainProtected: (dir) => !isMainOnlyRepo(dir) });
+const RULES = [...buildCommandRules({ isMainProtected: (dir) => !isMainOnlyRepo(dir) }), ...OUTWARD_RULES];
 
 /**
  * @param {string} command

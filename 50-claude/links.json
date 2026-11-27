@@ -19,6 +19,11 @@
       "label": "Claude command rules"
     },
     {
+      "source": "hooks/outward-rules.mjs",
+      "target": "hooks/outward-rules.mjs",
+      "label": "Claude outward rules"
+    },
+    {
       "source": "hooks/reply-in-spanish.mjs",
       "target": "hooks/reply-in-spanish.mjs",
       "label": "Claude hook reply-in-spanish"
