@@ -23,7 +23,6 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, realpathSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
 /** Printed with every run, before the repo's own exemptions. */
@@ -353,7 +352,7 @@ function parseConfig(text, configPath) {
 
 // Runs only from the command line, not when the test imports it.
 const invoked = process.argv[1] ? realpathSync(process.argv[1]) : "";
-if (invoked === realpathSync(fileURLToPath(import.meta.url))) {
+if (invoked === realpathSync(import.meta.filename)) {
 	const { values, positionals } = parseArgs({ options: { config: { type: "string" } }, allowPositionals: true });
 	const root = path.resolve(positionals[0] ?? process.cwd());
 	const config = loadConfig(root, values.config);
