@@ -1,0 +1,28 @@
+{
+	// The editor only analyses the files that are open. These tasks check the whole repo and put
+	// what they find in the Problems panel, so a file with errors shows without opening it.
+	"version": "2.0.0",
+	"tasks": [
+		{
+			// Types of the whole project, live, started by hand with "Tasks: Run Task" and stopped with
+			// "Tasks: Terminate Task": starting it with the folder adds its first full pass to the
+			// editor's own start-up, and automatic tasks would have to be allowed for every repo. In a
+			// monorepo, `-p` points at the main package's tsconfig: one watcher per project costs memory.
+			"label": "typecheck (watch)",
+			"type": "shell",
+			"command": "pnpm exec tsc --noEmit --watch --preserveWatchOutput -p tsconfig.json",
+			"isBackground": true,
+			"problemMatcher": "$tsc-watch",
+			"presentation": { "reveal": "never", "panel": "dedicated" }
+		},
+		{
+			// ESLint over the whole repo, through the repo's own script (the same one CI runs).
+			// Run it with "Tasks: Run Task".
+			"label": "lint: whole repo",
+			"type": "shell",
+			"command": "pnpm lint",
+			"problemMatcher": "$eslint-stylish",
+			"presentation": { "reveal": "silent", "panel": "dedicated" }
+		}
+	]
+}

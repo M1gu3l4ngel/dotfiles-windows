@@ -46,6 +46,7 @@ al pie de la letra; si no está claro de quién es el código, se pregunta.
 | `.gitattributes` | `* text=auto eol=lf` y los binarios marcados |
 | `.gitignore` | El del stack, más `.env`, claves y `*.local.*` |
 | `CLAUDE.md` (español) | Qué es, stack, tabla de comandos, convenciones y enlace a `docs/` |
+| `.vscode/tasks.json`, `extensions.json` | Desde `templates/vscode/`: `tsc --watch` y el lint del repo como tareas que se lanzan a mano, los dos al panel de Problemas, para ver los errores de todo el proyecto sin abrir cada archivo. `-p` y el script de lint, los del repo. En `extensions.json`, ESLint, Prettier y EditorConfig. Comentarios de verdad (JSONC), nunca pseudoclaves `"// x"` |
 | `LICENSE` | La de `docs-standard.md`, si lleva |
 
 Diagramas: Mermaid `flowchart`, etiquetas entre comillas, `<br/>` y `·` para

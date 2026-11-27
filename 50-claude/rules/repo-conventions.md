@@ -12,6 +12,8 @@ Todo repo mío (personal, de una organización propia o de un empleador) tiene:
   `<picture>`, descripción centrada, fila de enlaces, badges), igual que la de
   los otros repos del mismo dueño: se compara con una de ellas, no de memoria.
 - `.editorconfig`, `.prettierrc.json` y `.gitattributes` propios.
+- `.vscode/tasks.json` con el typecheck en vivo y el lint del repo hacia el panel de Problemas:
+  los errores de todo el proyecto se ven sin abrir cada archivo.
 - `CLAUDE.md` del repo: qué es, stack, comandos, convenciones y enlace a sus docs.
 - CI mínimo: lint, formato, tests y el check de docs.
 - Registro en el catálogo del cerebro, si su organización tiene uno.
