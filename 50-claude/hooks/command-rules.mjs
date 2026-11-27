@@ -17,8 +17,10 @@ import path from "node:path";
 /**
  * @typedef {object} CommandRule
  * @property {RegExp} pattern Tested against the command with its quoted text masked.
- * @property {(command: string, cwd: string) => boolean} [applies] Extra condition, on the
- *   original command and the session folder.
+ * @property {(command: string, dir: string) => boolean} [applies] Extra condition, on one step
+ *   of the original command and the folder it runs in (`listCommandSteps`).
+ * @property {"command"} [scope] Judged once on the whole command and the session folder, for a
+ *   rule about what its steps do together (a server started and stopped in the same command).
  * @property {"deny" | "ask"} decision
  * @property {string} reason
  */
@@ -91,18 +93,33 @@ export function stripQuotedText(command) {
 }
 
 /**
- * The folder the command's git runs in: the one from a leading `cd`, `Set-Location` or
- * `git -C`, or the session's.
+ * The steps of a command, each with the folder it runs in: it splits on `&&`, `||`, `;` and line
+ * breaks, carries each `cd` or `Set-Location` to the steps after it, and applies a `git -C` to its
+ * own step. Judged as one string, a command that pushed two repos took the first `cd` for both, and
+ * the second repo's push got the first repo's rules.
  *
  * @param {string} command
  * @param {string} cwd
+ * @returns {{ command: string, dir: string }[]}
  */
-export function resolveCommandDir(command, cwd) {
-	const match = /(?:\bgit\s+-C\s+|\b(?:cd|Set-Location)\s+)("[^"]+"|'[^']+'|[^\s;&|]+)/i.exec(
-		command,
-	);
-	if (!match?.[1]) return cwd;
-	return path.resolve(cwd, toNativePath(match[1].replaceAll(/^["']|["']$/g, "")));
+export function listCommandSteps(command, cwd) {
+	const toDir = (/** @type {string} */ from, /** @type {string} */ raw) =>
+		path.resolve(from, toNativePath(raw.replaceAll(/^["']|["']$/g, "")));
+	const separators = /&&|\|\||;|\n/g;
+	const masked = stripQuotedText(command);
+	const steps = [];
+	let dir = cwd;
+	let start = 0;
+	for (;;) {
+		const separator = separators.exec(masked);
+		const text = command.slice(start, separator ? separator.index : masked.length).trim();
+		const cd = /^(?:cd|Set-Location)\s+("[^"]+"|'[^']+'|\S+)$/i.exec(text)?.[1];
+		const gitDir = /\bgit\s+-C\s+("[^"]+"|'[^']+'|\S+)/.exec(text)?.[1];
+		if (cd) dir = toDir(dir, cd);
+		else if (text) steps.push({ command: text, dir: gitDir ? toDir(dir, gitDir) : dir });
+		if (!separator) return steps;
+		start = separator.index + separator[0].length;
+	}
 }
 
 /**
@@ -192,8 +209,7 @@ export function buildCommandRules({ isMainProtected }) {
 			// The promotion passes: the user's approval is checked on the server (`Release gate` reads
 			// the approved promotion issue), which holds even when nobody is at this terminal.
 			pattern: new RegExp(String.raw`${GIT_PUSH}[^;&|]*\b(main|master)\b`),
-			applies: (command, cwd) =>
-				isMainProtected(resolveCommandDir(command, cwd)) && !isMainPromotion(command),
+			applies: (command, dir) => isMainProtected(dir) && !isMainPromotion(command),
 			decision: "deny",
 			reason:
 				`push to main: only the promotion \`git push origin ${MAIN_PROMOTION_REFSPEC}\`, ` +
@@ -202,10 +218,10 @@ export function buildCommandRules({ isMainProtected }) {
 		{
 			pattern: new RegExp(GIT_PUSH),
 			// A main-only repo pushes to main on its own, like staging elsewhere: it is its normal flow.
-			applies: (command, cwd) =>
+			applies: (command, dir) =>
 				!isPlainPushTo(command, RELEASE_BRANCH) &&
 				!isMainPromotion(command) &&
-				!(!isMainProtected(resolveCommandDir(command, cwd)) && isPlainPushTo(command, "main")),
+				!(!isMainProtected(dir) && isPlainPushTo(command, "main")),
 			decision: "ask",
 			reason:
 				`push: only \`git push origin ${RELEASE_BRANCH}\` (or \`main\` in a main-only repo) passes on its own ` +
@@ -274,14 +290,21 @@ export function buildCommandRules({ isMainProtected }) {
 }
 
 /**
- * The first rule that matches the command, or `undefined`.
+ * The rule for the command, or `undefined`: each step gets its first matching rule, judged in the
+ * step's folder, the whole command gets its first `scope: "command"` rule, and the strictest of
+ * them wins (`deny` over `ask`).
  * @param {readonly CommandRule[]} rules
  * @param {string} command
  * @param {string} cwd
  */
 export function findCommandRule(rules, command, cwd) {
-	const masked = stripQuotedText(command);
-	return rules.find((rule) => rule.pattern.test(masked) && (rule.applies?.(command, cwd) ?? true));
+	const whole = { command, dir: cwd, scope: "command" };
+	const matches = [whole, ...listCommandSteps(command, cwd)].flatMap((step) => {
+		const masked = stripQuotedText(step.command);
+		const inScope = (/** @type {CommandRule} */ rule) => rule.scope === ("scope" in step ? step.scope : undefined);
+		return rules.find((rule) => inScope(rule) && rule.pattern.test(masked) && (rule.applies?.(step.command, step.dir) ?? true)) ?? [];
+	});
+	return matches.find((rule) => rule.decision === "deny") ?? matches[0];
 }
 
 /**

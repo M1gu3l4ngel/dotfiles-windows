@@ -6,7 +6,7 @@ import { test } from "node:test";
 import { findRule } from "./block-forbidden-commands.mjs";
 import os from "node:os";
 import path from "node:path";
-import { buildCommandRules, findCommandRule, isMainPromotion, toNativePath } from "./command-rules.mjs";
+import { buildCommandRules, findCommandRule, isMainPromotion, listCommandSteps, toNativePath } from "./command-rules.mjs";
 
 /** @param {string} command */
 const decide = (command) => findRule(command, process.cwd())?.decision ?? "allow";
@@ -172,6 +172,29 @@ test("a main-only repo pushes to main like staging; a protected main stays denie
 	assert.equal(decideIn("git -C ../brain push origin main --tags"), "ask");
 	assert.equal(decideIn("git push origin main"), "deny");
 	assert.equal(decideIn("git push origin origin/staging:main"), "allow");
+});
+
+test("each step runs in the folder its cd or git -C leaves it in", () => {
+	const root = path.resolve("/work");
+	assert.deepEqual(listCommandSteps('cd core && git add a.ts; cd "../brain" || git push origin main', root), [
+		{ command: "git add a.ts", dir: path.join(root, "core") },
+		{ command: "git push origin main", dir: path.join(root, "brain") },
+	]);
+	assert.deepEqual(listCommandSteps("git -C brain push origin main\ngit status", root), [
+		{ command: "git -C brain push origin main", dir: path.join(root, "brain") },
+		{ command: "git status", dir: root },
+	]);
+	assert.deepEqual(listCommandSteps('git commit -m "a && cd x"', root), [{ command: 'git commit -m "a && cd x"', dir: root }]);
+});
+
+test("a command over two repos judges each push in its own repo, and the strictest step wins", () => {
+	const brain = path.resolve("..", "brain");
+	const rules = buildCommandRules({ isMainProtected: (dir) => dir !== brain });
+	const decideIn = /** @param {string} command */ (command) => findCommandRule(rules, command, process.cwd())?.decision ?? "allow";
+	assert.equal(decideIn("git push origin staging && cd ../brain && git push origin main"), "allow");
+	assert.equal(decideIn("cd ../brain && git push origin main && cd ../dotfiles && git push origin main"), "deny");
+	assert.equal(decideIn("cd ../brain; git push origin main --tags"), "ask");
+	assert.equal(decideIn("git push origin feature; git reset --hard"), "deny");
 });
 
 test("a push that only updates staging passes; a bare or wider push asks", () => {
