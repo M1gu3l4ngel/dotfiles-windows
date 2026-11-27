@@ -328,7 +328,11 @@ function parseConfig(text, configPath) {
 	/** @type {CommentConfig} */
 	const config = {};
 	if (styles !== undefined) {
-		if (typeof styles !== "object" || styles === null || !Object.values(styles).every(isStringList))
+		if (
+			typeof styles !== "object" ||
+			styles === null ||
+			!Object.values(styles).every((value) => isStringList(value))
+		)
 			throw fail("styles");
 		config.styles = /** @type {Record<string, string[]>} */ (styles);
 	}

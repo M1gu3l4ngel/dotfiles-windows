@@ -270,7 +270,7 @@ mark{background:var(--warning-tint); color:inherit; border-radius:2px}
   </div>
 </div>
 
-<script>
+<script type="module">
 // Tasks: everything comes from `tasks.json` (`node ~/.claude/panel/generate.mjs`), published next to the page:
 // { project, sourceHash, platforms: [[id, label]], devices: [[id, label]], priorities: [[id, label]],
 //   phases: [{id, label}], track: [{label, name, status}],
@@ -341,7 +341,7 @@ const inDevice = (item) => state.device === "all" || !(item.devices || []).lengt
 const inPriority = (g) => state.priority === "all" || state.view === "test" || g.working || g.priority === state.priority;
 const inPlatform = (g) => inPlatformOnly(g) && inPriority(g);
 const inPhase = (g) => state.phase === "all" || g.phase === state.phase;
-const countItems = (groups) => groups.reduce((a, g) => a + g.items.filter(inDevice).length, 0);
+const countItems = (groups) => groups.reduce((a, g) => a + g.items.filter((item) => inDevice(item)).length, 0);
 const query = () => qInput.value.trim().toLowerCase();
 const matchesQuery = (g, item, q) => !q || item.text.toLowerCase().includes(q) || g.title.toLowerCase().includes(q);
 function closeAll() { openState = {}; }
@@ -569,7 +569,7 @@ async function loadBoard() {
   renderAll();
 }
 
-loadBoard();
+await loadBoard();
 </script>
 <script>
 // Theme: light or dark. The script at the top already set one; here it is only marked and switched.
