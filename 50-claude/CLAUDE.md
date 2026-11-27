@@ -38,7 +38,7 @@ Todo cambio a un archivo va con `Edit` o `Write`, **nunca por shell** (`sed`, `a
 - Saber algo y no decirlo es el fallo: un hueco de verificación o una limitación conocida se avisa la primera vez que aparece, y al cerrar se repite lo que quedó sin resolver.
 
 ## Artefacto de tareas
-- El panel de tareas («Panel <proyecto>», `~/.claude/panel/`) es una vista de `docs/tasks.md` y `docs/backlog.md`: el estado se escribe en `tasks.md`, se genera (`node ~/.claude/panel/generate.mjs`, o el `pnpm generate:panel` del repo si lo trae) y se republica; la página nunca se edita a mano. Formato: el README de esa carpeta.
+- **Un repo con oficina de agentes** (su `docs/tasks.md` apunta a un tablero de GitHub Projects) lleva sus tareas ahí, un issue por tarea, sin panel ni «Por probar», según la regla del propio repo. En los proyectos simples, el panel de tareas («Panel <proyecto>», `~/.claude/panel/`) es una vista de `docs/tasks.md` y `docs/backlog.md`: el estado se escribe en `tasks.md`, se genera (`node ~/.claude/panel/generate.mjs`, o el `pnpm generate:panel` del repo si lo trae) y se republica; la página nunca se edita a mano. Formato: el README de esa carpeta.
 - Un trabajo de varios bloques en un repo sin `.claude/panel.json` empieza con `node ~/.claude/panel/init.mjs`, antes de tocar código.
 - Se republica al cerrar cada bloque o al cambiar las tareas. Lo que le toca probar al usuario no se quita hasta que diga que lo probó.
 - **`**Estado:** en curso` marca solo lo que se está haciendo ahora**, en un solo bloque: al empezar otro se mueve, en la misma publicación.
