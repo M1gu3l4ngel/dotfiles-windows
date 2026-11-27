@@ -24,6 +24,11 @@
       "label": "Claude hook reply-in-spanish"
     },
     {
+      "source": "hooks/sync-brain.mjs",
+      "target": "hooks/sync-brain.mjs",
+      "label": "Claude hook sync-brain"
+    },
+    {
       "source": "rules/repo-conventions.md",
       "target": "rules/repo-conventions.md",
       "label": "Claude rule repo-conventions"

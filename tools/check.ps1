@@ -162,10 +162,12 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
 		Fail 'Task panel: failed tests'
 		$panelTests | Select-String 'not ok' | ForEach-Object { Write-Host "       $_" }
 	}
-	$hookTests = node --test --test-reporter=tap (Join-Path $repo '50-claude\hooks\block-forbidden-commands.test.mjs') 2>&1
-	if ($LASTEXITCODE -eq 0) { Pass "Command hook: $((($hookTests | Select-String '^# pass ') -replace '^# pass ', '')) tests" }
+	# Every hook's tests, not a list: a new hook's file is run the day it lands.
+	$hookFiles = @(Get-ChildItem (Join-Path $repo '50-claude\hooks') -Filter '*.test.mjs' | ForEach-Object FullName)
+	$hookTests = node --test --test-reporter=tap @hookFiles 2>&1
+	if ($LASTEXITCODE -eq 0) { Pass "Hooks: $((($hookTests | Select-String '^# pass ') -replace '^# pass ', '')) tests" }
 	else {
-		Fail 'Command hook: failed tests'
+		Fail 'Hooks: failed tests'
 		$hookTests | Select-String 'not ok' | ForEach-Object { Write-Host "       $_" }
 	}
 	# The shared tools other repos and dotfiles-parrot run: their tests are the contract.
