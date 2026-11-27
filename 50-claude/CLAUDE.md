@@ -7,7 +7,7 @@ El detalle de la máquina (carpeta de trabajo, cachés, variables, trampas del s
 ## Documentación: repo solo en inglés
 - Qué documentos lleva un repo, su orden y cómo se escriben: `~/.claude/skills/new-repo/docs-standard.md`, con sus plantillas. Todo documento (README, CONTRIBUTING, CHANGELOG, SECURITY, CODE_OF_CONDUCT, `docs/`, README de carpetas) va solo en inglés: sin copia `X.es.md` ni selector de idioma. Vale también en los repos privados, pensando en publicarlos algún día. El español de un producto va por su i18n, no por el repo.
 - Placeholders en inglés neutro. El check del repo (CI) lo verifica: ninguna copia `.es.md` ni selector, y enlaces y anclas que funcionan (`check-docs.mjs`).
-- **Nunca desfasada**: cada cambio actualiza en el mismo commit los README, sus diagramas (se amplían si el cambio añade una pieza o una relación) y los docs que lo describen. Clara, precisa, concisa y cuidada.
+- **Nunca desfasada**: cada cambio actualiza en el mismo commit los README, sus diagramas (se amplían si el cambio añade una pieza o una relación) y los docs que lo describen, y el cerebro de la organización (`../brain`) recibe en el mismo cierre toda decisión, proceso o puesto nuevo. Clara, precisa, concisa y cuidada.
 - En inglés: comentarios de código, salida de los scripts, `reason` de los hooks y nombres de los tests (guía: `docs/contributing/comments.md` de dotfiles-windows); y los commits, en imperativo, nunca en dos idiomas. Solo en español, la capa del agente: `CLAUDE.md`, `AGENTS.md`, `.claude/` y las listas del panel (`docs/tasks.md`, `docs/backlog.md`).
 
 ## Carpeta de trabajo: la que dice `entorno.md`

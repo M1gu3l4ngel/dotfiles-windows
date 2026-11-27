@@ -53,7 +53,7 @@
         "matcher": "startup|clear",
         "hooks": [
           { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/panel/hooks/panel-session-start.mjs\"", "timeout": 10 },
-          { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/hooks/sync-brain.mjs\"", "timeout": 30 }
+          { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/hooks/session-sync.mjs\"", "timeout": 60 }
         ]
       }
     ],
