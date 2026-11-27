@@ -15,7 +15,7 @@ export const OUTWARD_RULES = [
 	{
 		// The path is often quoted, and the pattern sees quoted text masked: `applies` reads it raw.
 		pattern: new RegExp(FILE_READERS, "i"),
-		applies: (command) => new RegExp(String.raw`${FILE_READERS}[^;&|]*${ENV_FILE}`, "i").test(command),
+		applies: (command) => new RegExp(`${FILE_READERS}[^;&|]*${ENV_FILE}`, "i").test(command),
 		decision: "ask",
 		reason:
 			"reading a `.env` prints its secrets into the conversation: only if the user asked, and never echo a value.",
@@ -27,7 +27,12 @@ export const OUTWARD_RULES = [
 			"merging a pull request is the Director's, or GitHub's auto-merge when its checks pass: never an agent.",
 	},
 	{
-		pattern: /\bgh\s+(?:repo\s+(?:delete|archive|rename)|issue\s+delete|release\s+delete|secret\s+delete|variable\s+delete|label\s+delete|project\s+delete)\b/,
+		pattern: /\bgh\s+repo\s+(?:delete|archive|rename)\b/,
+		decision: "deny",
+		reason: "deleting, archiving or renaming a repository is the Director's.",
+	},
+	{
+		pattern: /\bgh\s+(?:issue|release|secret|variable|label|project)\s+delete\b/,
 		decision: "deny",
 		reason: "deleting on GitHub cannot be undone: an issue is closed, never deleted; the rest is the Director's.",
 	},
@@ -41,7 +46,7 @@ export const OUTWARD_RULES = [
 		// `-X`: a write to the settings of a repository or an organization is told by its path.
 		pattern: /\bgh\s+api\b[^;&|]*\b(?:rulesets|protection|hooks|collaborators|keys|environments|actions\/(?:permissions|secrets|variables)|secret-scanning|code-scanning|dependabot)\b/i,
 		applies: (command) =>
-			/(?:\s(?:-X|--method)[\s=]*(?!GET\b)[A-Z]+|\s--input\b|\s-[fF]\s|\s--(?:raw-)?field\b)/i.test(command),
+			/(?:\s(?:-X|--method)[\s=]*(?!GET\b)[A-Z]+|\s--input\b|\s-f\s|\s--(?:raw-)?field\b)/i.test(command),
 		decision: "ask",
 		reason: "it changes the settings of a repository or an organization: only if the user asked.",
 	},
@@ -51,7 +56,12 @@ export const OUTWARD_RULES = [
 		reason: "secrets, variables and repository settings are the Director's: only if the user asked.",
 	},
 	{
-		pattern: /\brailway\b[^;&|]*(?:\b(?:up|down|delete|redeploy|variables?\s+(?:set|delete)|config\s+apply|environment\s+delete)\b|\s--set\b)/i,
+		pattern: /\brailway\b[^;&|]*\b(?:up|down|delete|redeploy)\b/i,
+		decision: "ask",
+		reason: "it changes a Railway environment: the Director runs it, after reading `railway config plan`.",
+	},
+	{
+		pattern: /\brailway\b[^;&|]*(?:\bvariables?\s+(?:set|delete)\b|\bconfig\s+apply\b|\s--set\b)/i,
 		decision: "ask",
 		reason: "it changes a Railway environment: the Director runs it, after reading `railway config plan`.",
 	},
