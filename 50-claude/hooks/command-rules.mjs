@@ -197,7 +197,7 @@ export function buildCommandRules({ isMainProtected }) {
 			decision: "deny",
 			reason:
 				`push to main: only the promotion \`git push origin ${MAIN_PROMOTION_REFSPEC}\`, ` +
-				"alone, once the user approved its promotion issue.",
+				"run alone (no pipe, `&&` or `;`), once the user approved its promotion issue.",
 		},
 		{
 			pattern: new RegExp(GIT_PUSH),
