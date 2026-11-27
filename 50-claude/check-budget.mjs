@@ -19,8 +19,9 @@ const BUDGETS = [
   { file: 'hooks/block-shell-edits.mjs', maxLines: 160 },
   { file: 'hooks/block-forbidden-commands.mjs', maxLines: 100 },
   // The git patterns share one prefix and name their option lists, so each one stays readable;
-  // the push to staging reads its refspecs, since a pattern cannot tell `:staging` from `HEAD:staging`.
-  { file: 'hooks/command-rules.mjs', maxLines: 270 },
+  // the push to staging reads its refspecs, since a pattern cannot tell `:staging` from `HEAD:staging`,
+  // and so does the promotion of main, which must be exactly `origin/staging:main` and alone.
+  { file: 'hooks/command-rules.mjs', maxLines: 300 },
   { file: 'hooks/reply-in-spanish.mjs', maxLines: 200 },
   // The rule loads in every session, like CLAUDE.md: keep it short. The skill loads only when used.
   { file: 'rules/repo-conventions.md', maxLines: 30 },

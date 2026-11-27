@@ -68,9 +68,9 @@ código: idéntico en las dos versiones, con etiquetas en inglés.
   ruta; con él, `check-comments.mjs`.
 - `.github/dependabot.yml` mensual para `github-actions`.
 - Ramas: `main` por defecto y el trabajo en la rama que diga el proyecto (su
-  cerebro o su `CLAUDE.md`). Push nunca a `main`, salvo en un repo de solo `main`. Con
-  rama `staging`, Claude sube a ella cada 15 a 20 commits y sigue el CI hasta verde; `main`
-  lo promueve el usuario a mano.
+  cerebro o su `CLAUDE.md`). En un repo de solo `main`, el trabajo y el push van a `main`. Con
+  rama `staging`, Claude sube a ella cada 15 a 20 commits y sigue el CI hasta verde, y promueve
+  `main` cuando el usuario lo ordena (`git push origin origin/staging:main`, que el hook pregunta).
 
 ## 5. GitHub
 

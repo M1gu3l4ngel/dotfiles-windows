@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { findRule } from "./block-forbidden-commands.mjs";
+import { isMainPromotion } from "./command-rules.mjs";
 
 /** @param {string} command */
 const decide = (command) => findRule(command, process.cwd())?.decision ?? "allow";
@@ -101,6 +102,14 @@ test("a command inside quotes is not a command", () => {
 
 test("pushing a tag asks, like any push", () => {
 	assert.equal(decide("git push origin v0.1.3"), "ask");
+});
+
+test("only the push of the remote staging to main, alone, counts as a promotion", () => {
+	assert.equal(isMainPromotion("git push origin origin/staging:main"), true);
+	assert.equal(isMainPromotion("git push origin main"), false);
+	assert.equal(isMainPromotion("git push origin staging:main"), false);
+	assert.equal(isMainPromotion("git push -u origin origin/staging:main"), false);
+	assert.equal(isMainPromotion("git push origin origin/staging:main && git push origin main"), false);
 });
 
 test("a push that only updates staging passes; a bare or wider push asks", () => {

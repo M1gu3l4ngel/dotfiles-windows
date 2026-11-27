@@ -122,6 +122,24 @@ export function isReleaseBranchPush(command) {
 	});
 }
 
+/** The only push that promotes `main`: the remote `staging` that passed CI, fast-forward only. */
+const MAIN_PROMOTION_REFSPEC = `origin/${RELEASE_BRANCH}:main`;
+
+/**
+ * Whether the command is exactly the promotion `git push origin origin/staging:main`, alone: it
+ * moves `main` to the commit `staging` already has on the remote, so what reaches production is
+ * what passed CI, and without `--force` git refuses it unless it is a fast-forward. Any option,
+ * another refspec or a second push makes it something else.
+ *
+ * @param {string} command
+ */
+export function isMainPromotion(command) {
+	const pushes = [...stripQuotedText(command).matchAll(GIT_PUSH_ARGS)];
+	if (pushes.length !== 1) return false;
+	const args = (pushes[0]?.[1] ?? "").trim().split(/\s+/).filter(Boolean);
+	return args.length === 2 && args[0] === "origin" && args[1] === MAIN_PROMOTION_REFSPEC;
+}
+
 /**
  * The universal rules. The caller decides in which repos `main` is protected, because that
  * depends on its branch flow.
@@ -149,9 +167,20 @@ export function buildCommandRules({ isMainProtected }) {
 		},
 		{
 			pattern: new RegExp(String.raw`${GIT_PUSH}[^;&|]*\b(main|master)\b`),
+			applies: (command, cwd) =>
+				isMainProtected(resolveCommandDir(command, cwd)) && isMainPromotion(command),
+			decision: "ask",
+			reason:
+				`promotion to main: only when the user orders it, after CI is green on ${RELEASE_BRANCH}; ` +
+				"the user approves it here. Then `git fetch origin main:main` and follow Release gate.",
+		},
+		{
+			pattern: new RegExp(String.raw`${GIT_PUSH}[^;&|]*\b(main|master)\b`),
 			applies: (command, cwd) => isMainProtected(resolveCommandDir(command, cwd)),
 			decision: "deny",
-			reason: "push to main: never; the user promotes main.",
+			reason:
+				`push to main: only the promotion \`git push origin ${MAIN_PROMOTION_REFSPEC}\`, ` +
+				"alone, when the user orders it.",
 		},
 		{
 			pattern: new RegExp(GIT_PUSH),
