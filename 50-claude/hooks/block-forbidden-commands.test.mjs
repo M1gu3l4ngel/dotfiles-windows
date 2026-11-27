@@ -102,3 +102,12 @@ test("a command inside quotes is not a command", () => {
 test("pushing a tag asks, like any push", () => {
 	assert.equal(decide("git push origin v0.1.3"), "ask");
 });
+
+test("a push that only updates staging passes; a bare or wider push asks", () => {
+	assert.equal(decide("git push origin staging"), "allow");
+	assert.equal(decide("git push -u origin HEAD:staging"), "allow");
+	assert.equal(decide("git push"), "ask");
+	assert.equal(decide("git push origin :staging"), "ask");
+	assert.equal(decide("git push --tags origin staging"), "ask");
+	assert.equal(decide("git push origin staging && git push origin feature"), "ask");
+});

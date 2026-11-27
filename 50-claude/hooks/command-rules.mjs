@@ -31,6 +31,14 @@ const TEMP_TARGET = new RegExp(`${TEMP_ENV}|${TEMP_DIRS}`, "i");
 // left the options out was skipped by `git -C`.
 const GIT = String.raw`\bgit\s+(?:-[cC]\s+\S+\s+)*`;
 const GIT_PUSH = String.raw`${GIT}push\b`;
+const GIT_PUSH_ARGS = new RegExp(String.raw`${GIT_PUSH}([^;&|]*)`, "g");
+
+// The branch Claude pushes to on its own: every 15 to 20 commits, then it follows CI to green and
+// the user promotes `main` by hand.
+const RELEASE_BRANCH = "staging";
+// Push options that do not change what is updated. Any other one (`--tags`, `--delete`,
+// `--mirror`, `--all`) widens the push, so it asks.
+const PLAIN_PUSH_OPTION = /^(?:-u|--set-upstream|-q|--quiet|-v|--verbose)$/;
 
 // `add`, `commit`, `rm` and `mv` are missing on purpose: Claude runs them on its own changes and
 // git keeps every version (a recursive or forced rm/mv asks). The rest belongs to the user.
@@ -91,6 +99,30 @@ export function resolveCommandDir(command, cwd) {
 }
 
 /**
+ * Whether every `git push` of the command only updates the release branch: a remote and one or
+ * more refspecs whose destination is `staging` and whose source is not empty (`:staging` deletes
+ * it). A bare `git push` does not count: where it goes depends on the current branch.
+ *
+ * @param {string} command
+ */
+export function isReleaseBranchPush(command) {
+	const pushes = [...stripQuotedText(command).matchAll(GIT_PUSH_ARGS)];
+	if (pushes.length === 0) return false;
+	return pushes.every((push) => {
+		const args = (push[1] ?? "").trim().split(/\s+/).filter(Boolean);
+		if (args.some((arg) => arg.startsWith("-") && !PLAIN_PUSH_OPTION.test(arg))) return false;
+		const refspecs = args.filter((arg) => !arg.startsWith("-")).slice(1);
+		return (
+			refspecs.length > 0 &&
+			refspecs.every((refspec) => {
+				const [source, destination = source] = refspec.split(":");
+				return source !== "" && destination === RELEASE_BRANCH;
+			})
+		);
+	});
+}
+
+/**
  * The universal rules. The caller decides in which repos `main` is protected, because that
  * depends on its branch flow.
  *
@@ -123,8 +155,11 @@ export function buildCommandRules({ isMainProtected }) {
 		},
 		{
 			pattern: new RegExp(GIT_PUSH),
+			applies: (command) => !isReleaseBranchPush(command),
 			decision: "ask",
-			reason: "push: only if the user asked for it; each push spends Actions minutes.",
+			reason:
+				`push: only \`git push origin ${RELEASE_BRANCH}\` passes on its own (every 15 to 20 commits, ` +
+				"then follow CI); any other push only if the user asked, since each one spends Actions minutes.",
 		},
 		{
 			pattern: GIT_TAG_FORBIDDEN,
