@@ -112,6 +112,14 @@ test("only the push of the remote staging to main, alone, counts as a promotion"
 	assert.equal(isMainPromotion("git push origin origin/staging:main && git push origin main"), false);
 });
 
+test("the only rebase is replaying unpushed commits on the remote staging, and it asks", () => {
+	assert.equal(decide("git pull --rebase --autostash origin staging"), "ask");
+	assert.equal(decide("git pull --rebase origin staging"), "deny");
+	assert.equal(decide("git pull --rebase --autostash origin main"), "deny");
+	assert.equal(decide("git pull --rebase --autostash origin staging && git reset --hard"), "deny");
+	assert.equal(decide("git rebase origin/staging"), "deny");
+});
+
 test("a push that only updates staging passes; a bare or wider push asks", () => {
 	assert.equal(decide("git push origin staging"), "allow");
 	assert.equal(decide("git push -u origin HEAD:staging"), "allow");

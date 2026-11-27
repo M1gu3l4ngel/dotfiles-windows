@@ -140,6 +140,25 @@ export function isMainPromotion(command) {
 	return args.length === 2 && args[0] === "origin" && args[1] === MAIN_PROMOTION_REFSPEC;
 }
 
+/** The only pull that rebases: local commits not yet pushed, replayed on the remote `staging`. */
+const RELEASE_BRANCH_SYNC = ["--rebase", "--autostash", "origin", RELEASE_BRANCH];
+const GIT_PULL_ARGS = new RegExp(String.raw`${GIT}pull\b([^;&|]*)`, "g");
+
+/**
+ * Whether the command is exactly `git pull --rebase --autostash origin staging`, alone: before a
+ * push it brings in what reached the remote without passing through here (a merged Dependabot PR,
+ * another agent's work). It only replays commits that are not published yet, so nothing on the
+ * remote is rewritten. Any other option, branch or a second command makes it something else.
+ *
+ * @param {string} command
+ */
+export function isReleaseBranchSync(command) {
+	const pulls = [...stripQuotedText(command).matchAll(GIT_PULL_ARGS)];
+	if (pulls.length !== 1 || /[;&|]/.test(command)) return false;
+	const args = (pulls[0]?.[1] ?? "").trim().split(/\s+/).filter(Boolean);
+	return args.join(" ") === RELEASE_BRANCH_SYNC.join(" ");
+}
+
 /**
  * The universal rules. The caller decides in which repos `main` is protected, because that
  * depends on its branch flow.
@@ -196,6 +215,14 @@ export function buildCommandRules({ isMainProtected }) {
 			reason:
 				"deleting or moving a tag rewrites a published release (if it is wrong, publish another), " +
 				"and tags are never unsigned: `git tag -s <version> -m <version>`.",
+		},
+		{
+			pattern: new RegExp(String.raw`${GIT}pull\b`),
+			applies: (command) => isReleaseBranchSync(command),
+			decision: "ask",
+			reason:
+				`sync before a push: \`git pull --rebase --autostash origin ${RELEASE_BRANCH}\` replays the ` +
+				"local commits on the remote; run `pnpm verify` again if it brought something.",
 		},
 		{
 			pattern: GIT_WRITE,
