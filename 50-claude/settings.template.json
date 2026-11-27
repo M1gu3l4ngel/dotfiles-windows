@@ -46,6 +46,12 @@
         "hooks": [
           { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/panel/hooks/panel-remind-refresh.mjs\"", "timeout": 10 }
         ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/hooks/follow-ci.mjs\"", "timeout": 30 }
+        ]
       }
     ],
     "SessionStart": [
@@ -60,7 +66,8 @@
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/hooks/reply-in-spanish.mjs\"", "timeout": 10 }
+          { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/hooks/reply-in-spanish.mjs\"", "timeout": 10 },
+          { "type": "command", "command": "node \"REEMPLAZA_RUTA_HOME/.claude/hooks/follow-ci.mjs\"", "timeout": 60 }
         ]
       }
     ]

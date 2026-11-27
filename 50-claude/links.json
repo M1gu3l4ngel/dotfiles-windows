@@ -24,6 +24,11 @@
       "label": "Claude outward rules"
     },
     {
+      "source": "hooks/follow-ci.mjs",
+      "target": "hooks/follow-ci.mjs",
+      "label": "Claude hook follow-ci"
+    },
+    {
       "source": "hooks/reply-in-spanish.mjs",
       "target": "hooks/reply-in-spanish.mjs",
       "label": "Claude hook reply-in-spanish"

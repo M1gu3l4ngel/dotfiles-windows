@@ -8,6 +8,9 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- `50-claude/hooks/follow-ci.mjs`: a push is finished only when its CI is green. After a `git push`
+  of a branch the hook records the repository and commit, and the turn cannot end while that run is
+  queued, running or red; a template release had gone out red and nobody followed it.
 - `50-claude/hooks/outward-rules.mjs`: the global hook asks before reading a `.env` through the
   shell, writing through `gh api`, setting secrets or repository settings, changing Railway or a
   linked Supabase database; and denies merging a pull request, deleting on GitHub and piping a
