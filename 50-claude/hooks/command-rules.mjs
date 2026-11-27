@@ -31,7 +31,7 @@ const TEMP_TARGET = new RegExp(`${TEMP_ENV}|${TEMP_DIRS}`, "i");
 // left the options out was skipped by `git -C`.
 const GIT = String.raw`\bgit\s+(?:-[cC]\s+\S+\s+)*`;
 const GIT_PUSH = String.raw`${GIT}push\b`;
-const GIT_PUSH_ARGS = new RegExp(String.raw`${GIT_PUSH}([^;&|]*)`, "g");
+const GIT_PUSH_ARGS = new RegExp(`${GIT_PUSH}([^;&|]*)`, "g");
 
 // The branch Claude pushes to on its own: every 15 to 20 commits, then it follows CI to green and
 // the user promotes `main` by hand.
