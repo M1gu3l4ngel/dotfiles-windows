@@ -4,7 +4,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { findRule } from "./block-forbidden-commands.mjs";
-import { isMainPromotion } from "./command-rules.mjs";
+import os from "node:os";
+import path from "node:path";
+import { buildCommandRules, findCommandRule, isMainPromotion, toNativePath } from "./command-rules.mjs";
 
 /** @param {string} command */
 const decide = (command) => findRule(command, process.cwd())?.decision ?? "allow";
@@ -34,22 +36,70 @@ test("listing tags passes and does not hide a write after it", () => {
 	assert.equal(decide('git tag -s v1 -m "v1"; git reset --hard'), "deny");
 });
 
-test("rewriting history stays blocked", () => {
+test("what loses work or rewrites what is published stays blocked", () => {
 	assert.equal(decide("git reset --hard HEAD~1"), "deny");
-	assert.equal(decide("git rebase main"), "deny");
 	assert.equal(decide("git commit --no-gpg-sign -m x"), "deny");
 	assert.equal(decide("git add -A"), "deny");
 	assert.equal(decide("git push --force origin staging"), "deny");
 });
 
-test("a fast-forward pull asks and does not hide a write after it", () => {
-	assert.equal(decide("git pull --ff-only"), "ask");
-	assert.equal(decide("git -C ~/dotfiles-windows pull --ff-only"), "ask");
-	assert.equal(decide("git pull"), "deny");
-	assert.equal(decide("git pull --ff-only --rebase"), "deny");
-	assert.equal(decide("git pull --ff-only --force"), "deny");
+test("an agent's branch work passes: switch, create, merge, rebase local commits, stash", () => {
+	for (const command of [
+		"git switch staging",
+		"git switch -c qa/flaky-test",
+		"git checkout main",
+		"git checkout -b qa/flaky-test",
+		"git branch qa/flaky-test",
+		"git branch -d qa/flaky-test",
+		"git worktree add ../core-qa staging",
+		"git merge --ff-only qa/flaky-test",
+		"git merge --no-ff qa/flaky-test",
+		"git rebase origin/staging",
+		"git cherry-pick abc1234",
+		"git revert abc1234",
+		"git stash",
+		"git stash push -m wip",
+		"git stash pop",
+		"git stash list",
+		"git restore --staged a.ts",
+		"git clean -n",
+	])
+		assert.equal(decide(command), "allow", command);
+});
+
+test("pulls pass: fast-forward, rebase or merge keep every version", () => {
+	assert.equal(decide("git pull --ff-only"), "allow");
+	assert.equal(decide("git -C ~/dotfiles-windows pull --ff-only"), "allow");
+	assert.equal(decide("git pull --rebase --autostash origin staging"), "allow");
+	assert.equal(decide("git pull"), "allow");
 	assert.equal(decide("git pull --ff-only; git reset --hard"), "deny");
 	assert.equal(decide("git fetch origin"), "allow");
+});
+
+test("what discards uncommitted work, untracked files, a stash or unmerged commits is blocked", () => {
+	for (const command of [
+		"git checkout -- a.ts",
+		"git checkout .",
+		"git checkout -f main",
+		"git switch -f main",
+		"git switch --discard-changes main",
+		"git restore a.ts",
+		"git restore --staged --worktree a.ts",
+		"git clean -fd",
+		"git clean -xfd",
+		"git stash drop",
+		"git stash clear",
+		"git branch -D qa/flaky-test",
+		"git rebase -i HEAD~3",
+		"git pull --force origin staging",
+		"git switch staging && git reset --hard origin/staging",
+	])
+		assert.equal(decide(command), "deny", command);
+});
+
+test("applying a patch asks", () => {
+	assert.equal(decide("git apply fix.patch"), "ask");
+	assert.equal(decide("git am 0001-fix.patch"), "ask");
 });
 
 test("unstaging paths passes, moving HEAD asks and --hard stays blocked", () => {
@@ -64,7 +114,7 @@ test("unstaging paths passes, moving HEAD asks and --hard stays blocked", () => 
 	assert.equal(decide("git reset --merge"), "deny");
 	assert.equal(decide("git reset --keep HEAD~1"), "deny");
 	assert.equal(decide("git reset -- a.mjs; git reset --hard"), "deny");
-	assert.equal(decide("git reset -- a.mjs; git rebase main"), "deny");
+	assert.equal(decide("git reset -- a.mjs; git clean -fd"), "deny");
 });
 
 test("git rm and git mv by path pass, recursive or forced asks", () => {
@@ -77,12 +127,12 @@ test("git rm and git mv by path pass, recursive or forced asks", () => {
 	assert.equal(decide("git rm -f a.mjs"), "ask");
 	assert.equal(decide("git mv --force a.mjs b.mjs"), "ask");
 	assert.equal(decide("git rm a.mjs; git reset --hard"), "deny");
-	assert.equal(decide("git rm a.mjs; git checkout main"), "deny");
+	assert.equal(decide("git rm a.mjs; git checkout -- ."), "deny");
 });
 
 test("repeated calls give the same decision", () => {
 	for (let i = 0; i < 3; i++) {
-		assert.equal(decide("git pull --ff-only"), "ask");
+		assert.equal(decide("git stash drop"), "deny");
 		assert.equal(decide("git reset --soft HEAD~1"), "ask");
 	}
 });
@@ -112,12 +162,16 @@ test("only the push of the remote staging to main, alone, counts as a promotion"
 	assert.equal(isMainPromotion("git push origin origin/staging:main && git push origin main"), false);
 });
 
-test("the only rebase is replaying unpushed commits on the remote staging, and it asks", () => {
-	assert.equal(decide("git pull --rebase --autostash origin staging"), "ask");
-	assert.equal(decide("git pull --rebase origin staging"), "deny");
-	assert.equal(decide("git pull --rebase --autostash origin main"), "deny");
-	assert.equal(decide("git pull --rebase --autostash origin staging && git reset --hard"), "deny");
-	assert.equal(decide("git rebase origin/staging"), "deny");
+test("a main-only repo pushes to main like staging; a protected main stays denied", () => {
+	const brain = path.resolve("..", "brain");
+	const isMainOnly = /** @param {string} dir */ (dir) => dir === brain;
+	const rules = buildCommandRules({ isMainProtected: (dir) => !isMainOnly(dir) });
+	const decideIn = /** @param {string} command */ (command) => findCommandRule(rules, command, process.cwd())?.decision ?? "allow";
+	assert.equal(decideIn("git -C ../brain push origin main"), "allow");
+	assert.equal(decideIn("git -C ../brain push --force origin main"), "deny");
+	assert.equal(decideIn("git -C ../brain push origin main --tags"), "ask");
+	assert.equal(decideIn("git push origin main"), "deny");
+	assert.equal(decideIn("git push origin origin/staging:main"), "ask");
 });
 
 test("a push that only updates staging passes; a bare or wider push asks", () => {
@@ -127,4 +181,17 @@ test("a push that only updates staging passes; a bare or wider push asks", () =>
 	assert.equal(decide("git push origin :staging"), "ask");
 	assert.equal(decide("git push --tags origin staging"), "ask");
 	assert.equal(decide("git push origin staging && git push origin feature"), "ask");
+});
+
+test("a Git Bash drive path is the Windows folder it names", () => {
+	assert.equal(toNativePath("/d/Dev/projects/brain", "win32"), "D:/Dev/projects/brain");
+	assert.equal(toNativePath("/c", "win32"), "C:/");
+	assert.equal(toNativePath("/d/Dev", "linux"), "/d/Dev");
+	assert.equal(toNativePath("/usr/local", "win32"), "/usr/local");
+});
+
+test("a tilde path is the home folder", () => {
+	assert.equal(toNativePath("~/dotfiles"), path.join(os.homedir(), "dotfiles"));
+	assert.equal(toNativePath("~"), os.homedir());
+	assert.equal(toNativePath("../brain"), "../brain");
 });

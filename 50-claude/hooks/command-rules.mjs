@@ -11,6 +11,7 @@
 // misses a `git commit` after `cd x &&`, one inside PowerShell, or a `/MIR` in the middle of a
 // `robocopy`. `ask` does not block: it hands the decision to the user.
 
+import os from "node:os";
 import path from "node:path";
 
 /**
@@ -40,30 +41,36 @@ const RELEASE_BRANCH = "staging";
 // `--mirror`, `--all`) widens the push, so it asks.
 const PLAIN_PUSH_OPTION = /^(?:-u|--set-upstream|-q|--quiet|-v|--verbose)$/;
 
-// `add`, `commit`, `rm` and `mv` are missing on purpose: Claude runs them on its own changes and
-// git keeps every version (a recursive or forced rm/mv asks). The rest belongs to the user.
-const WRITE_SUBCOMMANDS = "pull|reset|rebase|merge|checkout|switch|restore|clean|stash|cherry-pick|revert|tag|apply|am";
-const GIT_WRITE = new RegExp(String.raw`${GIT}(${WRITE_SUBCOMMANDS})\b`);
+// Git writes are judged by what they can lose, not by their name. Switching or creating a branch,
+// merging, rebasing local commits, stashing, cherry-picking and reverting keep every version in
+// the reflog, and what is published is guarded by the force-push rule here and by the remote's
+// branch protection: they pass, so a team of agents can branch, integrate and catch up. Denied is
+// only what discards uncommitted work or deleted commits for good, which no command undoes.
+const DISCARDING_WRITES = [
+	String.raw`reset\b[^;&|]*\s--(?:hard|merge|keep)\b`, // overwrites the working tree
+	String.raw`checkout\b[^;&|]*\s(?:--(?:\s|$)|\.(?:\s|$)|-f\b|--force\b)`, // overwrites files with the index
+	String.raw`switch\b[^;&|]*\s(?:-f\b|--force\b|--discard-changes\b)`,
+	String.raw`restore\b(?![^;&|]*\s(?:-S|--staged)\b(?![^;&|]*\s(?:-W|--worktree)\b))`, // --staged alone only unstages
+	String.raw`clean\b[^;&|]*\s-[a-zA-Z]*f`, // deletes untracked files
+	String.raw`stash\s+(?:drop|clear)\b`, // a dropped stash is unreachable
+	String.raw`branch\b[^;&|]*\s(?:-D\b|--delete\s+--force\b|--force\s+--delete\b)`, // deletes unmerged commits
+	String.raw`rebase\b[^;&|]*\s(?:-i\b|--interactive\b)`, // needs an editor nobody can drive here
+	String.raw`pull\b[^;&|]*\s(?:-f\b|--force\b)`, // may overwrite local branches with the remote's
+];
+const GIT_DISCARDING_WRITE = new RegExp(`${GIT}(?:${DISCARDING_WRITES.join("|")})`);
+// Applying a mailed or pasted patch changes the tree with code nobody reviewed here.
+const GIT_PATCH = new RegExp(String.raw`${GIT}(?:apply|am)\b`);
 
-// The read-only forms of those subcommands (listing and verifying tags, viewing the stash). They
-// are removed from the command and the rest is searched again: `git tag -l; git reset` blocks.
-const TAG_READ_OPTIONS = String.raw`-l|--list|-v|--verify|-n\d*|--contains|--points-at|--sort=\S+|--format=\S+`;
-const READ_ONLY = String.raw`${GIT}(?:tag(?:\s+(?:${TAG_READ_OPTIONS})\b[^;&|]*)?\s*(?:$|[;&|])|stash\s+(?:list|show)\b)`;
-const GIT_READ_ONLY = new RegExp(READ_ONLY, "g");
-
-// A release's signed tag closes it, the way a signed commit closes a change: Claude creates it,
-// so it is removed from the command like a read. Deleting, moving or creating it unsigned is not.
+// A release's signed tag closes it, the way a signed commit closes a change: Claude creates it.
+// Deleting or moving it rewrites a published release, and a tag is never unsigned. Listing and
+// verifying tags start with an option other than -a/-m, so they are not a creation.
 const GIT_TAG = String.raw`${GIT}tag\b`;
 const GIT_TAG_FORBIDDEN = new RegExp(
 	String.raw`${GIT_TAG}[^;&|]*\s(?:-d|--delete|-f|--force|--no-sign)\b`,
 );
-const GIT_SIGNED_TAG = new RegExp(String.raw`${GIT_TAG}(?=[^;&|]*\s(?:-s|--sign)\b)[^;&|]*`, "g");
-
-// A fast-forward pull loses no work and rewrites no history, so it asks instead of denying (a
-// read-only clone needs it). Any option that merges, rebases or forces keeps it a write.
-const MERGING_PULL_OPTIONS = String.raw`-r|--rebase\S*|--no-ff|--squash|-f|--force`;
-const FF_PULL = String.raw`${GIT}pull\b(?=[^;&|]*\s--ff-only\b)(?![^;&|]*\s(?:${MERGING_PULL_OPTIONS})\b)[^;&|]*`;
-const GIT_FF_PULL = new RegExp(FF_PULL, "g");
+const GIT_UNSIGNED_TAG = new RegExp(
+	String.raw`${GIT_TAG}(?![^;&|]*\s(?:-s|--sign)\b)\s+(?:-a\b|--annotate\b|-m\b|[^-\s;&|])`,
+);
 
 // Unstaging paths (`git reset [HEAD] -- <paths>`) only touches the index: it passes. Any other
 // reset without --hard, --merge or --keep keeps the files and the reflog undoes it: it asks. Kept
@@ -95,17 +102,33 @@ export function resolveCommandDir(command, cwd) {
 		command,
 	);
 	if (!match?.[1]) return cwd;
-	return path.resolve(cwd, match[1].replaceAll(/^["']|["']$/g, ""));
+	return path.resolve(cwd, toNativePath(match[1].replaceAll(/^["']|["']$/g, "")));
 }
 
 /**
- * Whether every `git push` of the command only updates the release branch: a remote and one or
- * more refspecs whose destination is `staging` and whose source is not empty (`:staging` deletes
- * it). A bare `git push` does not count: where it goes depends on the current branch.
+ * A folder as the shell wrote it, as the system reads it: `~` is the home folder, and on Windows
+ * Git Bash's `/d/Dev` is `D:/Dev`. Read as is, `path.resolve` turned `/d/Dev` into `D:\d\Dev`, a
+ * folder that does not exist, so a repo's exceptions (its main-only push) were never found.
+ *
+ * @param {string} dir
+ * @param {NodeJS.Platform} [platform]
+ */
+export function toNativePath(dir, platform = process.platform) {
+	if (dir === "~" || dir.startsWith("~/")) return path.join(os.homedir(), dir.slice(1));
+	const [, letter, rest] = /^\/([a-z])(\/.*)?$/i.exec(dir) ?? [];
+	if (platform === "win32" && letter) return `${letter.toUpperCase()}:${rest ?? "/"}`;
+	return dir;
+}
+
+/**
+ * Whether every `git push` of the command only updates `branch`: a remote and refspecs whose
+ * destination is `branch` and whose source is not empty (`:branch` deletes it), with no option that
+ * widens the push. A bare `git push` does not count: where it goes depends on the current branch.
  *
  * @param {string} command
+ * @param {string} branch
  */
-export function isReleaseBranchPush(command) {
+export function isPlainPushTo(command, branch) {
 	const pushes = [...stripQuotedText(command).matchAll(GIT_PUSH_ARGS)];
 	if (pushes.length === 0) return false;
 	return pushes.every((push) => {
@@ -116,7 +139,7 @@ export function isReleaseBranchPush(command) {
 			refspecs.length > 0 &&
 			refspecs.every((refspec) => {
 				const [source, destination = source] = refspec.split(":");
-				return source !== "" && destination === RELEASE_BRANCH;
+				return source !== "" && destination === branch;
 			})
 		);
 	});
@@ -138,25 +161,6 @@ export function isMainPromotion(command) {
 	if (pushes.length !== 1) return false;
 	const args = (pushes[0]?.[1] ?? "").trim().split(/\s+/).filter(Boolean);
 	return args.length === 2 && args[0] === "origin" && args[1] === MAIN_PROMOTION_REFSPEC;
-}
-
-/** The only pull that rebases: local commits not yet pushed, replayed on the remote `staging`. */
-const RELEASE_BRANCH_SYNC = ["--rebase", "--autostash", "origin", RELEASE_BRANCH];
-const GIT_PULL_ARGS = new RegExp(String.raw`${GIT}pull\b([^;&|]*)`, "g");
-
-/**
- * Whether the command is exactly `git pull --rebase --autostash origin staging`, alone: before a
- * push it brings in what reached the remote without passing through here (a merged Dependabot PR,
- * another agent's work). It only replays commits that are not published yet, so nothing on the
- * remote is rewritten. Any other option, branch or a second command makes it something else.
- *
- * @param {string} command
- */
-export function isReleaseBranchSync(command) {
-	const pulls = [...stripQuotedText(command).matchAll(GIT_PULL_ARGS)];
-	if (pulls.length !== 1 || /[;&|]/.test(command)) return false;
-	const args = (pulls[0]?.[1] ?? "").trim().split(/\s+/).filter(Boolean);
-	return args.join(" ") === RELEASE_BRANCH_SYNC.join(" ");
 }
 
 /**
@@ -203,11 +207,14 @@ export function buildCommandRules({ isMainProtected }) {
 		},
 		{
 			pattern: new RegExp(GIT_PUSH),
-			applies: (command) => !isReleaseBranchPush(command),
+			// A main-only repo pushes to main on its own, like staging elsewhere: it is its normal flow.
+			applies: (command, cwd) =>
+				!isPlainPushTo(command, RELEASE_BRANCH) &&
+				!(!isMainProtected(resolveCommandDir(command, cwd)) && isPlainPushTo(command, "main")),
 			decision: "ask",
 			reason:
-				`push: only \`git push origin ${RELEASE_BRANCH}\` passes on its own (every 15 to 20 commits, ` +
-				"then follow CI); any other push only if the user asked, since each one spends Actions minutes.",
+				`push: only \`git push origin ${RELEASE_BRANCH}\` (or \`main\` in a main-only repo) passes on its own ` +
+				"(every 15 to 20 commits, then follow CI); any other push only if the user asked, since each one spends Actions minutes.",
 		},
 		{
 			pattern: GIT_TAG_FORBIDDEN,
@@ -217,32 +224,22 @@ export function buildCommandRules({ isMainProtected }) {
 				"and tags are never unsigned: `git tag -s <version> -m <version>`.",
 		},
 		{
-			pattern: new RegExp(String.raw`${GIT}pull\b`),
-			applies: (command) => isReleaseBranchSync(command),
-			decision: "ask",
-			reason:
-				`sync before a push: \`git pull --rebase --autostash origin ${RELEASE_BRANCH}\` replays the ` +
-				"local commits on the remote; run `pnpm verify` again if it brought something.",
+			pattern: GIT_UNSIGNED_TAG,
+			decision: "deny",
+			reason: "a tag is never unsigned: `git tag -s <version> -m <version>`.",
 		},
 		{
-			pattern: GIT_WRITE,
-			applies: (command) =>
-				GIT_WRITE.test(
-					stripQuotedText(command)
-						.replaceAll(GIT_READ_ONLY, " ")
-						.replaceAll(GIT_SIGNED_TAG, " ")
-						.replaceAll(GIT_FF_PULL, " ")
-						.replaceAll(new RegExp(GIT_SOFT_RESET, "g"), " "),
-				),
+			pattern: GIT_DISCARDING_WRITE,
 			decision: "deny",
 			reason:
-				"git write: whatever rewrites history or the tree is the user's. Suggest the command; " +
-				"status, log, diff and show are fine.",
+				"git write that discards work for good (uncommitted changes, untracked files, a stash or " +
+				"unmerged commits): commit or stash first, or suggest the command to the user. Branching, " +
+				"merging, rebasing local commits and stashing pass.",
 		},
 		{
-			pattern: new RegExp(FF_PULL),
+			pattern: GIT_PATCH,
 			decision: "ask",
-			reason: "fast-forward pull: it changes the working tree; only if the user expects it.",
+			reason: "applying a patch changes the tree with code nobody reviewed here: only if the user asked.",
 		},
 		{
 			pattern: new RegExp(GIT_SOFT_RESET),
