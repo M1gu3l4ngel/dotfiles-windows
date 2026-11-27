@@ -171,7 +171,7 @@ test("a main-only repo pushes to main like staging; a protected main stays denie
 	assert.equal(decideIn("git -C ../brain push --force origin main"), "deny");
 	assert.equal(decideIn("git -C ../brain push origin main --tags"), "ask");
 	assert.equal(decideIn("git push origin main"), "deny");
-	assert.equal(decideIn("git push origin origin/staging:main"), "ask");
+	assert.equal(decideIn("git push origin origin/staging:main"), "allow");
 });
 
 test("a push that only updates staging passes; a bare or wider push asks", () => {

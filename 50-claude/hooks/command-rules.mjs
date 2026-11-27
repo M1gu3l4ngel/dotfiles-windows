@@ -189,27 +189,22 @@ export function buildCommandRules({ isMainProtected }) {
 			reason: "forced push: never, in any repo.",
 		},
 		{
+			// The promotion passes: the user's approval is checked on the server (`Release gate` reads
+			// the approved promotion issue), which holds even when nobody is at this terminal.
 			pattern: new RegExp(String.raw`${GIT_PUSH}[^;&|]*\b(main|master)\b`),
 			applies: (command, cwd) =>
-				isMainProtected(resolveCommandDir(command, cwd)) && isMainPromotion(command),
-			decision: "ask",
-			reason:
-				`promotion to main: only when the user orders it, after CI is green on ${RELEASE_BRANCH}; ` +
-				"the user approves it here. Then `git fetch origin main:main` and follow Release gate.",
-		},
-		{
-			pattern: new RegExp(String.raw`${GIT_PUSH}[^;&|]*\b(main|master)\b`),
-			applies: (command, cwd) => isMainProtected(resolveCommandDir(command, cwd)),
+				isMainProtected(resolveCommandDir(command, cwd)) && !isMainPromotion(command),
 			decision: "deny",
 			reason:
 				`push to main: only the promotion \`git push origin ${MAIN_PROMOTION_REFSPEC}\`, ` +
-				"alone, when the user orders it.",
+				"alone, once the user approved its promotion issue.",
 		},
 		{
 			pattern: new RegExp(GIT_PUSH),
 			// A main-only repo pushes to main on its own, like staging elsewhere: it is its normal flow.
 			applies: (command, cwd) =>
 				!isPlainPushTo(command, RELEASE_BRANCH) &&
+				!isMainPromotion(command) &&
 				!(!isMainProtected(resolveCommandDir(command, cwd)) && isPlainPushTo(command, "main")),
 			decision: "ask",
 			reason:
