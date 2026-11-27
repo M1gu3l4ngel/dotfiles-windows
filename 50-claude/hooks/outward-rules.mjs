@@ -37,6 +37,15 @@ export const OUTWARD_RULES = [
 		reason: "a write through `gh api` skips the guards of the `gh` commands: only if the user asked.",
 	},
 	{
+		// `gh api` sends a POST on its own when it carries a body (`--input`, `-f`, `-F`), with no
+		// `-X`: a write to the settings of a repository or an organization is told by its path.
+		pattern: /\bgh\s+api\b[^;&|]*\b(?:rulesets|protection|hooks|collaborators|keys|environments|actions\/(?:permissions|secrets|variables)|secret-scanning|code-scanning|dependabot)\b/i,
+		applies: (command) =>
+			/(?:\s(?:-X|--method)[\s=]*(?!GET\b)[A-Z]+|\s--input\b|\s-[fF]\s|\s--(?:raw-)?field\b)/i.test(command),
+		decision: "ask",
+		reason: "it changes the settings of a repository or an organization: only if the user asked.",
+	},
+	{
 		pattern: /\bgh\s+(?:secret|variable)\s+set\b|\bgh\s+repo\s+edit\b/,
 		decision: "ask",
 		reason: "secrets, variables and repository settings are the Director's: only if the user asked.",

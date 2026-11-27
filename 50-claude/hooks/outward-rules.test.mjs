@@ -41,6 +41,15 @@ test("writes through gh api, secrets and repo settings ask", () => {
 	assert.equal(decide("gh api graphql -f query='{viewer{login}}'"), "allow");
 });
 
+test("a write to repository settings asks, also as an implicit POST", () => {
+	assert.equal(decide("gh api repos/o/r/rulesets --input rules.json"), "ask");
+	assert.equal(decide("gh api -X POST repos/o/r/rulesets --input rules.json"), "ask");
+	assert.equal(decide("gh api repos/o/r/branches/main/protection -f enforce_admins=false"), "ask");
+	assert.equal(decide("gh api repos/o/r/hooks -F active=true"), "ask");
+	assert.equal(decide("gh api repos/o/r/rulesets --jq '.[].name'"), "allow");
+	assert.equal(decide("gh api -X GET repos/o/r/actions/permissions"), "allow");
+});
+
 test("changing Railway asks, and reading it passes", () => {
 	assert.equal(decide("railway config apply --yes"), "ask");
 	assert.equal(decide("railway variables --set KEY=1"), "ask");

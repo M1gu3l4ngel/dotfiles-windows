@@ -11,7 +11,9 @@ Notable changes to the project. The format follows
 - `50-claude/hooks/outward-rules.mjs`: the global hook asks before reading a `.env` through the
   shell, writing through `gh api`, setting secrets or repository settings, changing Railway or a
   linked Supabase database; and denies merging a pull request, deleting on GitHub and piping a
-  script from the internet into a shell. Tested in `outward-rules.test.mjs`.
+  script from the internet into a shell. Tested in `outward-rules.test.mjs`. A write to the
+  settings of a repository or an organization through `gh api` asks too when it is an implicit
+  POST (`--input`, `-f`, `-F`), told by its path (`rulesets`, `protection`, `hooks`, `secrets`).
 - Community files: `SECURITY.md` (private reports through GitHub), `CODE_OF_CONDUCT.md`
   (Contributor Covenant 2.1), the pull request template and the bug and feature request forms,
   with blank issues off and vulnerabilities sent to `SECURITY.md`. `CONTRIBUTING` follows the
