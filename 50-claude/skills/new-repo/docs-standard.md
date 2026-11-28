@@ -29,11 +29,10 @@ en el check local y en el CI. Todos los documentos van solo en inglés (regla gl
 
 ## 2. Licencia, sin preguntar lo que se puede decidir
 
-| Caso | Licencia |
-|---|---|
-| Producto, plantilla, o algo con nombre y logo que proteger | Apache-2.0, con `NOTICE`: copyright y que el nombre y el logo no se licencian |
-| Configuración o herramienta personal pequeña (dotfiles, scripts) | MIT |
-| Código de un empleador o cliente | Ninguna, y privado: el código es suyo |
+- **Producto, plantilla, o algo con nombre y logo que proteger**: Apache-2.0, con `NOTICE`
+  (copyright, y que el nombre y el logo no se licencian).
+- **Configuración o herramienta personal pequeña** (dotfiles, scripts): MIT.
+- **Código de un empleador o cliente**: ninguna, y privado: el código es suyo.
 
 Solo se pregunta si no está claro de quién es el código. El año y el titular salen de
 la cuenta u organización dueña, nunca de un correo.
@@ -53,9 +52,9 @@ con estos nombres (lo demás va como `###` dentro de la que le toca):
 | Features | Producto o herramienta |
 | Structure | Tabla de carpetas |
 | How it works | Diagrama si hay más de dos piezas que se relacionan |
-| Getting started | Siempre: requisitos en Windows, macOS y Linux (o el sistema al que va), instalación y cómo comprobarla |
-| Usage | Si se usa tras instalarlo: tareas del día a día, actualizar, desinstalar |
-| Troubleshooting | Tabla síntoma, causa, arreglo |
+| Getting started | Siempre: requisitos por sistema, instalación y cómo comprobarla |
+| Usage | Si se usa tras instalarlo: día a día, actualizar, desinstalar |
+| Troubleshooting | Lista: el síntoma en negrita, su causa y el arreglo |
 | Documentation | Si hay `docs/` |
 | Contributing | Compartido o público |
 | Security | Público |
@@ -124,5 +123,10 @@ cambia para él.
 - Comandos que se copian y funcionan: sin prompt delante ni salida mezclada, con la
   carpeta y los privilegios dichos en el texto.
 - Una información vive en un solo sitio; el resto enlaza.
+- **Tablas solo para datos cortos** (un nombre, una ruta, un valor), con ninguna fila de más de
+  120 caracteres: Prettier rellena cada columna hasta su celda más larga, y una frase en una
+  celda estira la tabla entera hasta que no se lee en el editor. Lo que necesita una frase va
+  en una lista, con el término en negrita. Lo comprueba `check-docs.mjs`, el mismo límite que
+  el `pnpm check` de un cerebro y el `check:markdown-tables` de Core.
 - Nunca un correo personal, un usuario local ni el nombre de un cliente: el contacto
   es GitHub o el correo de la organización.

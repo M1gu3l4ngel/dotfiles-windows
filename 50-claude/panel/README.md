@@ -13,7 +13,7 @@ hooks do nothing in it.
 
 | File | What it is |
 |---|---|
-| `board.html` | The page: three views (En curso, Por probar, Pendientes), cards per platform, filters, search and checkmarks kept in the browser |
+| `board.html` | The page: three views, cards per platform, filters, search and checkmarks |
 | `panel-theme.css` | Colors, radii and type, light and dark: Inter and JetBrains Mono from Google Fonts |
 | `board.mjs` | Parser and validator for the two `.md` files |
 | `board.test.mjs` | Parser tests (`node --test`, no dependencies) |

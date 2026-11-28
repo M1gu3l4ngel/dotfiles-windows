@@ -8,6 +8,9 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- `check-docs.mjs` fails on a Markdown table with a row over 120 characters, the same limit as a
+  brain's check and Core's; the documentation standard says when a table is right and when a list
+  is. The repo's own long tables become lists.
 - `50-claude/hooks/follow-ci.mjs`: a push is finished only when its CI is green. After a `git push`
   of a branch the hook records the repository and commit, and the turn cannot end while that run is
   queued, running or red; a template release had gone out red and nobody followed it.

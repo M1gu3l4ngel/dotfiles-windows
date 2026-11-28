@@ -38,16 +38,25 @@ al pie de la letra; si no está claro de quién es el código, se pregunta.
 
 ## 3. Archivos base (cada uno solo si falta)
 
-| Archivo | Qué lleva |
-|---|---|
-| `README.md` | Cabecera: si hay marca, el logo en `<picture>` con su versión clara y oscura (una sola desaparece en uno de los temas), sin título `#` que repita el nombre debajo; descripción centrada en dos líneas; fila de enlaces a las secciones en su orden; badges de tecnologías y licencia, y de CI solo si es público. Cuerpo en el orden de `docs-standard.md`, con la versión de Node en `engines.node` como fuente única (regla `repo-conventions`) y comandos copiables y probados. Si la organización tiene receta propia, manda la suya, y la cabecera se compara con la de otro de sus repos antes de cerrar |
-| Documentos de comunidad | Los de su tipo en `docs-standard.md`, desde `templates/` |
-| `.editorconfig`, `.prettierrc.json`, `.prettierignore` | Propios del repo, aunque copien el estilo global: con CI no se depende de `~` |
-| `.gitattributes` | `* text=auto eol=lf` y los binarios marcados |
-| `.gitignore` | El del stack, más `.env`, claves y `*.local.*` |
-| `CLAUDE.md` (español) | Qué es, stack, tabla de comandos, convenciones y enlace a `docs/` |
-| `.vscode/tasks.json`, `extensions.json` | Desde `templates/vscode/`: `tsc --watch` y el lint del repo como tareas que se lanzan a mano, los dos al panel de Problemas, para ver los errores de todo el proyecto sin abrir cada archivo. `-p` y el script de lint, los del repo. En `extensions.json`, ESLint, Prettier y EditorConfig. Comentarios de verdad (JSONC), nunca pseudoclaves `"// x"` |
-| `LICENSE` | La de `docs-standard.md`, si lleva |
+- **`README.md`**: cabecera con, si hay marca, el logo en `<picture>` con su versión clara y
+  oscura (una sola desaparece en uno de los temas), sin título `#` que repita el nombre debajo;
+  descripción centrada en dos líneas; fila de enlaces a las secciones en su orden; badges de
+  tecnologías y licencia, y de CI solo si es público. Cuerpo en el orden de `docs-standard.md`,
+  con la versión de Node en `engines.node` como fuente única (regla `repo-conventions`) y
+  comandos copiables y probados. Si la organización tiene receta propia, manda la suya, y la
+  cabecera se compara con la de otro de sus repos antes de cerrar.
+- **Documentos de comunidad**: los de su tipo en `docs-standard.md`, desde `templates/`.
+- **`.editorconfig`, `.prettierrc.json`, `.prettierignore`**: propios del repo, aunque copien el
+  estilo global: con CI no se depende de `~`.
+- **`.gitattributes`**: `* text=auto eol=lf` y los binarios marcados.
+- **`.gitignore`**: el del stack, más `.env`, claves y `*.local.*`.
+- **`CLAUDE.md`** (español): qué es, stack, comandos, convenciones y enlace a `docs/`.
+- **`.vscode/tasks.json`, `extensions.json`**: desde `templates/vscode/`, `tsc --watch` y el
+  lint del repo como tareas que se lanzan a mano, los dos al panel de Problemas, para ver los
+  errores de todo el proyecto sin abrir cada archivo. `-p` y el script de lint, los del repo. En
+  `extensions.json`, ESLint, Prettier y EditorConfig. Comentarios de verdad (JSONC), nunca
+  pseudoclaves `"// x"`.
+- **`LICENSE`**: la de `docs-standard.md`, si lleva.
 
 Diagramas: Mermaid `flowchart`, etiquetas entre comillas, `<br/>` y `·` para
 separar, sin colores propios (se ve en tema claro y oscuro). Es un bloque de

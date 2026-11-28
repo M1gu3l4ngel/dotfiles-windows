@@ -58,7 +58,7 @@ people and for Claude Code, which loads them automatically.
 | `powershell.md` | PowerShell conventions |
 | `documentation.md` | Documentation style and the two-language rule |
 | `environment.md` | Disks, Developer Mode, symlinks, WSL |
-| `task-tracking.md` | `docs/tasks.md` and `docs/backlog.md` (in Spanish): what is left to do, and the task panel generated from them |
+| `task-tracking.md` | `docs/tasks.md`, `docs/backlog.md` and the task panel generated from them |
 
 ## Commits and pull requests
 

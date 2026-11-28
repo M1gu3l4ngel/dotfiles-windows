@@ -7,7 +7,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, describe, it } from "node:test";
-import { checkCommunity, checkDocs, isExcluded, slug } from "./check-docs.mjs";
+import { checkCommunity, checkDocs, isExcluded, MAX_TABLE_ROW_CHARS, slug } from "./check-docs.mjs";
 
 const root = mkdtempSync(path.join(tmpdir(), "check-docs-"));
 after(() => rmSync(root, { recursive: true, force: true }));
@@ -55,6 +55,14 @@ describe("checkDocs", () => {
 	it("reports a broken link", () => {
 		const problems = check({ "README.md": [...README, "[x](missing.md)"] }).problems;
 		assert.match(problems.join("\n"), /broken link to missing\.md/);
+	});
+
+	it("reports a wide table once, on its first line, and ignores one inside a code block", () => {
+		const row = (/** @type {number} */ width) => `| ${"x".repeat(width - 4)} |`;
+		const table = ["", row(40), row(MAX_TABLE_ROW_CHARS), row(200), row(300)];
+		const fenced = ["", "```markdown", row(300), "```"];
+		const { problems } = check({ "README.md": [...README, ...table, ...fenced] });
+		assert.deepEqual(problems, [`README.md:11: a table row passes ${MAX_TABLE_ROW_CHARS} characters; shorten it or use a list`]);
 	});
 });
 

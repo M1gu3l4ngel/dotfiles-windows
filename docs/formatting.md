@@ -5,10 +5,8 @@ CI), not in the editor settings. They are a copy of the ones in
 [dotfiles-parrot](https://github.com/M1gu3l4ngel/dotfiles-parrot), so both
 machines format the same way.
 
-| File | Linked to | What it formats |
-|---|---|---|
-| `40-format/prettierrc.json` | `~\.prettierrc.json` and `<disk>\Dev\.prettierrc.json` | Prettier: JS, TS, JSON, CSS, HTML, Markdown and YAML |
-| `40-format/editorconfig` | `~\.editorconfig` and `<disk>\Dev\.editorconfig` | Indentation and line endings of everything else (shell, SQL, TOML, `.env`) |
+- **`40-format/prettierrc.json`**, linked to `~\.prettierrc.json` and `<disk>\Dev\.prettierrc.json`: Prettier for JS, TS, JSON, CSS, HTML, Markdown and YAML.
+- **`40-format/editorconfig`**, linked to `~\.editorconfig` and `<disk>\Dev\.editorconfig`: indentation and line endings of everything else (shell, SQL, TOML, `.env`).
 
 ## Why two locations
 

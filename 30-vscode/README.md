@@ -3,11 +3,13 @@
 The VS Code user settings, its key bindings and the list of extensions that a new
 PC installs.
 
-| Path | Linked to | What it is |
-|---|---|---|
-| `vscode/settings.json` | `%APPDATA%\Code\User\settings.json` | User settings (JSONC, with comments) |
-| `vscode/keybindings.json` | `%APPDATA%\Code\User\keybindings.json` | Key bindings |
-| `vscode/extensions.txt` | — (read by `bootstrap.ps1`) | One extension id per line; step 8 of `bootstrap.ps1` installs the missing ones |
+| Path                      | Linked to                              | What it is                      |
+| ------------------------- | -------------------------------------- | ------------------------------- |
+| `vscode/settings.json`    | `%APPDATA%\Code\User\settings.json`    | User settings (JSONC)           |
+| `vscode/keybindings.json` | `%APPDATA%\Code\User\keybindings.json` | Key bindings                    |
+| `vscode/extensions.txt`   | — (read by `bootstrap.ps1`)            | One extension id per line       |
+
+Step 8 of `bootstrap.ps1` installs the extensions of `extensions.txt` that are missing.
 
 `install.ps1` creates the links. `extensions.txt` is regenerated from the
 installed extensions, never edited by hand. Run it in the repo root from

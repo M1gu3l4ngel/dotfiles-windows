@@ -92,16 +92,25 @@ export function readDoc(text) {
 		first: lines[0] ?? "",
 		/** @type {string[]} */ links: [],
 		/** @type {Set<string>} */ anchors: new Set(),
+		/** @type {number[]} */ wideTables: [],
 	};
 	const seen = new Map();
 	let inside = false;
-	for (const line of lines) {
+	let tableStart = 0;
+	for (const [index, line] of lines.entries()) {
 		if (line.trim().startsWith("```")) {
 			inside = !inside;
 			continue;
 		}
 		// A link inside a code block is an example, not a link.
 		if (inside) continue;
+		if (!line.trimStart().startsWith("|")) tableStart = 0;
+		else {
+			tableStart ||= index + 1;
+			// By characters, not bytes: an accent takes one column in the editor.
+			const wide = Array.from(line.trimEnd()).length > MAX_TABLE_ROW_CHARS;
+			if (wide && doc.wideTables.at(-1) !== tableStart) doc.wideTables.push(tableStart);
+		}
 		if (/^#{1,6} /.test(line)) doc.anchors.add(slug(line.replace(/^#+/, ""), seen));
 		// Markdown links and the HTML ones a README header uses (`<a href>`, `<img src>`, `<source
 		// srcset>`), so a logo or a header link that breaks is caught too.
@@ -112,6 +121,13 @@ export function readDoc(text) {
 	}
 	return doc;
 }
+
+/**
+ * Prettier pads every column of a table to its longest cell, so one sentence in a cell stretches
+ * every row until the table cannot be read in an editor. A table holds short data; a sentence
+ * goes in a list. Prettier's width (100) plus a margin; the same limit as a brain's `pnpm check`.
+ */
+export const MAX_TABLE_ROW_CHARS = 120;
 
 /** @param {string} target 'x.md#anchor' → ['x.md', 'anchor'] */
 const splitAnchor = (target) => {
@@ -139,6 +155,9 @@ export function checkDocs(root, files) {
 			continue;
 		}
 		if (SELECTOR.test(doc.first)) problems.push(`${file}: line 1 is a language selector; remove it`);
+		for (const line of doc.wideTables) {
+			problems.push(`${file}:${line}: a table row passes ${MAX_TABLE_ROW_CHARS} characters; shorten it or use a list`);
+		}
 		for (const target of doc.links) {
 			const [filePart, anchor] = splitAnchor(target);
 			const dest = filePart ? path.posix.normalize(path.posix.join(path.posix.dirname(file), filePart)) : file;

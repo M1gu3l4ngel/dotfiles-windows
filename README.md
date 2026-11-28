@@ -38,15 +38,13 @@
 
 Each numbered folder is one area of the environment, with its own README.
 
-| Folder | Contents |
-|---|---|
-| `10-shell/` | PowerShell and Git Bash profiles and the prompt theme (`capr4n`, shared with Parrot) ([10-shell/README.md](10-shell/README.md)) |
-| `15-git/` | Git identity, signing and the GitHub account each remote uses; private organizations stay in `~/.gitconfig.local` ([15-git/README.md](15-git/README.md)) |
-| `20-terminal/` | Windows Terminal settings ([20-terminal/README.md](20-terminal/README.md)) |
-| `30-vscode/` | VS Code settings, keybindings and extension list ([30-vscode/README.md](30-vscode/README.md)) |
-| `40-format/` | Global Prettier and EditorConfig style for projects without their own ([40-format/README.md](40-format/README.md)) |
-| `50-claude/` | Global Claude Code layer: `CLAUDE.md`, hooks, status line, task panel and settings template ([50-claude/README.md](50-claude/README.md)) |
-| `60-apps/` | Environment apps: the essential ones, which `bootstrap.ps1` installs, and the optional ones ([60-apps/README.md](60-apps/README.md)) |
+- [`10-shell/`](10-shell/README.md): PowerShell and Git Bash profiles and the prompt theme (`capr4n`, shared with Parrot).
+- [`15-git/`](15-git/README.md): Git identity, signing and the GitHub account each remote uses; private organizations stay in `~/.gitconfig.local`.
+- [`20-terminal/`](20-terminal/README.md): Windows Terminal settings.
+- [`30-vscode/`](30-vscode/README.md): VS Code settings, keybindings and extension list.
+- [`40-format/`](40-format/README.md): global Prettier and EditorConfig style for projects without their own.
+- [`50-claude/`](50-claude/README.md): the global Claude Code layer, with `CLAUDE.md`, hooks, status line, task panel and settings template.
+- [`60-apps/`](60-apps/README.md): environment apps, the essential ones `bootstrap.ps1` installs and the optional ones.
 
 And around them:
 
@@ -122,17 +120,15 @@ Afterwards, complete the manual steps (GPG/SSH keys) that the script itself list
 It is idempotent: each step checks whether it is already done, so it can be re-run
 without breaking anything (for example after a reboot).
 
-| Step | What it installs or configures |
-|---|---|
-| 1 | Environment variables pointing to `D:` (or `C:` if there is no `D:`), including `PNPM_HOME`; they go first so Rust installs there |
-| 2 | Essential apps from `60-apps/essential.json`: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, fnm and CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt) |
-| 3 | CaskaydiaCove Nerd Font (download verified by SHA-256) |
-| 4 | Node with fnm (versions in `<disk>\Dev\fnm`; each terminal switches to the repo's version on entering it) + pnpm + Claude Code in `<disk>\Dev\npm-global` |
-| 5 | WSL Ubuntu 26.04 (requires a reboot) |
-| 6 | git identity in `~/.gitconfig.local`, if the machine has none: `-GitName` and `-GitEmail`, the owner's by default |
-| 7 | Configuration symlinks, and the Claude Code `settings.json` if the machine has none (`install.ps1`) |
-| 8 | VS Code extensions from `30-vscode/vscode/extensions.txt` (only the missing ones) |
-| 9 | Shows the manual steps that involve secrets (GPG/SSH) |
+1. Environment variables pointing to `D:` (or `C:` if there is no `D:`), including `PNPM_HOME`; they go first so Rust installs there.
+2. Essential apps from `60-apps/essential.json`: Git, PowerShell 7, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, fnm and CLI tools (fzf, ripgrep, bat, fd, jq, lsd, Neovim, shfmt).
+3. CaskaydiaCove Nerd Font, its download verified by SHA-256.
+4. Node with fnm (versions in `<disk>\Dev\fnm`; each terminal switches to the repo's version on entering it), pnpm, and Claude Code in `<disk>\Dev\npm-global`.
+5. WSL Ubuntu 26.04 (requires a reboot).
+6. The git identity in `~/.gitconfig.local`, if the machine has none: `-GitName` and `-GitEmail`, the owner's by default.
+7. Configuration symlinks, and the Claude Code `settings.json` if the machine has none (`install.ps1`).
+8. VS Code extensions from `30-vscode/vscode/extensions.txt`, only the missing ones.
+9. The manual steps that involve secrets (GPG/SSH), shown on screen.
 
 It only installs the **environment**. Personal apps are left untouched (see `60-apps/`).
 
@@ -232,15 +228,13 @@ It does not uninstall apps or touch environment variables or WSL.
 
 ## Troubleshooting
 
-| Symptom | Cause | Fix |
-|---|---|---|
-| "running scripts is disabled on this system" | `Restricted` policy on a new Windows | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
-| `install.ps1` fails to create symlinks | Developer Mode off | Enable it, or run as administrator |
-| The prompt does not appear in a new terminal | The profile did not load | `. $PROFILE`, or reopen the terminal |
-| Icons show as squares | Missing CaskaydiaCove Nerd Font | Re-run `bootstrap.ps1` |
-| `fnm` not recognized after bootstrap | PATH not refreshed | Reopen PowerShell and run `bootstrap.ps1` again |
-| `Can't find an installed Node version matching …` on entering a folder | The repo asks for a Node version you do not have | Answer `y` and fnm installs it; `N` keeps the current one |
-| GitHub shows "Unverified" | The GPG key UID does not have the noreply email | [docs/gpg-signing.md](docs/gpg-signing.md) |
+- **"running scripts is disabled on this system"**: a new Windows has the `Restricted` policy. Run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
+- **`install.ps1` fails to create symlinks**: Developer Mode is off. Enable it, or run as administrator.
+- **The prompt does not appear in a new terminal**: the profile did not load. Run `. $PROFILE`, or reopen the terminal.
+- **Icons show as squares**: the CaskaydiaCove Nerd Font is missing. Re-run `bootstrap.ps1`.
+- **`fnm` not recognized after bootstrap**: PATH was not refreshed. Reopen PowerShell and run `bootstrap.ps1` again.
+- **`Can't find an installed Node version matching …` on entering a folder**: the repo asks for a Node version you do not have. Answer `y` and fnm installs it; `N` keeps the current one.
+- **GitHub shows "Unverified"**: the GPG key UID does not have the noreply email. See [docs/gpg-signing.md](docs/gpg-signing.md).
 
 ## Documentation
 

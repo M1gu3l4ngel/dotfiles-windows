@@ -5,10 +5,8 @@ repo is for the environment, not for personal apps.
 
 ## What is here
 
-| File | What it is | Who installs it |
-|---|---|---|
-| `essential.json` | The environment: Git, PowerShell, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, fnm and CLI tools | `bootstrap.ps1`, in that order |
-| `optional.json` | Other development tools, picked on each PC | You, when you want them |
+- **`essential.json`**: the environment (Git, PowerShell, Windows Terminal, VS Code, oh-my-posh, Gpg4win, Rust, Python, Docker, fnm and CLI tools). `bootstrap.ps1` installs it, in that order.
+- **`optional.json`**: other development tools, picked on each PC. You install them when you want them.
 
 `tools/check.ps1` fails if an app is in both lists.
 

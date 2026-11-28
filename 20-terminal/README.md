@@ -3,9 +3,8 @@
 The Windows Terminal settings: PowerShell 7 as the default profile, the Monokai
 Soda color scheme and CaskaydiaCove Nerd Font, which the prompt icons need.
 
-| Path | Linked to | What it is |
-|---|---|---|
-| `windows-terminal/settings.json` | `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json` | Profiles, color scheme, font and key bindings |
+`windows-terminal/settings.json` holds the profiles, color scheme, font and key bindings, and is
+linked to `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`.
 
 `install.ps1` creates the link. `bootstrap.ps1` installs the font, verified by
 SHA-256.

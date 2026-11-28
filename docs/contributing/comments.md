@@ -6,16 +6,27 @@ are written in English, so that the code reads the same for anyone who opens it.
 
 ## Sources
 
-The rules below come from comparing five style guides. Where they disagree, the
-table says which one this repo follows.
+The rules below come from comparing five style guides. Where they disagree, each
+topic says which one this repo follows.
 
-| Topic | Google (Shell, JS, TS) | PowerShell Practice and Style | Microsoft | Linux kernel | This repo |
-|---|---|---|---|---|---|
-| File header | Required: "a description of its contents" (Shell); optional `@fileoverview` (JS, TS) | Comment-based help in every script | Help at the start of the script (`about_Comment_Based_Help`) | — | Required, short: what, why, where it fits |
-| Function comment | Required unless "obvious and short"; arguments, outputs, returns (Shell) | Help for every function; a synopsis at least | `.SYNOPSIS`, `.PARAMETER`, `.EXAMPLE` | At the head of the function: what it does, maybe why | JSDoc or comment-based help when the name and signature are not enough |
-| Inside the body | "Tricky, non-obvious, interesting or important parts"; "Don't comment everything" | Explain the reasoning, not the command | — | Avoid them; never explain how | Only why: decisions, limits, incidents |
-| Repeating the code | "Avoid comments that just restate the parameter name and type" (TS) | "Do not write: # Increment Margin by 2" | — | No boilerplate that repeats the signature | Never |
-| Line width | 80 columns | — | — | 80 columns | The code's limit: 100 (`printWidth`) |
+- **File header.** This repo: required and short, saying what, why and where it fits.
+  - Google: required, "a description of its contents" (Shell); optional `@fileoverview` (JS, TS).
+  - PowerShell Practice and Style: comment-based help in every script.
+  - Microsoft: help at the start of the script (`about_Comment_Based_Help`).
+- **Function comment.** This repo: JSDoc or comment-based help when the name and signature are not enough.
+  - Google: required unless "obvious and short", with arguments, outputs and returns (Shell).
+  - PowerShell Practice and Style: help for every function, a synopsis at least.
+  - Microsoft: `.SYNOPSIS`, `.PARAMETER`, `.EXAMPLE`.
+  - Linux kernel: at the head of the function, what it does and maybe why.
+- **Inside the body.** This repo: only why, meaning decisions, limits and incidents.
+  - Google: "tricky, non-obvious, interesting or important parts"; "Don't comment everything".
+  - PowerShell Practice and Style: explain the reasoning, not the command.
+  - Linux kernel: avoid them; never explain how.
+- **Repeating the code.** This repo: never.
+  - Google: "Avoid comments that just restate the parameter name and type" (TS).
+  - PowerShell Practice and Style: "Do not write: # Increment Margin by 2".
+  - Linux kernel: no boilerplate that repeats the signature.
+- **Line width.** This repo: the code's limit, 100 (`printWidth`). Google and the Linux kernel: 80 columns.
 
 [PowerShell Practice and Style](https://poshcode.gitbook.io/powershell-practice-and-style/)
 is a community guide on the PoshCode site, not a Microsoft one; Microsoft's
@@ -116,12 +127,10 @@ goes stale the first time the code changes.
 
 ## Other text in the code
 
-| Text | Language | Why |
-|---|---|---|
-| Script output (`install.ps1`, `bootstrap.ps1`, `tools/`) and CI step names | English | One text for both documentation languages to quote as is, and the `.ps1` files are ASCII, where Spanish loses its accents |
-| Hook messages (`reason`) | English, short, ending in the action to take | Claude reads them and still answers the user in Spanish |
-| Test names | English | They are code, and CI prints them |
-| Task panel text and the headings it reads from `docs/tasks.md` | Spanish | `docs/tasks.md` is written in Spanish |
+- **Script output** (`install.ps1`, `bootstrap.ps1`, `tools/`) **and CI step names**: English. One text the documentation quotes as is, and the `.ps1` files are ASCII, where Spanish loses its accents.
+- **Hook messages** (`reason`): English, short, ending in the action to take. Claude reads them and still answers the user in Spanish.
+- **Test names**: English. They are code, and CI prints them.
+- **Task panel text and the headings it reads from `docs/tasks.md`**: Spanish, because `docs/tasks.md` is written in Spanish.
 
 ## What is not commented
 
