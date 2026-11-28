@@ -66,6 +66,11 @@ Contributing, Security, License) no cambia nunca de orden, y cada uno es una o d
 frases que enlazan a su archivo. La fila de enlaces de la cabecera nombra las
 secciones con estos mismos nombres.
 
+`check-docs.mjs` lo exige: el README abre centrado con el logo en `<picture>` con versión
+oscura, sin `#`, con un `---` antes de la primera sección; la fila de enlaces sigue el orden
+de las secciones; y las tres últimas son Contributing, Security y License, cada una con el
+enlace a su archivo.
+
 ## 4. CONTRIBUTING
 
 1. `# Contributing` y una frase: gracias, y qué es este repo.

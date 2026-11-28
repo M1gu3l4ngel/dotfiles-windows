@@ -25,6 +25,49 @@ import { parseArgs } from "node:util";
 /** Left out in every repo: instructions for Claude Code and the task panel lists (Spanish only). */
 export const DEFAULT_EXCLUDES = [".claude/", "docs/tasks.md", "docs/backlog.md"];
 
+/** The sections every README closes with, in this order, each linking to its file. */
+export const README_CLOSING_SECTIONS = ["Contributing", "Security", "License"];
+
+/** The file each closing section links to: the README points, the file explains. */
+const README_CLOSING_LINKS = { Contributing: "CONTRIBUTING.md", Security: "SECURITY.md", License: "LICENSE" };
+
+/**
+ * The problems of a README's header and closing (skills/new-repo/docs-standard.md, section 3):
+ * it opens centered with the logo in a `<picture>` that has a dark version, has no `#` title, a
+ * `---` rule ends the header before the first section, the header's link row follows the
+ * sections' order, and the closing sections are the last ones, in their order.
+ *
+ * @param {string} text
+ */
+export function checkReadme(text) {
+	const lines = text.split(/\r?\n/);
+	const problems = [];
+	const firstSection = lines.findIndex((line) => line.startsWith("## "));
+	const rule = lines.findIndex((line) => line.trim() === "---");
+	const header = lines.slice(0, rule < 0 ? firstSection : rule).join("\n");
+	// A leading HTML comment (a marker a tool reads) is not part of what the reader sees.
+	if (!/^(\s*<!--[\s\S]*?-->)*\s*<p align="center">/.test(text)) problems.push('opens with <p align="center"> and the logo');
+	if (!/<picture>[\s\S]*prefers-color-scheme: dark[\s\S]*<\/picture>/.test(header)) {
+		problems.push("the header logo is a <picture> with a prefers-color-scheme: dark source");
+	}
+	if (/^# /m.test(header)) problems.push("no # title: the logo already says the name");
+	if (rule < 0 || (firstSection >= 0 && rule > firstSection)) problems.push("a --- rule ends the header, before the first section");
+	const sections = lines.filter((line) => line.startsWith("## ")).map((line) => line.slice(3).trim());
+	const anchors = sections.map((section) => slug(section, new Map()));
+	const linked = [...header.matchAll(/href="#([^"]+)"/g)].map((match) => match[1]);
+	const order = linked.map((anchor) => anchors.indexOf(anchor));
+	if (order.some((index, i) => i > 0 && index < order[i - 1])) problems.push("the header's links follow the order of the sections");
+	const closing = sections.slice(-README_CLOSING_SECTIONS.length);
+	if (closing.join() !== README_CLOSING_SECTIONS.join()) {
+		problems.push(`the last sections are ${README_CLOSING_SECTIONS.join(", ")}, in that order (now: ${closing.join(", ")})`);
+	}
+	for (const [section, file] of Object.entries(README_CLOSING_LINKS)) {
+		const body = text.split(new RegExp(`^## ${section}\\s*$`, "m"))[1]?.split(/^## /m)[0] ?? "";
+		if (body && !body.includes(`](${file})`)) problems.push(`the ${section} section links to ${file}`);
+	}
+	return problems.map((problem) => `README.md: ${problem}`);
+}
+
 /** The files every repo carries, private or public. */
 export const COMMUNITY_FILES = [
 	"README.md",
@@ -187,6 +230,8 @@ if (invoked === realpathSync(fileURLToPath(import.meta.url))) {
 		.sort();
 	const { documents, problems } = checkDocs(root, files);
 	problems.push(...checkCommunity(root));
+	const readme = path.join(root, "README.md");
+	if (existsSync(readme)) problems.push(...checkReadme(readFileSync(readme, "utf8")));
 	if (problems.length > 0) {
 		for (const problem of problems) console.log(problem);
 		process.exit(1);

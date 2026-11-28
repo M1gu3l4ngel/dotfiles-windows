@@ -8,6 +8,9 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- `check-docs.mjs` checks the README's header (centered logo with a dark version, no `#` title,
+  a `---` rule, links in the order of the sections) and its closing (Contributing, Security and
+  License last, each linking to its file).
 - Every repo, private or public, carries README, CHANGELOG, CONTRIBUTING, CODE_OF_CONDUCT,
   SECURITY, LICENSE (proprietary when the code is not licensed) and the pull request and issue
   templates: GitHub shows them as tabs of the repository page. `check-docs.mjs` always requires

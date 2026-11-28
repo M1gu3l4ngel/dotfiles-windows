@@ -7,7 +7,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, describe, it } from "node:test";
-import { checkCommunity, checkDocs, COMMUNITY_FILES, isExcluded, MAX_TABLE_ROW_CHARS, slug } from "./check-docs.mjs";
+import { checkCommunity, checkDocs, checkReadme, COMMUNITY_FILES, isExcluded, MAX_TABLE_ROW_CHARS, slug } from "./check-docs.mjs";
 
 const root = mkdtempSync(path.join(tmpdir(), "check-docs-"));
 after(() => rmSync(root, { recursive: true, force: true }));
@@ -86,6 +86,41 @@ describe("checkCommunity", () => {
 		for (const file of ["CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "SECURITY.md", "LICENSE"]) {
 			assert.match(problems, new RegExp(`${file.replace(".", "\\.")}: missing \\(every repo carries it\\)`));
 		}
+	});
+
+	it("passes a README with the standard header and closing", () => {
+		const readme = [
+			"<!-- marker -->",
+			'<p align="center">',
+			"  <picture>",
+			'    <source media="(prefers-color-scheme: dark)" srcset="logo-dark.svg">',
+			'    <img src="logo.svg" alt="X" width="320">',
+			"  </picture>",
+			"</p>",
+			'<p align="center"><a href="#usage">Usage</a> · <a href="#license">License</a></p>',
+			"",
+			"---",
+			"",
+			"## Usage",
+			"## Contributing",
+			"See [CONTRIBUTING.md](CONTRIBUTING.md).",
+			"## Security",
+			"See [SECURITY.md](SECURITY.md).",
+			"## License",
+			"[MIT](LICENSE).",
+		].join("\n");
+		assert.deepEqual(checkReadme(readme), []);
+	});
+
+	it("reports a README with a title, no rule, links out of order and a wrong closing", () => {
+		const readme = ['<p align="center"><img src="logo.svg"></p>', '<a href="#b">B</a> <a href="#a">A</a>', "# Name", "## A", "## B", "## License", "MIT"].join("\n");
+		const problems = checkReadme(readme).join("\n");
+		assert.match(problems, /<picture> with a prefers-color-scheme: dark source/);
+		assert.match(problems, /no # title/);
+		assert.match(problems, /a --- rule ends the header/);
+		assert.match(problems, /links follow the order of the sections/);
+		assert.match(problems, /last sections are Contributing, Security, License/);
+		assert.match(problems, /the License section links to LICENSE/);
 	});
 
 	it("asks for NOTICE under Apache-2.0", () => {
