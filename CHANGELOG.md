@@ -8,6 +8,10 @@ Notable changes to the project. The format follows
 
 ### Added
 
+- Every repo, private or public, carries README, CHANGELOG, CONTRIBUTING, CODE_OF_CONDUCT,
+  SECURITY, LICENSE (proprietary when the code is not licensed) and the pull request and issue
+  templates: GitHub shows them as tabs of the repository page. `check-docs.mjs` always requires
+  them, and its `--community <kind>` option is gone.
 - `check-docs.mjs` fails on a Markdown table with a row over 120 characters, the same limit as a
   brain's check and Core's; the documentation standard says when a table is right and when a list
   is. The repo's own long tables become lists.

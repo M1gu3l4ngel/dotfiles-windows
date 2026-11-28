@@ -4,10 +4,10 @@ Todo repo mío (personal, de una organización propia o de un empleador) tiene:
 
 - En GitHub: descripción en inglés de una frase, web si la hay, de 6 a 10 topics y
   `main` protegido contra borrado y push forzado (ruleset).
-- Licencia y documentos según `~/.claude/skills/new-repo/docs-standard.md`: README
-  y CHANGELOG siempre; CONTRIBUTING y plantilla de PR si es compartido; CODE_OF_CONDUCT,
-  SECURITY, licencia y plantillas de issues si es público. Secciones en su orden, desde
-  sus plantillas, y `check-docs.mjs --community <tipo>` en el check del repo.
+- Licencia y documentos según `~/.claude/skills/new-repo/docs-standard.md`, todos en todo
+  repo, privado o público: README, CHANGELOG, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY,
+  LICENSE (propietaria si no se licencia) y las plantillas de PR e issues. Secciones en su
+  orden, desde sus plantillas, y `check-docs.mjs` (o el check de la organización) en el CI.
 - Cabecera del README con la receta del skill `new-repo` (logo claro y oscuro en
   `<picture>`, descripción centrada, fila de enlaces, badges), igual que la de
   los otros repos del mismo dueño: se compara con una de ellas, no de memoria.

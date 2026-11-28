@@ -3,18 +3,18 @@
 // Checks a repo's documentation, which is written in English only, as the global CLAUDE.md asks of
 // every repo:
 //   1. no document has a translated copy (X.es.md) or a language selector on line 1;
-//   2. relative links point to files that exist, and anchors (#section) to headings that exist.
+//   2. relative links point to files that exist, and anchors (#section) to headings that exist;
+//   3. no table row passes MAX_TABLE_ROW_CHARS;
+//   4. the repo carries every community file (skills/new-repo/docs-standard.md in the Claude Code
+//      layer), private or public: GitHub shows README, Code of conduct, Contributing, License and
+//      Security as tabs of the repository page, and the issue and pull request templates shape
+//      every contribution. NOTICE too under Apache-2.0.
 //
 // Shared by every repo through ~/.claude/tools, so dotfiles-windows and dotfiles-parrot run one
 // implementation. Agent instructions and the task lists are Spanish by design, so they are left
 // out; a repo leaves out more with --exclude (a path, or a folder ending in /).
 //
-// --community personal|shared|public also requires the files a repo of that kind carries
-// (skills/new-repo/docs-standard.md in the Claude Code layer): README and CHANGELOG always,
-// CONTRIBUTING and the pull request template when shared, and the code of conduct, the security
-// policy, the license and the issue templates when public, with NOTICE under Apache-2.0.
-//
-// Usage: node check-docs.mjs [repo folder] [--exclude path]... [--community personal|shared|public]
+// Usage: node check-docs.mjs [repo folder] [--exclude path]...
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, realpathSync } from "node:fs";
@@ -25,35 +25,30 @@ import { parseArgs } from "node:util";
 /** Left out in every repo: instructions for Claude Code and the task panel lists (Spanish only). */
 export const DEFAULT_EXCLUDES = [".claude/", "docs/tasks.md", "docs/backlog.md"];
 
-const PERSONAL = ["README.md", "CHANGELOG.md"];
-const SHARED = [...PERSONAL, "CONTRIBUTING.md", ".github/pull_request_template.md"];
-
-/** The files each kind of repo carries. */
-export const COMMUNITY_FILES = {
-	personal: PERSONAL,
-	shared: SHARED,
-	public: [
-		...SHARED,
-		"CODE_OF_CONDUCT.md",
-		"SECURITY.md",
-		"LICENSE",
-		".github/ISSUE_TEMPLATE/config.yml",
-		".github/ISSUE_TEMPLATE/bug_report.yml",
-		".github/ISSUE_TEMPLATE/feature_request.yml",
-	],
-};
+/** The files every repo carries, private or public. */
+export const COMMUNITY_FILES = [
+	"README.md",
+	"CHANGELOG.md",
+	"CONTRIBUTING.md",
+	"CODE_OF_CONDUCT.md",
+	"SECURITY.md",
+	"LICENSE",
+	".github/pull_request_template.md",
+	".github/ISSUE_TEMPLATE/config.yml",
+	".github/ISSUE_TEMPLATE/bug_report.yml",
+	".github/ISSUE_TEMPLATE/feature_request.yml",
+];
 
 /**
- * The community files missing from a repo of the given kind; Apache-2.0 also needs its NOTICE.
+ * The community files missing from a repo; Apache-2.0 also needs its NOTICE.
  *
  * @param {string} root
- * @param {keyof typeof COMMUNITY_FILES} kind
  */
-export function checkCommunity(root, kind) {
-	const required = [...COMMUNITY_FILES[kind]];
+export function checkCommunity(root) {
+	const required = [...COMMUNITY_FILES];
 	const license = path.join(root, "LICENSE");
 	if (existsSync(license) && readFileSync(license, "utf8").includes("Apache License")) required.push("NOTICE");
-	return required.filter((f) => !existsSync(path.join(root, f))).map((f) => `${f}: missing (required in a ${kind} repo)`);
+	return required.filter((f) => !existsSync(path.join(root, f))).map((f) => `${f}: missing (every repo carries it)`);
 }
 
 /**
@@ -178,14 +173,9 @@ export function checkDocs(root, files) {
 const invoked = process.argv[1] ? realpathSync(process.argv[1]) : "";
 if (invoked === realpathSync(fileURLToPath(import.meta.url))) {
 	const { values, positionals } = parseArgs({
-		options: { exclude: { type: "string", multiple: true, default: [] }, community: { type: "string" } },
+		options: { exclude: { type: "string", multiple: true, default: [] } },
 		allowPositionals: true,
 	});
-	const kind = values.community;
-	if (kind !== undefined && !(kind in COMMUNITY_FILES)) {
-		console.log(`--community must be one of: ${Object.keys(COMMUNITY_FILES).join(", ")}`);
-		process.exit(2);
-	}
 	const root = path.resolve(positionals[0] ?? process.cwd());
 	const excludes = [...DEFAULT_EXCLUDES, ...values.exclude];
 	// --others includes new documents not yet added: the check must see them before the commit.
@@ -196,10 +186,10 @@ if (invoked === realpathSync(fileURLToPath(import.meta.url))) {
 		.filter((f) => f && existsSync(path.join(root, f)) && !isExcluded(f, excludes))
 		.sort();
 	const { documents, problems } = checkDocs(root, files);
-	if (kind) problems.push(...checkCommunity(root, /** @type {keyof typeof COMMUNITY_FILES} */ (kind)));
+	problems.push(...checkCommunity(root));
 	if (problems.length > 0) {
 		for (const problem of problems) console.log(problem);
 		process.exit(1);
 	}
-	console.log(`Docs: ${documents} documents in English, links and anchors resolve${kind ? `, every file of a ${kind} repo present` : ""}`);
+	console.log(`Docs: ${documents} documents in English, links, anchors and tables fine, every community file present`);
 }

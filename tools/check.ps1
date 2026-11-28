@@ -125,13 +125,12 @@ foreach ($rel in ($tracked | Where-Object { $_ -notmatch $binExt })) {
 if ($crlf.Count -eq 0) { Pass 'LF line endings' }
 else { Fail "CRLF found in: $($crlf -join ', ')" }
 
-# Documents are English only: no X.es.md copy or language selector, and links and anchors resolve
-# (50-claude/tools/check-docs.mjs). Besides its defaults (CLAUDE.md, .claude/, the task lists), the
-# global rules, the skill and the entorno.md template are Spanish by design, like the agent
-# instructions they are. The repo is public, so it also needs every community file a public repo
-# carries.
+# Documents are English only, links, anchors and tables are fine, and every community file is
+# present (50-claude/tools/check-docs.mjs). Besides its defaults (CLAUDE.md, .claude/, the task
+# lists), the global rules, the skill and the entorno.md template are Spanish by design, like the
+# agent instructions they are.
 if (Get-Command node -ErrorAction SilentlyContinue) {
-	$docsOut = node (Join-Path $repo '50-claude\tools\check-docs.mjs') $repo --community public --exclude 50-claude/rules/ --exclude 50-claude/skills/ --exclude 50-claude/entorno.template.md 2>&1
+	$docsOut = node (Join-Path $repo '50-claude\tools\check-docs.mjs') $repo --exclude 50-claude/rules/ --exclude 50-claude/skills/ --exclude 50-claude/entorno.template.md 2>&1
 	if ($LASTEXITCODE -eq 0) { Pass ($docsOut -join ' ') }
 	else {
 		Fail 'Docs check failed:'

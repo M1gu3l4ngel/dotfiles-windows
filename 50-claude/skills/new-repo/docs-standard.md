@@ -10,29 +10,29 @@ Si la organización tiene receta propia en su cerebro (`40-engineering/`), manda
 suya en lo que diga; lo demás sale de aquí. Antes de cerrar, se compara el resultado
 con otro repo del mismo dueño, no de memoria.
 
-## 1. Qué archivos lleva según su tipo
+## 1. Qué archivos lleva
 
-| Archivo | Personal (privado, una persona) | Compartido (privado, varias) | Público |
-|---|---|---|---|
-| `README.md` | Sí | Sí | Sí |
-| `CHANGELOG.md` | Sí | Sí | Sí |
-| `CONTRIBUTING.md` | No | Sí | Sí |
-| `.github/pull_request_template.md` | No | Sí | Sí |
-| `CODE_OF_CONDUCT.md` | No | No | Sí |
-| `SECURITY.md` | No | No | Sí |
-| `.github/ISSUE_TEMPLATE/` (`bug_report.yml`, `feature_request.yml`, `config.yml`) | No | No | Sí |
-| `LICENSE` | La que tendría al publicarse | La que tendría al publicarse | Sí |
-| `NOTICE` | Con Apache-2.0 | Con Apache-2.0 | Con Apache-2.0 |
+Todos, en todo repo, privado o público, personal o de una organización:
 
-Lo comprueba `node ~/.claude/tools/check-docs.mjs . --community personal|shared|public`,
-en el check local y en el CI. Todos los documentos van solo en inglés (regla global).
+- `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md` y `LICENSE`.
+  GitHub enseña README, Code of conduct, Contributing, License y Security como pestañas de la
+  página del repo: un repo sin alguno se ve a medias, y un privado puede publicarse mañana.
+- `.github/pull_request_template.md` y `.github/ISSUE_TEMPLATE/` (`bug_report.yml`,
+  `feature_request.yml`, `config.yml`).
+- `NOTICE`, con Apache-2.0.
+
+Lo comprueba `node ~/.claude/tools/check-docs.mjs .` en el check local y en el CI, o el check
+propio de la organización si su cerebro o su plantilla lo trae, con la misma lista. Todos los
+documentos van solo en inglés (regla global).
 
 ## 2. Licencia, sin preguntar lo que se puede decidir
 
 - **Producto, plantilla, o algo con nombre y logo que proteger**: Apache-2.0, con `NOTICE`
   (copyright, y que el nombre y el logo no se licencian).
 - **Configuración o herramienta personal pequeña** (dotfiles, scripts): MIT.
-- **Código de un empleador o cliente**: ninguna, y privado: el código es suyo.
+- **Código de un empleador, un cliente o el contenido interno de una empresa** (su cerebro):
+  privado, con un `LICENSE` propietario: `Copyright (c) <año> <dueño>. All rights reserved.` y
+  que nadie lo usa, copia ni distribuye sin permiso escrito. El código es suyo.
 
 Solo se pregunta si no está claro de quién es el código. El año y el titular salen de
 la cuenta u organización dueña, nunca de un correo.

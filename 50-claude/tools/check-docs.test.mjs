@@ -7,7 +7,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, describe, it } from "node:test";
-import { checkCommunity, checkDocs, isExcluded, MAX_TABLE_ROW_CHARS, slug } from "./check-docs.mjs";
+import { checkCommunity, checkDocs, COMMUNITY_FILES, isExcluded, MAX_TABLE_ROW_CHARS, slug } from "./check-docs.mjs";
 
 const root = mkdtempSync(path.join(tmpdir(), "check-docs-"));
 after(() => rmSync(root, { recursive: true, force: true }));
@@ -77,23 +77,20 @@ describe("checkCommunity", () => {
 		return dir;
 	}
 
-	it("asks a personal repo for README and CHANGELOG only", () => {
-		assert.deepEqual(checkCommunity(repo(["README.md", "CHANGELOG.md"]), "personal"), []);
+	it("passes a repo with every community file", () => {
+		assert.deepEqual(checkCommunity(repo(COMMUNITY_FILES)), []);
 	});
 
-	it("asks a shared repo for CONTRIBUTING and the pull request template", () => {
-		const problems = checkCommunity(repo(["README.md", "CHANGELOG.md"]), "shared").join("\n");
-		assert.match(problems, /CONTRIBUTING\.md: missing \(required in a shared repo\)/);
-		assert.match(problems, /\.github\/pull_request_template\.md: missing/);
+	it("asks every repo, private too, for the files GitHub shows as tabs", () => {
+		const problems = checkCommunity(repo(["README.md", "CHANGELOG.md"])).join("\n");
+		for (const file of ["CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "SECURITY.md", "LICENSE"]) {
+			assert.match(problems, new RegExp(`${file.replace(".", "\\.")}: missing \\(every repo carries it\\)`));
+		}
 	});
 
-	it("asks a public repo for the community files, and NOTICE under Apache-2.0", () => {
-		const all = ["README.md", "CHANGELOG.md", "CONTRIBUTING.md", ".github/pull_request_template.md", "CODE_OF_CONDUCT.md", "SECURITY.md", "LICENSE"];
-		const issues = ["config.yml", "bug_report.yml", "feature_request.yml"].map((f) => `.github/ISSUE_TEMPLATE/${f}`);
-		assert.deepEqual(checkCommunity(repo([...all, ...issues]), "public"), []);
-		const problems = checkCommunity(repo(all, "Apache License\nVersion 2.0"), "public").join("\n");
+	it("asks for NOTICE under Apache-2.0", () => {
+		const problems = checkCommunity(repo(COMMUNITY_FILES, "Apache License\nVersion 2.0")).join("\n");
 		assert.match(problems, /NOTICE: missing/);
-		assert.match(problems, /bug_report\.yml: missing/);
 	});
 });
 

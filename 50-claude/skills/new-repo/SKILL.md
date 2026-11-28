@@ -56,7 +56,8 @@ al pie de la letra; si no está claro de quién es el código, se pregunta.
   errores de todo el proyecto sin abrir cada archivo. `-p` y el script de lint, los del repo. En
   `extensions.json`, ESLint, Prettier y EditorConfig. Comentarios de verdad (JSONC), nunca
   pseudoclaves `"// x"`.
-- **`LICENSE`**: la de `docs-standard.md`, si lleva.
+- **`LICENSE`**: la de `docs-standard.md`; siempre hay una, propietaria si el código no se
+  licencia.
 
 Diagramas: Mermaid `flowchart`, etiquetas entre comillas, `<br/>` y `·` para
 separar, sin colores propios (se ve en tema claro y oscuro). Es un bloque de
@@ -71,7 +72,7 @@ código: idéntico en las dos versiones, con etiquetas en inglés.
   lo instalan o lo corren en su máquina, matriz con `windows-latest` y
   `macos-latest` además de Linux, en `bash`.
 - Check de docs: el de la organización si su cerebro o su plantilla lo trae;
-  si no, `node ~/.claude/tools/check-docs.mjs . --community <tipo>` (de dotfiles-windows, con
+  si no, `node ~/.claude/tools/check-docs.mjs .` (de dotfiles-windows, con
   `--exclude` para lo que el repo tenga solo en español). En el CI, un segundo
   `actions/checkout` de dotfiles-windows fijado por SHA y el mismo comando con su
   ruta; con él, `check-comments.mjs`.
